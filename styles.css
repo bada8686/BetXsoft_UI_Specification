@@ -1074,3 +1074,13 @@ body.ios-keyboard-locked{
   }
 }
 /* searchable-customer-picker:end */
+
+
+/* hide-transaction-subtitles:start */
+.route-deposit-2 .page-head p,
+.route-deposit-3 .page-head p,
+.route-payout-2 .page-head p,
+.route-payout-3 .page-head p{
+  display:none!important;
+}
+/* hide-transaction-subtitles:end */
