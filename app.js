@@ -203,10 +203,10 @@ function header(){ return `<header class="topbar"><div class="topbar-main"><div 
 function drawer(){
   const link=(routeIndex)=>{
     const [r,n]=routes[routeIndex];
-    return `<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${String(routeIndex+1).padStart(2,'0')}</span><span>${n}</span></button>`;
+    return `<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${n}</span></button>`;
   };
-  const category=(title,range)=>`<div class="drawer-category"><strong>${title}</strong><small>${range}</small></div>`;
-  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav"><div class="drawer-group">Menü</div>${link(0)}${category('Einzahlung','02–04')}${[1,2,3].map(link).join('')}${category('Auszahlung','05–07')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','08–16')}${routes.slice(7).map((_,idx)=>link(idx+7)).join('')}</nav></aside>`;
+  const category=(title,icon,tone)=>`<div class="drawer-category ${tone}"><span class="drawer-category-icon">${svgIcon(icon)}</span><strong>${title}</strong></div>`;
+  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav">${category('Einzahlung','down','deposit')}${[1,2,3].map(link).join('')}${category('Auszahlung','up','payout')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','menu','other')}${routes.slice(7).map((_,idx)=>link(idx+7)).join('')}</nav></aside>`;
 }
 
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
