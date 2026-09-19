@@ -1638,7 +1638,7 @@ body.ios-keyboard-locked{
 
   /* Accepted visual treatment for the three quick-action cards. */
   .route-home .quick-card{
-    border:0.6px solid #6f7680!important;
+    border:1px solid rgba(74,80,88,.45)!important;
   }
 }
 /* unified-topbar-content-gap-v43:end */
