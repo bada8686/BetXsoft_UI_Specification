@@ -389,3 +389,15 @@ button{cursor:pointer}
   .route-deposit-1 .amount-chip{font-size:11px}
 }
 /* deposit-entry-refresh:end */
+
+
+/* ios-global-input-zoom-fix:start */
+/* Prevent automatic iPhone/iOS Safari zoom when focusing form controls on every page. */
+@supports (-webkit-touch-callout: none){
+  input,
+  select,
+  textarea{
+    font-size:16px!important;
+  }
+}
+/* ios-global-input-zoom-fix:end */
