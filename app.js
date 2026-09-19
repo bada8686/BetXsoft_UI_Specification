@@ -194,8 +194,18 @@ function deposit1(){ return `<section class="deposit-minimal-page">
     <div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen <span aria-hidden="true">→</span></button></div>
   </section>
 </section>`; }
-function deposit2(){ const amount=state.amount||'20'; return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row deposit-amount-highlight"><span>Betrag</span><strong class="positive">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>0,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${esc(amount)},00</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`; }
-function deposit3(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${esc(state.amount||'20')},00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
+function deposit2(){
+  const amount=Number(state.amount||'0');
+  const currentBalance=customerBalanceValue(state.customer);
+  const newBalance=currentBalance+amount;
+  return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row deposit-amount-highlight"><span>Betrag</span><strong class="positive">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>${formatAccountBalance(currentBalance)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`;
+}
+function deposit3(){
+  const amount=Number(state.amount||'0');
+  const currentBalance=customerBalanceValue(state.customer);
+  const newBalance=currentBalance+amount;
+  return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`;
+}
 
 function payoutClose(){ return `<button class="page-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
 
