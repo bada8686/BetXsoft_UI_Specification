@@ -1177,7 +1177,7 @@ body.ios-keyboard-locked{
 .create-user-head{
   min-height:52px;
   display:grid;
-  grid-template-columns:44px minmax(0,1fr) 44px;
+  grid-template-columns:minmax(0,1fr) 44px;
   align-items:center;
   gap:12px;
   margin-bottom:18px;
@@ -1372,7 +1372,7 @@ body.ios-keyboard-locked{
   }
   .create-user-head{
     min-height:44px;
-    grid-template-columns:38px minmax(0,1fr) 38px;
+    grid-template-columns:minmax(0,1fr) 38px;
     gap:9px;
     margin-bottom:14px;
   }
