@@ -206,7 +206,9 @@ function drawer(){
     return `<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${n}</span></button>`;
   };
   const category=(title,icon,tone)=>`<div class="drawer-category ${tone}"><span class="drawer-category-icon">${svgIcon(icon)}</span><strong>${title}</strong></div>`;
-  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav">${category('Einzahlung','down','deposit')}${[1,2,3].map(link).join('')}${category('Auszahlung','up','payout')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','menu','other')}${routes.slice(7).map((_,idx)=>link(idx+7)).join('')}</nav></aside>`;
+  const otherIndexes=[7,8,9,10,13,14,15];
+  const otherLinks=otherIndexes.map(routeIndex=>`${link(routeIndex)}${routeIndex===10?'<div class="drawer-menu-divider" aria-hidden="true"></div>':''}`).join('');
+  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav">${category('Einzahlung','down','deposit')}${[1,2,3].map(link).join('')}${category('Auszahlung','up','payout')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','menu','other')}${otherLinks}</nav></aside>`;
 }
 
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
