@@ -857,3 +857,10 @@ body.ios-keyboard-locked{
   .route-payout-1 .amount-chip{font-size:11px}
 }
 /* payout-match-deposit:end */
+
+
+/* payout-balance-visibility:start */
+.route-payout-1 .payout-balance-field[hidden]{
+  display:none!important;
+}
+/* payout-balance-visibility:end */
