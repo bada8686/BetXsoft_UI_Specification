@@ -1139,16 +1139,16 @@ body.ios-keyboard-locked{
 /* unified-page-top-spacing:start */
 /* Keep every internal page comfortably separated from the fixed top bar. */
 #app > .app:not(.route-home) > .layout{
-  padding-top:43px!important;
+  padding-top:48px!important;
 }
 @media(max-width:850px){
   #app > .app:not(.route-home) > .layout{
-    padding-top:41px!important;
+    padding-top:46px!important;
   }
 }
 @media(max-width:520px){
   #app > .app:not(.route-home) > .layout{
-    padding-top:39px!important;
+    padding-top:44px!important;
   }
 }
 /* unified-page-top-spacing:end */
@@ -1167,6 +1167,6 @@ body.ios-keyboard-locked{
 
 /* footer-position-adjustment:start */
 .footer{
-  top:-15px;
+  top:-5px;
 }
 /* footer-position-adjustment:end */
