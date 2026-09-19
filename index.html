@@ -2,33 +2,15 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#061228">
+  <meta name="description" content="BetXsoft Shop Admin – Kunden, Zahlungen, Wettscheine und Umsätze zentral verwalten.">
   <title>BetXsoft Shop Admin</title>
-  <style>
-    *{box-sizing:border-box}
-    html,body{margin:0;min-height:100%;background:#f2f3f5}
-    body{display:flex;flex-direction:column;justify-content:flex-start;align-items:center}
-    img{display:block;width:min(390px,100vw);height:auto;background:#fff}
-    @media(max-width:390px){html,body{background:#fff}}
-  </style>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
-  <img src="./assets/screens/screen-01-home.png" alt="BetXsoft Shop Admin">
-  <img src="./assets/screens/screen-02-deposit-1.png" alt="BetXsoft Einzahlung Schritt 1">
-  <img src="./assets/screens/screen-03-deposit-2.png" alt="BetXsoft Einzahlung Schritt 2">
-  <img src="./assets/screens/screen-04-deposit-3.png" alt="BetXsoft Einzahlung Schritt 3">
-  <img src="./assets/screens/screen-05-payout-1.png" alt="BetXsoft Auszahlung Schritt 1">
-  <img src="./assets/screens/screen-06-payout-2.png" alt="BetXsoft Auszahlung Schritt 2">
-  <img src="./assets/screens/screen-07-payout-3.png" alt="BetXsoft Auszahlung Schritt 3">
-  <img src="./assets/screens/screen-08-customers.png" alt="BetXsoft Kunden">
-  <img src="./assets/screens/screen-09-account-history.png" alt="BetXsoft Kontoverlauf">
-  <img src="./assets/screens/screen-10-create-user.png" alt="BetXsoft Benutzer erstellen">
-  <img src="./assets/screens/screen-11-coupons.png" alt="BetXsoft Wettscheine">
-  <img src="./assets/screens/screen-12-coupon-filters.png" alt="BetXsoft Wettscheinfilter">
-  <img src="./assets/screens/screen-13-coupon-detail.png" alt="BetXsoft Wettscheindetails">
-  <img src="./assets/screens/screen-14-turnover.png" alt="BetXsoft Umsatz">
-  <img src="./assets/screens/screen-15-deposit-transactions.png" alt="BetXsoft Einzahlungstransaktionen">
-  <img src="./assets/screens/screen-16-payout-transactions.png" alt="BetXsoft Auszahlungstransaktionen">
+  <div id="app" aria-live="polite"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
 </body>
 </html>
