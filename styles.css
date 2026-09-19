@@ -493,3 +493,367 @@ body.ios-keyboard-locked{
   touch-action:none;
 }
 /* ios-keyboard-layout-lock:end */
+
+
+/* payout-match-deposit:start */
+/* Payout page 1 mirrors the compact deposit layout. */
+.route-payout-1 .layout{
+  width:min(720px,100%);
+  padding-top:24px;
+  padding-bottom:36px;
+}
+.route-payout-1 .payout-minimal-page{
+  max-width:620px;
+  margin:0 auto;
+}
+.route-payout-1 .payout-minimal-head{
+  min-height:50px;
+  display:grid;
+  grid-template-columns:44px 1fr 44px;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+.route-payout-1 .payout-minimal-head h1{
+  margin:0;
+  color:#07142f;
+  font-size:24px;
+  line-height:1.1;
+  font-weight:850;
+  letter-spacing:-.45px;
+}
+.route-payout-1 .payout-back{
+  width:40px;
+  height:40px;
+  border:0;
+  border-radius:10px;
+  background:#f4f6fa;
+  color:#07142f;
+  display:grid;
+  place-items:center;
+  font-size:31px;
+  font-weight:400;
+  line-height:1;
+}
+.route-payout-1 .payout-back:hover{
+  background:#edf1f7;
+}
+.route-payout-1 .payout-minimal-close{
+  width:40px;
+  height:40px;
+  border:1.4px solid #111;
+  border-radius:10px;
+  background:#fff;
+  color:#0b50ea;
+  display:grid;
+  place-items:center;
+  justify-self:end;
+}
+.route-payout-1 .payout-minimal-close .svg-icon{
+  width:20px;
+  height:20px;
+  stroke-width:1.8;
+}
+.route-payout-1 .stepper{
+  max-width:470px;
+  margin:3px auto 26px;
+}
+.route-payout-1 .step{
+  width:118px;
+  font-size:12px;
+}
+.route-payout-1 .step-num{
+  width:31px;
+  height:31px;
+  margin-bottom:6px;
+}
+.route-payout-1 .step:not(:last-child):after{
+  top:15px;
+}
+.route-payout-1 .payout-minimal-form{
+  background:#fff;
+  border:1px solid #e5e9f0;
+  border-radius:15px;
+  padding:22px;
+  box-shadow:0 5px 18px rgba(20,40,80,.035);
+}
+.route-payout-1 .payout-form-grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:18px;
+}
+.route-payout-1 .payout-form-grid .field{
+  gap:8px;
+}
+.route-payout-1 .payout-form-grid .field label{
+  color:#0a1530;
+  font-size:13px;
+  line-height:1.2;
+  font-weight:800;
+}
+.route-payout-1 .customer-select-shell,
+.route-payout-1 .payout-amount-shell,
+.route-payout-1 .payout-balance-display{
+  position:relative;
+  height:50px;
+  border:1px solid #dbe1ea;
+  border-radius:10px;
+  background:#fbfcfe;
+}
+.route-payout-1 .payout-balance-display{
+  display:flex;
+  align-items:center;
+  padding:0 16px;
+  color:#0a1530;
+  font-size:14px;
+}
+.route-payout-1 .customer-select-shell:focus-within,
+.route-payout-1 .payout-amount-shell:focus-within{
+  border-color:#7892fb;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(6,72,245,.07);
+}
+.route-payout-1 .customer-select-icon,
+.route-payout-1 .customer-select-chevron,
+.route-payout-1 .payout-amount-icon{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  z-index:1;
+  color:#7a879c;
+}
+.route-payout-1 .customer-select-icon{
+  left:15px;
+}
+.route-payout-1 .customer-select-icon .svg-icon{
+  width:21px;
+  height:21px;
+  stroke-width:1.7;
+}
+.route-payout-1 .customer-select-value{
+  position:absolute;
+  left:47px;
+  right:45px;
+  top:50%;
+  transform:translateY(-50%);
+  color:#8793a7;
+  font-size:14px;
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  pointer-events:none;
+}
+.route-payout-1 .customer-select-chevron{
+  right:15px;
+  color:#0a1530;
+  transform:translateY(-50%) rotate(90deg);
+}
+.route-payout-1 .customer-select-chevron .svg-icon{
+  width:14px;
+  height:14px;
+  stroke-width:2.3;
+}
+.route-payout-1 .customer-select-native{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  opacity:0;
+  cursor:pointer;
+  z-index:2;
+}
+.route-payout-1 .payout-amount-shell .control{
+  width:100%;
+  height:100%;
+  border:0!important;
+  border-radius:10px;
+  background:transparent!important;
+  padding:0 60px 0 16px;
+  box-shadow:none!important;
+  outline:0;
+  color:#0a1530;
+  font-size:14px;
+}
+.route-payout-1 .payout-amount-shell .control::placeholder{
+  color:#9ba6b8;
+  opacity:1;
+}
+.route-payout-1 .payout-amount-icon{
+  right:15px;
+  padding-left:13px;
+  border-left:1px solid #e0e5ed;
+}
+.route-payout-1 .payout-amount-icon .svg-icon{
+  width:22px;
+  height:22px;
+  stroke-width:1.7;
+}
+.route-payout-1 .payout-helper{
+  display:block;
+  margin-top:18px;
+  color:#7a8598;
+  font-size:12px;
+  font-weight:500;
+}
+.route-payout-1 .amounts{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:9px;
+  margin-top:10px;
+}
+.route-payout-1 .amount-chip{
+  min-height:42px;
+  border:1px solid #dbe1ea;
+  border-radius:9px;
+  background:#fbfcfe;
+  color:#0a1530;
+  font-size:13px;
+  font-weight:800;
+  transition:.15s ease;
+}
+.route-payout-1 .amount-chip:hover,
+.route-payout-1 .amount-chip.selected{
+  border-color:#7f97fb;
+  background:#f0f4ff;
+  color:#0648f5;
+}
+.route-payout-1 .actions{
+  margin-top:21px;
+}
+.route-payout-1 .payout-continue{
+  min-height:48px;
+  border-radius:9px;
+  background:linear-gradient(90deg,#0751f4,#1d75ff);
+  font-size:14px;
+  font-weight:800;
+  box-shadow:0 8px 18px rgba(6,72,245,.16);
+}
+.route-payout-1 .payout-continue span{
+  font-size:20px;
+  line-height:1;
+  margin-left:2px;
+}
+
+/* On confirmation, highlight only the payout amount row and keep its dimensions unchanged. */
+.route-payout-2 .summary-row.payout-amount-highlight{
+  background:linear-gradient(90deg,#fff4f6 0%,#fffafa 100%);
+  box-shadow:inset 0 0 0 1.5px var(--red);
+  position:relative;
+  z-index:1;
+}
+.route-payout-2 .summary-row.payout-amount-highlight span{
+  color:#d91d3d;
+  font-weight:800;
+}
+.route-payout-2 .summary-row.payout-amount-highlight strong{
+  color:var(--red);
+  font-weight:900;
+  letter-spacing:.1px;
+}
+
+@media(max-width:520px){
+  .route-payout-1 .layout{
+    padding:13px 14px 28px;
+  }
+  .route-payout-1 .payout-minimal-head{
+    min-height:42px;
+    grid-template-columns:38px 1fr 38px;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .route-payout-1 .payout-minimal-head h1{
+    font-size:20px;
+    letter-spacing:-.3px;
+  }
+  .route-payout-1 .payout-back,
+  .route-payout-1 .payout-minimal-close{
+    width:36px;
+    height:36px;
+    border-radius:9px;
+  }
+  .route-payout-1 .payout-back{
+    font-size:28px;
+  }
+  .route-payout-1 .payout-minimal-close .svg-icon{
+    width:18px;
+    height:18px;
+  }
+  .route-payout-1 .stepper{
+    max-width:330px;
+    margin:0 auto 18px;
+  }
+  .route-payout-1 .step{
+    width:96px;
+    font-size:10px;
+  }
+  .route-payout-1 .step-num{
+    width:28px;
+    height:28px;
+    margin-bottom:5px;
+    font-size:11px;
+  }
+  .route-payout-1 .step:not(:last-child):after{
+    top:13px;
+  }
+  .route-payout-1 .payout-minimal-form{
+    border:0;
+    border-radius:0;
+    padding:8px 0 0;
+    box-shadow:none;
+  }
+  .route-payout-1 .payout-form-grid{
+    gap:17px;
+  }
+  .route-payout-1 .payout-form-grid .field{
+    gap:7px;
+  }
+  .route-payout-1 .payout-form-grid .field label{
+    font-size:12px;
+  }
+  .route-payout-1 .customer-select-shell,
+  .route-payout-1 .payout-amount-shell,
+  .route-payout-1 .payout-balance-display{
+    height:48px;
+    border-radius:9px;
+  }
+  .route-payout-1 .customer-select-value{
+    font-size:13px;
+  }
+  .route-payout-1 .payout-amount-shell .control,
+  .route-payout-1 .customer-select-native{
+    font-size:16px;
+  }
+  .route-payout-1 .payout-balance-display{
+    font-size:16px;
+  }
+  .route-payout-1 .payout-helper{
+    margin-top:16px;
+    font-size:11px;
+  }
+  .route-payout-1 .amounts{
+    gap:8px 7px;
+    margin-top:9px;
+  }
+  .route-payout-1 .amount-chip{
+    min-height:40px;
+    border-radius:8px;
+    font-size:12px;
+  }
+  .route-payout-1 .actions{
+    margin-top:18px;
+  }
+  .route-payout-1 .payout-continue{
+    min-height:47px;
+    border-radius:8px;
+    font-size:13px;
+  }
+}
+
+@media(max-width:350px){
+  .route-payout-1 .layout{padding-left:10px;padding-right:10px}
+  .route-payout-1 .step{width:88px}
+  .route-payout-1 .amount-chip{font-size:11px}
+}
+/* payout-match-deposit:end */
