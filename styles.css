@@ -1475,7 +1475,7 @@ body.ios-keyboard-locked{
 @media(max-width:520px){
   /* Topbar: menu left, brand center-left, balance right. No wallet icon. */
   .route-home .topbar{
-    height:87px;
+    height:84px;
     background:linear-gradient(112deg,#02091a 0%,#031027 66%,#071936 100%);
     overflow:hidden;
   }
@@ -1631,7 +1631,7 @@ body.ios-keyboard-locked{
 /* Mobile home has its own fixed-header offset; content itself still starts 5px below it. */
 @media(max-width:520px){
   .route-home{
-    padding-top:87px;
+    padding-top:84px;
   }
   .route-home .layout{
     padding-top:5px!important;
