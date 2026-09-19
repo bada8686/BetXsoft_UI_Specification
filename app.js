@@ -284,7 +284,6 @@ function historyView(){ return `${pageHead('↔','Transaktionen','Übersicht all
 
 function createUserView(){ return `<section class="create-user-page">
   <div class="create-user-head">
-    <button class="create-user-back" data-go="customers" aria-label="Zurück zur Kundenliste" title="Zurück">${svgIcon('chevron')}</button>
     <div class="create-user-heading">
       <span class="create-user-heading-icon">${svgIcon('user')}</span>
       <div><h1>Kunden erstellen</h1><p>Neuen Kunden anlegen</p></div>
