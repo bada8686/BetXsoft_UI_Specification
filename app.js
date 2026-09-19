@@ -43,7 +43,15 @@ function recordCustomerSelection(name){
 }
 function depositCustomerSelect(){
   const options=sortedDepositCustomers().map(name=>`<option value="${esc(name)}" ${state.customer===name?'selected':''}>${esc(name)}</option>`).join('');
-  return `<div class="customer-select-shell"><span class="customer-select-icon">${svgIcon('person')}</span><select class="control customer-select" id="depositCustomer" aria-label="Kunde auswählen"><option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>${options}</select><span class="customer-select-chevron">${svgIcon('chevron')}</span></div>`;
+  return `<div class="customer-select-shell">
+    <span class="customer-select-icon">${svgIcon('person')}</span>
+    <span class="customer-select-value" id="depositCustomerLabel">${state.customer?esc(state.customer):'Kunde auswählen'}</span>
+    <span class="customer-select-chevron">${svgIcon('chevron')}</span>
+    <select class="customer-select-native" id="depositCustomer" aria-label="Kunde auswählen">
+      <option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>
+      ${options}
+    </select>
+  </div>`;
 }
 
 const historyRows = [
@@ -107,6 +115,7 @@ function svgIcon(name){
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
     person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
+    coins:'<ellipse cx="12" cy="6.2" rx="6.3" ry="2.7"/><path d="M5.7 6.2v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7V6.2M5.7 10.3v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-4.1M5.7 14.4v3.4c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-3.4"/>',
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
     shop:'<path d="M4 9v11h16V9M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 5 2 3 3 0 0 0 4 0 3 3 0 0 0 4 0 3 3 0 0 0 5-2M9 20v-5h6v5"/>',
     transfer:'<path d="M4 7h15M16 4l3 3-3 3M20 17H5M8 14l-3 3 3 3"/>',
@@ -135,7 +144,23 @@ function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Über
   ].map((x,i)=>`<button class="menu-entry ${i===0?'primary-icon':''}" data-go="${x[0]}"><span>${svgIcon(x[1])}</span><span><strong>${x[2]}</strong><small>${x[3]}</small></span><span class="chev">${svgIcon('chevron')}</span></button>`).join('')}</div></section></div>`; }
 
 function depositClose(){ return `<button class="page-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
-function deposit1(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Guthaben sicher und schnell aufladen.',depositClose())} ${steps(1)}<section class="card card-pad flow-card deposit-entry-card"><div class="deposit-card-intro"><h2>Einzahlung durchführen</h2><p class="muted">Wählen Sie den Kunden aus und geben Sie den Einzahlungsbetrag ein.</p></div><div class="form-grid deposit-form-grid">${field('Kunde auswählen',depositCustomerSelect())}${field('Einzahlungsbetrag',input('Betrag eingeben','id="depositAmount" inputmode="decimal" autocomplete="off"'))}</div><label class="helper deposit-helper">Schnellauswahl</label><div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div><div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen →</button></div></section>`; }
+function deposit1(){ return `<section class="card deposit-entry-card">
+  <button class="deposit-card-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>
+  <div class="deposit-design-head">
+    <div class="deposit-design-icon">${svgIcon('depositWallet')}</div>
+    <div class="deposit-design-copy">
+      <h1>Einzahlung durchführen</h1>
+      <p>Wählen Sie den Kunden aus und geben Sie den Einzahlungsbetrag ein.</p>
+    </div>
+  </div>
+  <div class="deposit-form-grid">
+    ${field('Kunde auswählen',depositCustomerSelect())}
+    ${field('Einzahlungsbetrag',`<div class="deposit-amount-shell">${input('Betrag eingeben','id="depositAmount" inputmode="decimal" autocomplete="off"')}<span class="deposit-amount-icon">${svgIcon('coins')}</span></div>`)}
+  </div>
+  <label class="deposit-helper">Schnellauswahl</label>
+  <div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div>
+  <div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen <span aria-hidden="true">→</span></button></div>
+</section>`; }
 function deposit2(){ const amount=state.amount||'20'; return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="positive">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>0,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${esc(amount)},00</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`; }
 function deposit3(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${esc(state.amount||'20')},00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
 
@@ -178,6 +203,7 @@ function render(){
 }
 
 function bind(){
+  document.querySelector('#depositCustomer')?.addEventListener('change',e=>{const label=document.querySelector('#depositCustomerLabel');if(label)label.textContent=e.target.value||'Kunde auswählen';});
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
