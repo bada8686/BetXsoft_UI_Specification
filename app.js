@@ -54,6 +54,19 @@ function depositCustomerSelect(){
   </div>`;
 }
 
+function payoutCustomerSelect(){
+  const options=sortedDepositCustomers().map(name=>`<option value="${esc(name)}" ${state.customer===name?'selected':''}>${esc(name)}</option>`).join('');
+  return `<div class="customer-select-shell payout-customer-select-shell">
+    <span class="customer-select-icon">${svgIcon('person')}</span>
+    <span class="customer-select-value" id="payoutCustomerLabel">${state.customer?esc(state.customer):'Kunde auswählen'}</span>
+    <span class="customer-select-chevron">${svgIcon('chevron')}</span>
+    <select class="customer-select-native" id="payoutCustomer" aria-label="Kunde auswählen">
+      <option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>
+      ${options}
+    </select>
+  </div>`;
+}
+
 const historyRows = [
   ['50054060','06.08.25 11:51:51','Einzahlung','+10,00','0,97','10,97','Einzahlung via Sofortüberweisung'],
   ['41064834','06.08.25 11:51:51','Wetteinsatz','-0,20','10,97','10,77','Wetteinsatz Slot Casino'],
@@ -164,9 +177,30 @@ function deposit1(){ return `<section class="deposit-minimal-page">
 function deposit2(){ const amount=state.amount||'20'; return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row deposit-amount-highlight"><span>Betrag</span><strong class="positive">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>0,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${esc(amount)},00</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`; }
 function deposit3(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${esc(state.amount||'20')},00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
 
-function payout1(){ return `${pageHead('↑','Auszahlung','Auszahlung für einen Kunden erfassen.')} ${steps(1,'Auszahlung')}<section class="card card-pad flow-card"><h2>Auszahlung durchführen</h2><p class="muted">Wählen Sie einen Kunden aus und geben Sie den gewünschten Betrag ein.</p><div class="form-grid">${field('Kunde auswählen',select(['David','Toni1234','akdag67','Sahin'],'id="payoutCustomer"'))}${field('Aktuelles Guthaben','<div class="control" style="display:flex;align-items:center">200,00</div>')}</div><div style="margin-top:16px">${field('Auszahlungsbetrag',input('Betrag eingeben','id="payoutAmount" inputmode="decimal"'))}</div><div class="actions"><button class="btn block" data-flow="payout-next">Weiter →</button></div></section>`; }
-function payout2(){ const amount=state.amount||'50'; return `${pageHead('↑','Auszahlung','Angaben prüfen und Auszahlung bestätigen.')} ${steps(2,'Auszahlung')}<section class="card card-pad flow-card"><h2>Auszahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Aktuelles Guthaben</span><strong>200,00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Auszahlungsbetrag</span><strong class="negative">${esc(amount)},00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${Math.max(0,200-Number(amount)).toFixed(2).replace('.',',')}</strong></div></div><div class="actions"><button class="btn secondary" data-go="payout-1">Zurück</button><button class="btn danger" data-go="payout-3">Auszahlung bestätigen</button></div></section>`; }
-function payout3(){ const amount=state.amount||'50'; return `${pageHead('✓','Auszahlung','Der Auftrag wurde erfolgreich erstellt.')} ${steps(3,'Auszahlung')}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Auszahlung bestätigt!</h2><p class="muted">Die Auszahlung wurde erfolgreich erstellt. Sie wird in Kürze bearbeitet.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong>${Math.max(0,200-Number(amount)).toFixed(2).replace('.',',')}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Auszahlungsbetrag</span><strong class="negative">${esc(amount)},00</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
+function payoutClose(){ return `<button class="page-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
+
+function payout1(){ return `<section class="payout-minimal-page">
+  <div class="payout-minimal-head">
+    <button class="payout-back" data-go="home" aria-label="Zurück zur Startseite">‹</button>
+    <h1>Auszahlung</h1>
+    <button class="payout-minimal-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>
+  </div>
+  ${steps(1,'Auszahlung')}
+  <section class="payout-minimal-form">
+    <div class="payout-form-grid">
+      ${field('Kunde auswählen',payoutCustomerSelect())}
+      ${field('Aktuelles Guthaben','<div class="payout-balance-display">200,00</div>')}
+      ${field('Auszahlungsbetrag',`<div class="payout-amount-shell">${input('Betrag eingeben','id="payoutAmount" inputmode="decimal" autocomplete="off"')}<span class="payout-amount-icon">${svgIcon('coins')}</span></div>`)}
+    </div>
+    <label class="payout-helper">Schnellauswahl</label>
+    <div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div>
+    <div class="actions"><button class="btn block payout-continue" data-flow="payout-next">Auszahlung fortsetzen <span aria-hidden="true">→</span></button></div>
+  </section>
+</section>`; }
+
+function payout2(){ const amount=state.amount||'50'; return `${pageHead(svgIcon('up'),'Auszahlung','Angaben prüfen und Auszahlung bestätigen.',payoutClose())} ${steps(2,'Auszahlung')}<section class="card card-pad flow-card"><h2>Auszahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row payout-amount-highlight"><span>Betrag</span><strong class="negative">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>200,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${Math.max(0,200-Number(amount)).toFixed(2).replace('.',',')}</strong></div></div><div class="actions"><button class="btn secondary" data-go="payout-1">Zurück</button><button class="btn danger" data-go="payout-3">Auszahlung bestätigen</button></div></section>`; }
+
+function payout3(){ const amount=state.amount||'50'; return `${pageHead(svgIcon('up'),'Auszahlung','Die Transaktion wurde abgeschlossen.',payoutClose())} ${steps(3,'Auszahlung')}<section class="card flow-card success-panel"><div class="success-mark payout-success-mark">✓</div><h2>Auszahlung erfolgreich!</h2><p class="muted">Die Auszahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong>${Math.max(0,200-Number(amount)).toFixed(2).replace('.',',')}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="negative">${esc(amount)},00</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
 
 function customersView(){ const q=state.customerFilter.toLowerCase(); const rows=customers.concat(state.createdUsers).filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('♙','Kunden','Verwalten Sie Ihre Kunden.','<button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>')}<section class="card card-pad"><div class="filters"><div class="field"><label>ID</label>${input('z. B. 4590','data-filter="customer"')}</div><div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div><div class="field"><label>Status</label>${select(['Alle','Aktiv','Gesperrt'])}</div><div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${r[2]}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Kunden',12)}</section>`; }
 
@@ -204,15 +238,16 @@ function render(){
 
 function bind(){
   document.querySelector('#depositCustomer')?.addEventListener('change',e=>{const label=document.querySelector('#depositCustomerLabel');if(label)label.textContent=e.target.value||'Kunde auswählen';});
+  document.querySelector('#payoutCustomer')?.addEventListener('change',e=>{const label=document.querySelector('#payoutCustomerLabel');if(label)label.textContent=e.target.value||'Kunde auswählen';});
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
-  document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{document.querySelector('#depositAmount').value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
+  document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
   document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();state.toggles[el.dataset.toggle]=!state.toggles[el.dataset.toggle];el.classList.toggle('on')}));
   document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;recordCustomerSelection(customer);go('deposit-2')});
-  document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{const a=document.querySelector('#payoutAmount').value.trim();if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');if(Number(a.replace(',','.'))>200)return toast('Der Betrag übersteigt das Guthaben.');state.amount=a.replace(',','.');state.customer=document.querySelector('#payoutCustomer').value;go('payout-2')});
+  document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#payoutCustomer')?.value||'';const a=document.querySelector('#payoutAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');if(Number(a.replace(',','.'))>200)return toast('Der Betrag übersteigt das Guthaben.');state.amount=a.replace(',','.');state.customer=customer;recordCustomerSelection(customer);go('payout-2')});
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
   document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value).find(Boolean)||'';render()});
   document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{state.customerFilter='';render()});
