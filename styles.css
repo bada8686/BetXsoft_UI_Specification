@@ -401,3 +401,62 @@ button{cursor:pointer}
   }
 }
 /* ios-global-input-zoom-fix:end */
+
+
+/* global-fixed-header-scroll-lock:start */
+/* Keep the app stable while scrolling and keep the main header visible on every page. */
+html,
+body{
+  width:100%;
+  max-width:100%;
+  overflow-x:hidden;
+  overscroll-behavior-x:none;
+}
+
+body{
+  touch-action:pan-y pinch-zoom;
+}
+
+#app,
+.app{
+  width:100%;
+  max-width:100%;
+  overflow-x:clip;
+}
+
+.app{
+  padding-top:82px;
+}
+
+.topbar{
+  position:fixed!important;
+  top:0;
+  left:0;
+  right:0;
+  width:100%;
+  z-index:100;
+}
+
+.layout,
+.footer{
+  max-width:100%;
+}
+
+@media(max-width:850px){
+  .app{
+    padding-top:72px;
+  }
+}
+
+@media(max-width:520px){
+  .route-home{
+    padding-top:120px;
+  }
+  .route-home .topbar{
+    position:fixed!important;
+    top:0;
+    left:0;
+    right:0;
+  }
+}
+/* global-fixed-header-scroll-lock:end */
