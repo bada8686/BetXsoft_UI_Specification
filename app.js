@@ -200,7 +200,14 @@ function pageHead(icon,title,sub,action=''){ return `<div class="page-head"><div
 function steps(active,type='Einzahlung'){ const names=['Daten','Übersicht','Bestätigung']; return `<div class="stepper">${names.map((n,i)=>`<div class="step ${i+1===active?'active':''} ${i+1<active?'done':''}"><span class="step-num">${i+1<active?'✓':i+1}</span>${n}</div>`).join('')}</div>`; }
 function footer(){ return `<footer class="footer"><span>© 2024 BetXsoft. Alle Rechte vorbehalten.</span><i class="mobile-home-indicator"></i></footer>`; }
 function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>368.161,00</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
-function drawer(){ return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav"><div class="drawer-group">Alle 16 Seiten</div>${routes.map(([r,n,i],idx)=>`<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${String(idx+1).padStart(2,'0')}</span>${n}</button>`).join('')}</nav></aside>`; }
+function drawer(){
+  const link=(routeIndex)=>{
+    const [r,n]=routes[routeIndex];
+    return `<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${String(routeIndex+1).padStart(2,'0')}</span><span>${n}</span></button>`;
+  };
+  const category=(title,range)=>`<div class="drawer-category"><strong>${title}</strong><small>${range}</small></div>`;
+  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav"><div class="drawer-group">Menü</div>${link(0)}${category('Einzahlung','02–04')}${[1,2,3].map(link).join('')}${category('Auszahlung','05–07')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','08–16')}${routes.slice(7).map((_,idx)=>link(idx+7)).join('')}</nav></aside>`;
+}
 
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
 function currentDashboard(){ return state.dashboardPeriod==='custom' && state.customDashboard ? state.customDashboard : dashboardPeriods[state.dashboardPeriod] || dashboardPeriods.today; }
