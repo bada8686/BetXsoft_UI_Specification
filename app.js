@@ -1,5 +1,5 @@
 const state = {
-  route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: 'David',
+  route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
   customerFilter: '', ticketFilter: '', toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null
 };
@@ -22,6 +22,29 @@ const customers = [
   ['4258','Toni1234','40,00','Aktiv'],['800','akdag67','25,63','Aktiv'],['901','Sahin','20,00','Aktiv'],['4638','David','20,00','Aktiv'],
   ['1073','Halil2','13,97','Aktiv'],['2258','Ali elmali','10,00','Aktiv'],['1567','jassin','9,00','Aktiv'],['5067','mica','5,50','Gesperrt']
 ];
+
+function depositCustomerNames(){ return ['David','Toni1234','akdag67','Sahin']; }
+function customerUsage(){
+  try{ return JSON.parse(localStorage.getItem('betxsoftDepositCustomerUsage')||'{}') || {}; }
+  catch(_){ return {}; }
+}
+function sortedDepositCustomers(){
+  const usage=customerUsage();
+  return depositCustomerNames()
+    .map((name,index)=>({name,index,count:Number(usage[name]||0)}))
+    .sort((a,b)=>b.count-a.count || a.index-b.index)
+    .map(x=>x.name);
+}
+function recordCustomerSelection(name){
+  if(!name) return;
+  const usage=customerUsage();
+  usage[name]=Number(usage[name]||0)+1;
+  try{ localStorage.setItem('betxsoftDepositCustomerUsage',JSON.stringify(usage)); }catch(_){}
+}
+function depositCustomerSelect(){
+  const options=sortedDepositCustomers().map(name=>`<option value="${esc(name)}" ${state.customer===name?'selected':''}>${esc(name)}</option>`).join('');
+  return `<div class="customer-select-shell"><span class="customer-select-icon">${svgIcon('person')}</span><select class="control customer-select" id="depositCustomer" aria-label="Kunde auswählen"><option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>${options}</select><span class="customer-select-chevron">${svgIcon('chevron')}</span></div>`;
+}
 
 const historyRows = [
   ['50054060','06.08.25 11:51:51','Einzahlung','+10,00','0,97','10,97','Einzahlung via Sofortüberweisung'],
@@ -83,6 +106,7 @@ function svgIcon(name){
     chart:'<path d="M3 20h18M5 16l4-5 4 3 7-9M16 5h4v4"/>',
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
+    person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
     shop:'<path d="M4 9v11h16V9M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 5 2 3 3 0 0 0 4 0 3 3 0 0 0 4 0 3 3 0 0 0 5-2M9 20v-5h6v5"/>',
     transfer:'<path d="M4 7h15M16 4l3 3-3 3M20 17H5M8 14l-3 3 3 3"/>',
@@ -111,7 +135,7 @@ function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Über
   ].map((x,i)=>`<button class="menu-entry ${i===0?'primary-icon':''}" data-go="${x[0]}"><span>${svgIcon(x[1])}</span><span><strong>${x[2]}</strong><small>${x[3]}</small></span><span class="chev">${svgIcon('chevron')}</span></button>`).join('')}</div></section></div>`; }
 
 function depositClose(){ return `<button class="page-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
-function deposit1(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Guthaben sicher und schnell aufladen.',depositClose())} ${steps(1)}<section class="card card-pad flow-card"><h2>Einzahlung durchführen</h2><p class="muted">Wählen Sie den Kunden aus und geben Sie den Einzahlungsbetrag ein.</p><div class="form-grid">${field('Kunde auswählen',select(['David','Toni1234','akdag67','Sahin'],'id="depositCustomer"'))}${field('Einzahlungsbetrag',input('Betrag eingeben','id="depositAmount" inputmode="decimal"'))}</div><label class="helper" style="display:block;margin-top:16px">Schnellauswahl</label><div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div><div class="actions"><button class="btn block" data-flow="deposit-next">Einzahlung fortsetzen →</button></div></section>`; }
+function deposit1(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Guthaben sicher und schnell aufladen.',depositClose())} ${steps(1)}<section class="card card-pad flow-card deposit-entry-card"><div class="deposit-card-intro"><h2>Einzahlung durchführen</h2><p class="muted">Wählen Sie den Kunden aus und geben Sie den Einzahlungsbetrag ein.</p></div><div class="form-grid deposit-form-grid">${field('Kunde auswählen',depositCustomerSelect())}${field('Einzahlungsbetrag',input('Betrag eingeben','id="depositAmount" inputmode="decimal" autocomplete="off"'))}</div><label class="helper deposit-helper">Schnellauswahl</label><div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div><div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen →</button></div></section>`; }
 function deposit2(){ const amount=state.amount||'20'; return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="positive">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>0,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${esc(amount)},00</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`; }
 function deposit3(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${esc(state.amount||'20')},00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
 
@@ -161,7 +185,7 @@ function bind(){
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{document.querySelector('#depositAmount').value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
   document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();state.toggles[el.dataset.toggle]=!state.toggles[el.dataset.toggle];el.classList.toggle('on')}));
-  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const a=document.querySelector('#depositAmount').value.trim();if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=document.querySelector('#depositCustomer').value;go('deposit-2')});
+  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;recordCustomerSelection(customer);go('deposit-2')});
   document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{const a=document.querySelector('#payoutAmount').value.trim();if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');if(Number(a.replace(',','.'))>200)return toast('Der Betrag übersteigt das Guthaben.');state.amount=a.replace(',','.');state.customer=document.querySelector('#payoutCustomer').value;go('payout-2')});
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
   document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value).find(Boolean)||'';render()});
