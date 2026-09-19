@@ -187,7 +187,8 @@ function svgIcon(name){
     transfer:'<path d="M4 7h15M16 4l3 3-3 3M20 17H5M8 14l-3 3 3 3"/>',
     calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
     chevron:'<path d="m9 5 7 7-7 7"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',close:'<path d="M5 5l14 14M19 5 5 19"/>',
-    depositWallet:'<path d="M4 9h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h9"/><path d="M16 13h5v5h-5a2.5 2.5 0 0 1 0-5ZM14 2v7M10.5 5.5 14 9l3.5-3.5"/>'
+    depositWallet:'<path d="M4 9h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h9"/><path d="M16 13h5v5h-5a2.5 2.5 0 0 1 0-5ZM14 2v7M10.5 5.5 14 9l3.5-3.5"/>',
+    payoutWallet:'<path d="M4 9h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h8"/><path d="M15 13h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><path d="M12 10 19 3M14 3h5v5"/>'
   };
   return `<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name]||''}</svg>`;
 }
@@ -244,7 +245,7 @@ function payout1(){
   const currentBalance=state.customer?customerBalanceValue(state.customer):0;
   return `<section class="payout-minimal-page">
   <div class="payout-minimal-head">
-    <button class="payout-back" data-go="home" aria-label="Zurück zur Startseite">‹</button>
+    <button class="payout-back payout-icon-button" data-go="home" aria-label="Zurück zur Startseite" title="Auszahlung">${svgIcon('payoutWallet')}</button>
     <h1>Auszahlung</h1>
     <button class="payout-minimal-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>
   </div>
