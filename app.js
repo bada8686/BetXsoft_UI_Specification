@@ -202,7 +202,7 @@ function drawer(){ return `<div class="drawer-backdrop ${state.drawer?'open':''}
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
 function currentDashboard(){ return state.dashboardPeriod==='custom' && state.customDashboard ? state.customDashboard : dashboardPeriods[state.dashboardPeriod] || dashboardPeriods.today; }
 
-function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Übersicht','Alle wichtigen Kennzahlen und Schnellaktionen auf einen Blick.')}<h2 class="mobile-section-title">Schnellaktionen</h2><div class="quick-grid">
+function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Übersicht','Alle wichtigen Kennzahlen und Schnellaktionen auf einen Blick.')}<div class="quick-grid">
   <button class="quick-card green" data-go="deposit-1"><span class="quick-icon">${svgIcon('down')}</span><span class="quick-copy"><strong>Einzahlung</strong><small>Geld einzahlen</small></span></button>
   <button class="quick-card red" data-go="payout-1"><span class="quick-icon">${svgIcon('up')}</span><span class="quick-copy"><strong>Auszahlung</strong><small>Geld auszahlen</small></span></button>
   <button class="quick-card blue" data-go="create-user"><span class="quick-icon">${svgIcon('user')}</span><span class="quick-copy"><strong>Neuer Kunde</strong><small>Neuen Kunden anlegen</small></span></button></div>
