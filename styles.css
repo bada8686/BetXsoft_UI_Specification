@@ -1469,28 +1469,3 @@ body.ios-keyboard-locked{
   top:-9px;
 }
 /* footer-position-adjustment:end */
-
-
-/* topbar-wallet-removal:start */
-@media(max-width:520px){
-  .route-home .balance{
-    display:none!important;
-  }
-  .route-home .topbar-main{
-    grid-template-columns:auto 1fr auto;
-  }
-  .route-home .menu-button{
-    margin-left:auto;
-    width:43px;
-    height:43px;
-  }
-  .route-home .top-spacer{
-    display:block;
-  }
-}
-@media(min-width:521px){
-  .balance{
-    gap:0;
-  }
-}
-/* topbar-wallet-removal:end */
