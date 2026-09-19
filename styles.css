@@ -355,7 +355,10 @@ button{cursor:pointer}
     font-size:13px;
   }
   .route-deposit-1 .deposit-amount-shell .control{
-    font-size:13px;
+    font-size:16px;
+  }
+  .route-deposit-1 .customer-select-native{
+    font-size:16px;
   }
   .route-deposit-1 .deposit-helper{
     margin-top:16px;
