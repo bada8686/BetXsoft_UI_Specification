@@ -1477,9 +1477,10 @@ body.ios-keyboard-locked{
   .route-home .topbar{
     height:87px;
     background:linear-gradient(112deg,#02091a 0%,#031027 66%,#071936 100%);
+    overflow:hidden;
   }
   .route-home .topbar-main{
-    height:87px;
+    height:91px;
     padding:0 16px;
     gap:12px;
     align-items:center;
