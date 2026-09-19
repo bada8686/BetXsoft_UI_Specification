@@ -2559,3 +2559,12 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-reference-v67:end */
+
+
+/* drawer-qr-left-v68:start */
+@media(max-width:520px){
+  .route-home + .drawer-backdrop + .drawer .drawer-qr-link{
+    transform:translateX(-11px)!important;
+  }
+}
+/* drawer-qr-left-v68:end */
