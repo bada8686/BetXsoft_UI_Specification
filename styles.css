@@ -460,3 +460,22 @@ body{
   }
 }
 /* global-fixed-header-scroll-lock:end */
+
+
+/* deposit-confirm-amount-highlight:start */
+.route-deposit-2 .summary-row.deposit-amount-highlight{
+  background:linear-gradient(90deg,#f2fff6 0%,#f8fffa 100%);
+  box-shadow:inset 0 0 0 1.5px var(--green);
+  position:relative;
+  z-index:1;
+}
+.route-deposit-2 .summary-row.deposit-amount-highlight span{
+  color:#07953a;
+  font-weight:800;
+}
+.route-deposit-2 .summary-row.deposit-amount-highlight strong{
+  color:#00a83b;
+  font-weight:900;
+  letter-spacing:.1px;
+}
+/* deposit-confirm-amount-highlight:end */
