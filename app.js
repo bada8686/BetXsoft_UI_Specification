@@ -181,6 +181,7 @@ function svgIcon(name){
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
     person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
+    lock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/>',
     coins:'<ellipse cx="12" cy="6.2" rx="6.3" ry="2.7"/><path d="M5.7 6.2v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7V6.2M5.7 10.3v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-4.1M5.7 14.4v3.4c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-3.4"/>',
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
     shop:'<path d="M4 9v11h16V9M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 5 2 3 3 0 0 0 4 0 3 3 0 0 0 4 0 3 3 0 0 0 5-2M9 20v-5h6v5"/>',
@@ -281,7 +282,40 @@ function customersView(){ const q=state.customerFilter.toLowerCase(); const rows
 
 function historyView(){ return `${pageHead('↔','Transaktionen','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}<section class="card card-pad"><div class="filters three"><div class="field"><label>Status</label>${select(['Alle','Erfolgreich','Ausstehend','Storniert'])}</div><div class="field"><label>Transaktionstyp</label>${select(['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'])}</div><div class="filter-actions"><button class="btn" data-demo="Filter angewendet">Filtern</button><button class="btn secondary" data-demo="Filter zurückgesetzt">Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Alt-Guthaben</th><th>Neu-Guthaben</th><th>Beschreibung</th></tr></thead><tbody>${historyRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===3?moneyClass(c):''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${tableBottom(10,'Transaktionen',5,42)}</section>`; }
 
-function createUserView(){ return `${pageHead('＋','Kunden erstellen','Erstellen Sie einen neuen Kunden.')}<button class="back-link" data-go="customers">← Zurück zur Kundenliste</button><section class="card card-pad flow-card"><h2 class="section-title">Kundendaten</h2><form id="createUserForm"><div class="form-grid">${field('Nutzername (Nick)',input('Benutzernamen eingeben','name="username" required minlength="3"'),true)}${field('Passwort',input('Mindestens 6 Zeichen','name="password" required minlength="6" type="password"'),true)}</div><p class="helper" style="margin-top:8px">Das Passwort muss aus mindestens 6 Zeichen bestehen.</p><div style="margin-top:16px">${field('Startguthaben',input('0,00','name="balance" inputmode="decimal" value="0"'),true)}</div><div class="actions"><button type="button" class="btn secondary" data-go="customers">Abbrechen</button><button class="btn" type="submit">Kunden erstellen</button></div></form></section>`; }
+function createUserView(){ return `<section class="create-user-page">
+  <div class="create-user-head">
+    <button class="create-user-back" data-go="customers" aria-label="Zurück zur Kundenliste" title="Zurück">${svgIcon('chevron')}</button>
+    <div class="create-user-heading">
+      <span class="create-user-heading-icon">${svgIcon('user')}</span>
+      <div><h1>Kunden erstellen</h1><p>Neuen Kunden anlegen</p></div>
+    </div>
+    <button class="create-user-close" data-go="customers" aria-label="Kunden erstellen schließen" title="Schließen">${svgIcon('close')}</button>
+  </div>
+  <section class="create-user-form-card">
+    <div class="create-user-form-title"><h2>Kundendaten</h2><p>Geben Sie die Daten des neuen Kunden ein.</p></div>
+    <form id="createUserForm">
+      <div class="create-user-fields">
+        <div class="field">
+          <label>Nutzername (Nick) *</label>
+          <div class="create-user-input-shell"><span class="create-user-field-icon">${svgIcon('person')}</span>${input('Benutzernamen eingeben','name="username" required minlength="3" autocomplete="username"')}</div>
+        </div>
+        <div class="field">
+          <label>Passwort *</label>
+          <div class="create-user-input-shell"><span class="create-user-field-icon">${svgIcon('lock')}</span>${input('Mindestens 6 Zeichen','name="password" required minlength="6" type="password" autocomplete="new-password"')}</div>
+          <p class="create-user-helper">Mindestens 6 Zeichen.</p>
+        </div>
+        <div class="field">
+          <label>Startguthaben *</label>
+          <div class="create-user-input-shell create-user-balance-shell"><span class="create-user-field-icon">${svgIcon('coins')}</span>${input('0,00','name="balance" inputmode="decimal" value="0" autocomplete="off"')}</div>
+        </div>
+      </div>
+      <div class="create-user-actions">
+        <button type="button" class="btn secondary create-user-cancel" data-go="customers">Abbrechen</button>
+        <button class="btn create-user-submit" type="submit">Kunden erstellen <span aria-hidden="true">→</span></button>
+      </div>
+    </form>
+  </section>
+</section>`; }
 
 function toggleCards(){ return ['Nur offene Wettscheine','Nur Gewinner','Nur Verlierer','Stornierte Wettscheine','Verkaufte Wettscheine'].map((n,i)=>`<label class="toggle-card"><button class="switch ${state.toggles[i]?'on':''}" data-toggle="${i}" aria-label="${n}"></button><span>${n}</span></label>`).join(''); }
 function couponsView(){ const q=state.ticketFilter.toLowerCase(); const rows=coupons.filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('▧','Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.','<button class="btn outline" data-go="coupon-filters">⚙ Zusätzliche Filter</button>')}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. ali','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein Nummer</th><th>Einsatz</th><th>Status</th><th>Maximaler Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Wettscheine',8)}</section>`; }
