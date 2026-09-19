@@ -452,6 +452,13 @@ function bind(){
     });
   });
 
+  // All page close buttons always exit the current flow and return to the dashboard.
+  document.querySelectorAll('.page-close,.deposit-minimal-close,.payout-minimal-close,.create-user-close').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    state.drawer=false;
+    go('home');
+  }));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
     if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
