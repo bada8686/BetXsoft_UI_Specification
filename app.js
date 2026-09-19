@@ -288,7 +288,7 @@ function createUserView(){ return `<section class="create-user-page">
       <span class="create-user-heading-icon">${svgIcon('user')}</span>
       <div><h1>Kunden erstellen</h1><p>Neuen Kunden anlegen</p></div>
     </div>
-    <button class="create-user-close" data-go="customers" aria-label="Kunden erstellen schließen" title="Schließen">${svgIcon('close')}</button>
+    <button class="create-user-close" data-go="home" aria-label="Kunden erstellen schließen" title="Schließen">${svgIcon('close')}</button>
   </div>
   <section class="create-user-form-card">
     <div class="create-user-form-title"><h2>Kundendaten</h2><p>Geben Sie die Daten des neuen Kunden ein.</p></div>
