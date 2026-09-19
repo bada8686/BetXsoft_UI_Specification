@@ -864,3 +864,213 @@ body.ios-keyboard-locked{
   display:none!important;
 }
 /* payout-balance-visibility:end */
+
+
+/* searchable-customer-picker:start */
+.customer-picker{
+  position:relative;
+  width:100%;
+}
+.customer-picker-trigger{
+  width:100%;
+  height:50px;
+  border:1px solid #dbe1ea;
+  border-radius:10px;
+  background:#fbfcfe;
+  color:#0a1530;
+  padding:0 45px 0 47px;
+  display:flex;
+  align-items:center;
+  text-align:left;
+  position:relative;
+  outline:0;
+}
+.customer-picker-trigger:hover{
+  border-color:#cfd7e4;
+}
+.customer-picker.open .customer-picker-trigger,
+.customer-picker-trigger:focus-visible{
+  border-color:#7892fb;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(6,72,245,.07);
+}
+.customer-picker .customer-select-icon,
+.customer-picker .customer-select-chevron{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  pointer-events:none;
+  color:#7a879c;
+}
+.customer-picker .customer-select-icon{
+  left:15px;
+}
+.customer-picker .customer-select-icon .svg-icon{
+  width:21px;
+  height:21px;
+  stroke-width:1.7;
+}
+.customer-picker .customer-select-value{
+  display:block;
+  width:100%;
+  color:#8793a7;
+  font-size:14px;
+  line-height:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.customer-picker .customer-select-chevron{
+  right:15px;
+  color:#0a1530;
+  transform:translateY(-50%) rotate(90deg);
+}
+.customer-picker .customer-select-chevron .svg-icon{
+  width:14px;
+  height:14px;
+  stroke-width:2.3;
+}
+.customer-picker-menu{
+  position:absolute;
+  top:calc(100% + 7px);
+  left:0;
+  right:0;
+  z-index:60;
+  max-height:min(430px,55vh);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  border:1px solid #dbe1ea;
+  border-radius:12px;
+  background:#fff;
+  box-shadow:0 18px 40px rgba(15,35,70,.16);
+  padding:10px;
+}
+.customer-picker-menu[hidden],
+.customer-picker-section[hidden],
+.customer-option[hidden],
+.customer-picker-empty[hidden]{
+  display:none!important;
+}
+.customer-search-wrap{
+  position:sticky;
+  top:0;
+  z-index:2;
+  background:#fff;
+  padding-bottom:9px;
+}
+.customer-search-input{
+  width:100%;
+  height:42px;
+  border:1px solid #dbe1ea;
+  border-radius:9px;
+  background:#f8fafc;
+  padding:0 12px 0 39px;
+  outline:0;
+  color:#0a1530;
+}
+.customer-search-input:focus{
+  border-color:#7892fb;
+  background:#fff;
+  box-shadow:0 0 0 3px rgba(6,72,245,.07);
+}
+.customer-search-input::placeholder{
+  color:#929db0;
+}
+.customer-search-icon{
+  position:absolute;
+  left:12px;
+  top:21px;
+  transform:translateY(-50%);
+  color:#7a879c;
+  pointer-events:none;
+}
+.customer-search-icon .svg-icon{
+  width:19px;
+  height:19px;
+}
+.customer-picker-heading{
+  padding:7px 8px 6px;
+  font-size:10px;
+  line-height:1.2;
+  font-weight:800;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  color:#8b95a6;
+}
+.customer-picker-options{
+  display:grid;
+  gap:3px;
+}
+.customer-option{
+  width:100%;
+  min-height:40px;
+  border:0;
+  border-radius:8px;
+  background:#fff;
+  color:#142037;
+  padding:7px 9px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  text-align:left;
+  font-size:13px;
+  font-weight:650;
+}
+.customer-option:hover,
+.customer-option:focus-visible{
+  background:#f2f6ff;
+  color:#0648f5;
+  outline:0;
+}
+.customer-option-icon{
+  width:26px;
+  height:26px;
+  border-radius:7px;
+  background:#f3f5f9;
+  color:#75829a;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+.customer-option-icon .svg-icon{
+  width:17px;
+  height:17px;
+}
+.customer-picker-divider{
+  height:1px;
+  background:#e8ecf2;
+  margin:9px 3px;
+}
+.customer-picker-empty{
+  padding:18px 10px;
+  text-align:center;
+  color:#8b95a6;
+  font-size:12px;
+}
+
+@media(max-width:520px){
+  .customer-picker-trigger{
+    height:48px;
+    border-radius:9px;
+  }
+  .customer-picker .customer-select-value{
+    font-size:13px;
+  }
+  .customer-picker-menu{
+    max-height:min(390px,52vh);
+    border-radius:10px;
+    padding:8px;
+  }
+  .customer-search-input{
+    height:40px;
+    font-size:16px!important;
+  }
+  .customer-search-icon{
+    top:20px;
+  }
+  .customer-option{
+    min-height:39px;
+    font-size:13px;
+  }
+}
+/* searchable-customer-picker:end */
