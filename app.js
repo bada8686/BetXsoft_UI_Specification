@@ -23,16 +23,22 @@ const customers = [
   ['1073','Halil2','13,97','Aktiv'],['2258','Ali elmali','10,00','Aktiv'],['1567','jassin','9,00','Aktiv'],['5067','mica','5,50','Gesperrt']
 ];
 
-function depositCustomerNames(){ return ['David','Toni1234','akdag67','Sahin']; }
+function allCustomerRows(){
+  return customers.concat(state.createdUsers);
+}
+function allCustomerNames(){
+  return [...new Set(allCustomerRows().map(r=>r[1]))];
+}
 function customerUsage(){
   try{ return JSON.parse(localStorage.getItem('betxsoftDepositCustomerUsage')||'{}') || {}; }
   catch(_){ return {}; }
 }
-function sortedDepositCustomers(){
+function topCustomerNames(limit=15){
   const usage=customerUsage();
-  return depositCustomerNames()
+  return allCustomerNames()
     .map((name,index)=>({name,index,count:Number(usage[name]||0)}))
     .sort((a,b)=>b.count-a.count || a.index-b.index)
+    .slice(0,limit)
     .map(x=>x.name);
 }
 function recordCustomerSelection(name){
@@ -41,31 +47,37 @@ function recordCustomerSelection(name){
   usage[name]=Number(usage[name]||0)+1;
   try{ localStorage.setItem('betxsoftDepositCustomerUsage',JSON.stringify(usage)); }catch(_){}
 }
-function depositCustomerSelect(){
-  const options=sortedDepositCustomers().map(name=>`<option value="${esc(name)}" ${state.customer===name?'selected':''}>${esc(name)}</option>`).join('');
-  return `<div class="customer-select-shell">
-    <span class="customer-select-icon">${svgIcon('person')}</span>
-    <span class="customer-select-value" id="depositCustomerLabel">${state.customer?esc(state.customer):'Kunde auswählen'}</span>
-    <span class="customer-select-chevron">${svgIcon('chevron')}</span>
-    <select class="customer-select-native" id="depositCustomer" aria-label="Kunde auswählen">
-      <option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>
-      ${options}
-    </select>
+function customerPicker(prefix,extraClass=''){
+  const top=topCustomerNames(15);
+  const all=allCustomerNames();
+  const option=(name,section)=>`<button type="button" class="customer-option" data-customer-option data-section="${section}" data-value="${esc(name)}"><span class="customer-option-icon">${svgIcon('person')}</span><span>${esc(name)}</span></button>`;
+  return `<div class="customer-picker ${extraClass}" data-customer-picker>
+    <input type="hidden" id="${prefix}Customer" value="${state.customer?esc(state.customer):''}">
+    <button type="button" class="customer-picker-trigger" data-customer-toggle aria-expanded="false">
+      <span class="customer-select-icon">${svgIcon('person')}</span>
+      <span class="customer-select-value" id="${prefix}CustomerLabel">${state.customer?esc(state.customer):'Kunden suchen'}</span>
+      <span class="customer-select-chevron">${svgIcon('chevron')}</span>
+    </button>
+    <div class="customer-picker-menu" data-customer-menu hidden>
+      <div class="customer-search-wrap">
+        <span class="customer-search-icon">${svgIcon('searchUser')}</span>
+        <input class="customer-search-input" type="search" inputmode="search" autocomplete="off" placeholder="Kunden suchen" data-customer-search>
+      </div>
+      <div class="customer-picker-section" data-customer-section="top">
+        <div class="customer-picker-heading">Am häufigsten ausgewählt</div>
+        <div class="customer-picker-options" data-customer-options="top">${top.map(name=>option(name,'top')).join('')}</div>
+      </div>
+      <div class="customer-picker-divider"></div>
+      <div class="customer-picker-section" data-customer-section="all">
+        <div class="customer-picker-heading">Alle Kunden</div>
+        <div class="customer-picker-options" data-customer-options="all">${all.map(name=>option(name,'all')).join('')}</div>
+      </div>
+      <div class="customer-picker-empty" data-customer-empty hidden>Keine Kunden gefunden.</div>
+    </div>
   </div>`;
 }
-
-function payoutCustomerSelect(){
-  const options=sortedDepositCustomers().map(name=>`<option value="${esc(name)}" ${state.customer===name?'selected':''}>${esc(name)}</option>`).join('');
-  return `<div class="customer-select-shell payout-customer-select-shell">
-    <span class="customer-select-icon">${svgIcon('person')}</span>
-    <span class="customer-select-value" id="payoutCustomerLabel">${state.customer?esc(state.customer):'Kunde auswählen'}</span>
-    <span class="customer-select-chevron">${svgIcon('chevron')}</span>
-    <select class="customer-select-native" id="payoutCustomer" aria-label="Kunde auswählen">
-      <option value="" ${state.customer?'':'selected'} disabled>Kunde auswählen</option>
-      ${options}
-    </select>
-  </div>`;
-}
+function depositCustomerSelect(){ return customerPicker('deposit'); }
+function payoutCustomerSelect(){ return customerPicker('payout','payout-customer-picker'); }
 
 function parseAccountBalance(value){
   const normalized=String(value??'0').replace(/\./g,'').replace(',','.');
@@ -128,6 +140,10 @@ const payouts = [
 function moneyClass(v){ return String(v).trim().startsWith('-') ? 'negative' : String(v).trim().startsWith('+') ? 'positive' : ''; }
 function esc(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 function go(route){
+  if(route==='deposit-1' && state.route!=='deposit-2'){
+    state.customer='';
+    state.amount='';
+  }
   if(route==='payout-1' && state.route!=='payout-2'){
     state.customer='';
     state.amount='';
@@ -280,16 +296,83 @@ function render(){
 }
 
 function bind(){
-  document.querySelector('#depositCustomer')?.addEventListener('change',e=>{const label=document.querySelector('#depositCustomerLabel');if(label)label.textContent=e.target.value||'Kunde auswählen';});
-  document.querySelector('#payoutCustomer')?.addEventListener('change',e=>{
-    const customer=e.target.value||'';
-    const label=document.querySelector('#payoutCustomerLabel');
-    const balanceField=document.querySelector('#payoutBalanceField');
-    const balanceValue=document.querySelector('#payoutCurrentBalance');
-    if(label) label.textContent=customer||'Kunde auswählen';
-    if(balanceField) balanceField.hidden=!customer;
-    if(balanceValue) balanceValue.textContent=customer?formatAccountBalance(customerBalanceValue(customer)):'';
+  document.querySelectorAll('[data-customer-picker]').forEach(picker=>{
+    const trigger=picker.querySelector('[data-customer-toggle]');
+    const menu=picker.querySelector('[data-customer-menu]');
+    const search=picker.querySelector('[data-customer-search]');
+    const hidden=picker.querySelector('input[type="hidden"]');
+    const label=picker.querySelector('.customer-select-value');
+    const empty=picker.querySelector('[data-customer-empty]');
+
+    const closeMenu=()=>{
+      menu.hidden=true;
+      trigger.setAttribute('aria-expanded','false');
+      picker.classList.remove('open');
+      if(search) search.value='';
+      picker.querySelectorAll('[data-customer-option]').forEach(btn=>btn.hidden=false);
+      picker.querySelectorAll('[data-customer-section]').forEach(section=>section.hidden=false);
+      if(empty) empty.hidden=true;
+    };
+
+    trigger?.addEventListener('click',()=>{
+      const willOpen=menu.hidden;
+      document.querySelectorAll('[data-customer-picker].open').forEach(other=>{
+        if(other!==picker){
+          const otherMenu=other.querySelector('[data-customer-menu]');
+          const otherTrigger=other.querySelector('[data-customer-toggle]');
+          if(otherMenu) otherMenu.hidden=true;
+          if(otherTrigger) otherTrigger.setAttribute('aria-expanded','false');
+          other.classList.remove('open');
+        }
+      });
+      menu.hidden=!willOpen;
+      trigger.setAttribute('aria-expanded',String(willOpen));
+      picker.classList.toggle('open',willOpen);
+    });
+
+    search?.addEventListener('input',()=>{
+      const q=search.value.trim().toLowerCase();
+      let anyVisible=false;
+      picker.querySelectorAll('[data-customer-section]').forEach(section=>{
+        let sectionVisible=false;
+        section.querySelectorAll('[data-customer-option]').forEach(btn=>{
+          const show=!q || btn.dataset.value.toLowerCase().includes(q);
+          btn.hidden=!show;
+          if(show){ sectionVisible=true; anyVisible=true; }
+        });
+        section.hidden=!sectionVisible;
+      });
+      if(empty) empty.hidden=anyVisible;
+    });
+
+    picker.querySelectorAll('[data-customer-option]').forEach(btn=>btn.addEventListener('click',()=>{
+      const customer=btn.dataset.value||'';
+      if(hidden) hidden.value=customer;
+      if(label) label.textContent=customer||'Kunden suchen';
+      state.customer=customer;
+      recordCustomerSelection(customer);
+      closeMenu();
+
+      if(hidden?.id==='payoutCustomer'){
+        const balanceField=document.querySelector('#payoutBalanceField');
+        const balanceValue=document.querySelector('#payoutCurrentBalance');
+        if(balanceField) balanceField.hidden=!customer;
+        if(balanceValue) balanceValue.textContent=customer?formatAccountBalance(customerBalanceValue(customer)):'';
+      }
+    }));
   });
+
+  document.addEventListener('click',e=>{
+    if(e.target.closest('[data-customer-picker]')) return;
+    document.querySelectorAll('[data-customer-picker].open').forEach(picker=>{
+      const menu=picker.querySelector('[data-customer-menu]');
+      const trigger=picker.querySelector('[data-customer-toggle]');
+      if(menu) menu.hidden=true;
+      if(trigger) trigger.setAttribute('aria-expanded','false');
+      picker.classList.remove('open');
+    });
+  });
+
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
@@ -297,7 +380,7 @@ function bind(){
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
   document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();state.toggles[el.dataset.toggle]=!state.toggles[el.dataset.toggle];el.classList.toggle('on')}));
-  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;recordCustomerSelection(customer);go('deposit-2')});
+  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;go('deposit-2')});
   document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{
     const customer=document.querySelector('#payoutCustomer')?.value||'';
     const raw=document.querySelector('#payoutAmount').value.trim();
@@ -308,7 +391,6 @@ function bind(){
     if(amount>balance)return toast('Der Betrag übersteigt das aktuelle Guthaben.');
     state.amount=String(amount);
     state.customer=customer;
-    recordCustomerSelection(customer);
     go('payout-2');
   });
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
