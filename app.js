@@ -188,6 +188,9 @@ function svgIcon(name){
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
     person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
+    personSolid:'<circle cx="12" cy="7.5" r="4" fill="currentColor" stroke="none"/><path d="M4.5 21c.6-4.7 3.2-7 7.5-7s6.9 2.3 7.5 7H4.5Z" fill="currentColor" stroke="none"/>',
+    userSolidAdd:'<circle cx="9" cy="7.2" r="3.5" fill="currentColor" stroke="none"/><path d="M3 20c.5-4.1 2.7-6.1 6-6.1 2.2 0 3.9.8 4.9 2.4" fill="currentColor" stroke="none"/><path d="M18 10v7M14.5 13.5h7"/>',
+    telegram:'<path d="M21.4 3.4 2.9 10.6c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.7.1 1 .8 1 .5 0 .8-.2 1-.4l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.7c.4-1.3-.5-1.9-1.6-1.5ZM8.2 13.3l9.2-5.8c.5-.3.9-.1.5.2l-7.6 6.9-.3 3.1-1.8-4.4Z" fill="currentColor" stroke="none"/>',
     lock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/>',
     coins:'<ellipse cx="12" cy="6.2" rx="6.3" ry="2.7"/><path d="M5.7 6.2v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7V6.2M5.7 10.3v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-4.1M5.7 14.4v3.4c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-3.4"/>',
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
@@ -213,9 +216,9 @@ function drawer(){
       ${primary(4,'Auszahlung','up','payout')}
       ${primary(13,'Umsatz','bars','turnover')}
       <div class="drawer-section-title"><span class="drawer-section-icon">${svgIcon('list')}</span><strong>Weitere Bereiche</strong></div>
-      ${item(7,'person')}
+      ${item(7,'personSolid')}
       ${item(8,'historyClock')}
-      ${item(9,'user')}
+      ${item(9,'userSolidAdd')}
       ${item(10,'ticket')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${item(14,'bars')}
@@ -223,7 +226,7 @@ function drawer(){
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
         <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
-          <img class="drawer-qr" src="./assets/betxsoft-telegram-qr.svg" alt="QR-Code zu BetXsoft auf Telegram">
+          <img class="drawer-qr" src="./assets/betxsoft-telegram-qr.svg" alt="QR-Code zu BetXsoft auf Telegram"><span class="drawer-qr-telegram" aria-hidden="true">${svgIcon('telegram')}</span>
         </a>
         <div class="drawer-footer-copy"><span>2022</span><i aria-hidden="true"></i><span>BETXSOFT</span></div>
       </div>
