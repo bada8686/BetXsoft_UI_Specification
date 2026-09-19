@@ -1139,16 +1139,16 @@ body.ios-keyboard-locked{
 /* unified-page-top-spacing:start */
 /* Keep every internal page comfortably separated from the fixed top bar. */
 #app > .app:not(.route-home) > .layout{
-  padding-top:48px!important;
+  padding-top:33px!important;
 }
 @media(max-width:850px){
   #app > .app:not(.route-home) > .layout{
-    padding-top:46px!important;
+    padding-top:31px!important;
   }
 }
 @media(max-width:520px){
   #app > .app:not(.route-home) > .layout{
-    padding-top:44px!important;
+    padding-top:29px!important;
   }
 }
 /* unified-page-top-spacing:end */
