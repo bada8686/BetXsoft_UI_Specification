@@ -1552,6 +1552,10 @@ body.ios-keyboard-locked{
     display:none!important;
   }
 
+  .route-home .quick-grid{
+    margin-top:5px;
+  }
+
   /* Requested overview typography. */
   .route-home .overview-title{
     margin:0 0 12px;
