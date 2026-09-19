@@ -1646,14 +1646,15 @@ body.ios-keyboard-locked{
 /* unified-topbar-content-gap-v43:end */
 
 
-/* home-drawer-left-v59:start */
-.route-home .drawer{
+/* home-drawer-left-v60:start */
+/* Drawer is a sibling of .route-home, not a descendant. */
+.route-home + .drawer-backdrop + .drawer{
   left:0;
   right:auto;
   box-shadow:20px 0 50px rgba(0,0,0,.2);
   transform:translateX(-105%);
 }
-.route-home .drawer.open{
+.route-home + .drawer-backdrop + .drawer.open{
   transform:none;
 }
-/* home-drawer-left-v59:end */
+/* home-drawer-left-v60:end */
