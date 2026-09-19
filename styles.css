@@ -1166,6 +1166,10 @@ body.ios-keyboard-locked{
 
 
 /* create-user-refresh:start */
+.route-create-user .create-user-back{
+  display:none!important;
+}
+
 .route-create-user .layout{
   width:min(720px,100%);
   padding-bottom:36px;
