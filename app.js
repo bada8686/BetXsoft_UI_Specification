@@ -144,22 +144,22 @@ function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Über
   ].map((x,i)=>`<button class="menu-entry ${i===0?'primary-icon':''}" data-go="${x[0]}"><span>${svgIcon(x[1])}</span><span><strong>${x[2]}</strong><small>${x[3]}</small></span><span class="chev">${svgIcon('chevron')}</span></button>`).join('')}</div></section></div>`; }
 
 function depositClose(){ return `<button class="page-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
-function deposit1(){ return `<section class="card deposit-entry-card">
-  <button class="deposit-card-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>
-  <div class="deposit-design-head">
-    <div class="deposit-design-icon">${svgIcon('depositWallet')}</div>
-    <div class="deposit-design-copy">
-      <h1>Einzahlung durchführen</h1>
-      <p>Wählen Sie den Kunden aus und geben Sie den Einzahlungsbetrag ein.</p>
+function deposit1(){ return `<section class="deposit-minimal-page">
+  <div class="deposit-minimal-head">
+    <button class="deposit-back" data-go="home" aria-label="Zurück zur Startseite">‹</button>
+    <h1>Einzahlung</h1>
+    <button class="deposit-minimal-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>
+  </div>
+  ${steps(1)}
+  <section class="deposit-minimal-form">
+    <div class="deposit-form-grid">
+      ${field('Kunde auswählen',depositCustomerSelect())}
+      ${field('Einzahlungsbetrag',`<div class="deposit-amount-shell">${input('Betrag eingeben','id="depositAmount" inputmode="decimal" autocomplete="off"')}<span class="deposit-amount-icon">${svgIcon('coins')}</span></div>`)}
     </div>
-  </div>
-  <div class="deposit-form-grid">
-    ${field('Kunde auswählen',depositCustomerSelect())}
-    ${field('Einzahlungsbetrag',`<div class="deposit-amount-shell">${input('Betrag eingeben','id="depositAmount" inputmode="decimal" autocomplete="off"')}<span class="deposit-amount-icon">${svgIcon('coins')}</span></div>`)}
-  </div>
-  <label class="deposit-helper">Schnellauswahl</label>
-  <div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div>
-  <div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen <span aria-hidden="true">→</span></button></div>
+    <label class="deposit-helper">Schnellauswahl</label>
+    <div class="amounts">${[10,20,40,50,70,100,150,200].map(x=>`<button class="amount-chip" data-amount="${x}">${x}</button>`).join('')}</div>
+    <div class="actions"><button class="btn block deposit-continue" data-flow="deposit-next">Einzahlung fortsetzen <span aria-hidden="true">→</span></button></div>
+  </section>
 </section>`; }
 function deposit2(){ const amount=state.amount||'20'; return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="positive">${esc(amount)},00</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>0,00</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${esc(amount)},00</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`; }
 function deposit3(){ return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${esc(state.amount||'20')},00</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
