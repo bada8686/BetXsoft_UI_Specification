@@ -304,8 +304,8 @@ function createUserView(){ return `<section class="create-user-page">
           <p class="create-user-helper">Mindestens 6 Zeichen.</p>
         </div>
         <div class="field">
-          <label>Startguthaben *</label>
-          <div class="create-user-input-shell create-user-balance-shell"><span class="create-user-field-icon">${svgIcon('coins')}</span>${input('0,00','name="balance" inputmode="decimal" value="0" autocomplete="off"')}</div>
+          <label>Startguthaben</label>
+          <div class="create-user-input-shell create-user-balance-shell"><span class="create-user-field-icon">${svgIcon('coins')}</span>${input('0,00','name="balance" inputmode="decimal" autocomplete="off"')}</div>
         </div>
       </div>
       <div class="create-user-actions">
@@ -507,7 +507,7 @@ function bind(){
   document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{state.customerFilter='';render()});
   document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';render()});
   document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';render()});
-  document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const bal=fd.get('balance')||'0';state.createdUsers.unshift([String(6000+state.createdUsers.length),name,`${bal},00`,'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('customers'),500)});
+  document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
   document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
   document.querySelectorAll('[data-period]').forEach(el=>el.addEventListener('click',()=>{state.dashboardPeriod=el.dataset.period;state.customRangeOpen=false;render();toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
   document.querySelector('[data-custom-range]')?.addEventListener('click',()=>{state.customRangeOpen=!state.customRangeOpen;render()});
