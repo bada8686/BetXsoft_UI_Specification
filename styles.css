@@ -47,3 +47,160 @@ button{cursor:pointer}
 }
 @media(max-width:350px){.route-home .layout{padding-left:10px;padding-right:10px}.route-home .quick-grid{gap:5px}.route-home .kpi{padding-left:2px;padding-right:2px}.route-home .kpi strong{font-size:11px}.route-home .kpi label{font-size:8px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+
+/* deposit-entry-refresh:start */
+.route-deposit-1 .deposit-entry-card{
+  max-width:620px;
+  padding:28px;
+  border:1px solid #e3e8f0;
+  border-radius:18px;
+  box-shadow:0 18px 48px rgba(20,40,80,.08);
+}
+.route-deposit-1 .deposit-card-intro h2{
+  margin:0 0 7px;
+  font-size:25px;
+  letter-spacing:-.35px;
+}
+.route-deposit-1 .deposit-card-intro>.muted{
+  margin:0 0 24px;
+  max-width:470px;
+  font-size:13px;
+  line-height:1.5;
+}
+.route-deposit-1 .deposit-form-grid{
+  grid-template-columns:1fr;
+  gap:18px;
+}
+.route-deposit-1 .deposit-form-grid .field{
+  gap:8px;
+}
+.route-deposit-1 .deposit-form-grid .field label{
+  font-size:12px;
+  font-weight:800;
+  color:#172033;
+}
+.route-deposit-1 .deposit-form-grid .control{
+  height:52px;
+  border-color:#dfe5ee;
+  border-radius:12px;
+  background:#fbfcfe;
+  padding:0 16px;
+  font-size:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8);
+}
+.route-deposit-1 .deposit-form-grid .control:hover{
+  border-color:#cfd7e4;
+}
+.route-deposit-1 .deposit-form-grid .control:focus{
+  background:#fff;
+  border-color:#6480ff;
+  box-shadow:0 0 0 4px rgba(6,72,245,.08);
+}
+.customer-select-shell{
+  position:relative;
+}
+.customer-select-shell .customer-select{
+  appearance:none;
+  -webkit-appearance:none;
+  padding-left:46px;
+  padding-right:46px;
+  color:#182235;
+  cursor:pointer;
+}
+.customer-select-shell .customer-select:invalid,
+.customer-select-shell .customer-select option[value=""]{
+  color:#8d98aa;
+}
+.customer-select-icon,
+.customer-select-chevron{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  z-index:2;
+  color:#75829a;
+  pointer-events:none;
+}
+.customer-select-icon{
+  left:15px;
+  font-size:20px;
+}
+.customer-select-chevron{
+  right:15px;
+  font-size:16px;
+  color:#172033;
+  transform:translateY(-50%) rotate(90deg);
+}
+.customer-select-icon .svg-icon{width:21px;height:21px;stroke-width:1.7}
+.customer-select-chevron .svg-icon{width:15px;height:15px;stroke-width:2}
+.route-deposit-1 .deposit-helper{
+  display:block;
+  margin-top:19px!important;
+  font-size:11px;
+  color:#8a95a6;
+}
+.route-deposit-1 .amounts{
+  gap:10px;
+  margin-top:10px;
+}
+.route-deposit-1 .amount-chip{
+  min-height:43px;
+  border-color:#e1e6ee;
+  border-radius:10px;
+  background:#fbfcfe;
+  color:#445065;
+  font-size:13px;
+  font-weight:800;
+  transition:.16s ease;
+}
+.route-deposit-1 .amount-chip:hover,
+.route-deposit-1 .amount-chip.selected{
+  transform:translateY(-1px);
+  border-color:#6e86fb;
+  background:#f0f4ff;
+  color:#0648f5;
+  box-shadow:0 5px 13px rgba(6,72,245,.08);
+}
+.route-deposit-1 .actions{
+  margin-top:24px;
+}
+.route-deposit-1 .deposit-continue{
+  min-height:50px;
+  border-radius:11px;
+  background:linear-gradient(90deg,#0b4cf2,#1661ff);
+  box-shadow:0 10px 22px rgba(6,72,245,.18);
+}
+.route-deposit-1 .deposit-continue:hover{
+  background:linear-gradient(90deg,#073fd6,#0d55ef);
+  box-shadow:0 12px 26px rgba(6,72,245,.23);
+}
+@media(max-width:520px){
+  .route-deposit-1 .layout{padding-left:10px;padding-right:10px}
+  .route-deposit-1 .deposit-entry-card{
+    padding:18px 14px 16px;
+    border-radius:14px;
+    box-shadow:0 10px 28px rgba(20,40,80,.07);
+  }
+  .route-deposit-1 .deposit-card-intro h2{font-size:18px}
+  .route-deposit-1 .deposit-card-intro>.muted{
+    margin-bottom:18px;
+    font-size:11px;
+  }
+  .route-deposit-1 .deposit-form-grid{gap:14px}
+  .route-deposit-1 .deposit-form-grid .control{
+    height:47px;
+    font-size:12px;
+    border-radius:10px;
+  }
+  .route-deposit-1 .amounts{gap:7px}
+  .route-deposit-1 .amount-chip{
+    min-height:39px;
+    font-size:11px;
+    border-radius:8px;
+  }
+  .route-deposit-1 .deposit-continue{
+    min-height:46px;
+    font-size:12px;
+  }
+}
+/* deposit-entry-refresh:end */
