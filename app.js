@@ -53,16 +53,12 @@ function customerPicker(prefix,extraClass=''){
   const option=(name,section)=>`<button type="button" class="customer-option" data-customer-option data-section="${section}" data-value="${esc(name)}"><span class="customer-option-icon">${svgIcon('person')}</span><span>${esc(name)}</span></button>`;
   return `<div class="customer-picker ${extraClass}" data-customer-picker>
     <input type="hidden" id="${prefix}Customer" value="${state.customer?esc(state.customer):''}">
-    <button type="button" class="customer-picker-trigger" data-customer-toggle aria-expanded="false">
+    <div class="customer-picker-trigger" data-customer-trigger>
       <span class="customer-select-icon">${svgIcon('person')}</span>
-      <span class="customer-select-value" id="${prefix}CustomerLabel">${state.customer?esc(state.customer):'Kunden suchen'}</span>
+      <input class="customer-picker-input customer-select-value" id="${prefix}CustomerSearch" type="search" inputmode="search" autocomplete="off" placeholder="Kunden suchen" value="${state.customer?esc(state.customer):''}" data-customer-search aria-label="Kunden suchen" aria-expanded="false">
       <span class="customer-select-chevron">${svgIcon('chevron')}</span>
-    </button>
+    </div>
     <div class="customer-picker-menu" data-customer-menu hidden>
-      <div class="customer-search-wrap">
-        <span class="customer-search-icon">${svgIcon('searchUser')}</span>
-        <input class="customer-search-input" type="search" inputmode="search" autocomplete="off" placeholder="Kunden suchen" data-customer-search>
-      </div>
       <div class="customer-picker-section" data-customer-section="top">
         <div class="customer-picker-heading">Am häufigsten ausgewählt</div>
         <div class="customer-picker-options" data-customer-options="top">${top.map(name=>option(name,'top')).join('')}</div>
@@ -316,41 +312,66 @@ function render(){
 
 function bind(){
   document.querySelectorAll('[data-customer-picker]').forEach(picker=>{
-    const trigger=picker.querySelector('[data-customer-toggle]');
+    const trigger=picker.querySelector('[data-customer-trigger]');
     const menu=picker.querySelector('[data-customer-menu]');
     const search=picker.querySelector('[data-customer-search]');
     const hidden=picker.querySelector('input[type="hidden"]');
-    const label=picker.querySelector('.customer-select-value');
     const empty=picker.querySelector('[data-customer-empty]');
 
-    const closeMenu=()=>{
-      menu.hidden=true;
-      trigger.setAttribute('aria-expanded','false');
-      picker.classList.remove('open');
-      if(search) search.value='';
+    const resetOptions=()=>{
       picker.querySelectorAll('[data-customer-option]').forEach(btn=>btn.hidden=false);
       picker.querySelectorAll('[data-customer-section]').forEach(section=>section.hidden=false);
       if(empty) empty.hidden=true;
     };
 
-    trigger?.addEventListener('click',()=>{
-      const willOpen=menu.hidden;
+    const closeMenu=()=>{
+      menu.hidden=true;
+      search?.setAttribute('aria-expanded','false');
+      picker.classList.remove('open');
+      resetOptions();
+      if(search) search.value=hidden?.value||'';
+    };
+
+    const openMenu=()=>{
       document.querySelectorAll('[data-customer-picker].open').forEach(other=>{
         if(other!==picker){
           const otherMenu=other.querySelector('[data-customer-menu]');
-          const otherTrigger=other.querySelector('[data-customer-toggle]');
+          const otherSearch=other.querySelector('[data-customer-search]');
+          const otherHidden=other.querySelector('input[type="hidden"]');
           if(otherMenu) otherMenu.hidden=true;
-          if(otherTrigger) otherTrigger.setAttribute('aria-expanded','false');
+          if(otherSearch){
+            otherSearch.setAttribute('aria-expanded','false');
+            otherSearch.value=otherHidden?.value||'';
+          }
           other.classList.remove('open');
         }
       });
-      menu.hidden=!willOpen;
-      trigger.setAttribute('aria-expanded',String(willOpen));
-      picker.classList.toggle('open',willOpen);
+      menu.hidden=false;
+      search?.setAttribute('aria-expanded','true');
+      picker.classList.add('open');
+    };
+
+    trigger?.addEventListener('click',e=>{
+      openMenu();
+      if(e.target!==search) search?.focus({preventScroll:true});
     });
+    search?.addEventListener('focus',openMenu);
 
     search?.addEventListener('input',()=>{
-      const q=search.value.trim().toLowerCase();
+      const raw=search.value;
+      const q=raw.trim().toLowerCase();
+
+      if(hidden && raw!==hidden.value){
+        hidden.value='';
+        state.customer='';
+        if(hidden.id==='payoutCustomer'){
+          const balanceField=document.querySelector('#payoutBalanceField');
+          const balanceValue=document.querySelector('#payoutCurrentBalance');
+          if(balanceField) balanceField.hidden=true;
+          if(balanceValue) balanceValue.textContent='';
+        }
+      }
+
       let anyVisible=false;
       picker.querySelectorAll('[data-customer-section]').forEach(section=>{
         let sectionVisible=false;
@@ -362,12 +383,13 @@ function bind(){
         section.hidden=!sectionVisible;
       });
       if(empty) empty.hidden=anyVisible;
+      openMenu();
     });
 
     picker.querySelectorAll('[data-customer-option]').forEach(btn=>btn.addEventListener('click',()=>{
       const customer=btn.dataset.value||'';
       if(hidden) hidden.value=customer;
-      if(label) label.textContent=customer||'Kunden suchen';
+      if(search) search.value=customer;
       state.customer=customer;
       recordCustomerSelection(customer);
       closeMenu();
@@ -385,9 +407,13 @@ function bind(){
     if(e.target.closest('[data-customer-picker]')) return;
     document.querySelectorAll('[data-customer-picker].open').forEach(picker=>{
       const menu=picker.querySelector('[data-customer-menu]');
-      const trigger=picker.querySelector('[data-customer-toggle]');
+      const search=picker.querySelector('[data-customer-search]');
+      const hidden=picker.querySelector('input[type="hidden"]');
       if(menu) menu.hidden=true;
-      if(trigger) trigger.setAttribute('aria-expanded','false');
+      if(search){
+        search.setAttribute('aria-expanded','false');
+        search.value=hidden?.value||'';
+      }
       picker.classList.remove('open');
     });
   });
