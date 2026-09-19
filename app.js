@@ -181,6 +181,10 @@ function svgIcon(name){
     user:'<circle cx="10" cy="8" r="3"/><path d="M4.5 19c.7-3.1 2.6-4.8 5.5-4.8s4.8 1.7 5.5 4.8M18 7v6M15 10h6"/>',
     wallet:'<path d="M4 7.5h13.5A2.5 2.5 0 0 1 20 10v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3h11v3.5"/><path d="M15 11h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><circle cx="15.5" cy="13.5" r=".6" fill="currentColor" stroke="none"/>',
     chart:'<path d="M3 20h18M5 16l4-5 4 3 7-9M16 5h4v4"/>',
+    bars:'<path d="M5 20V12h3v8H5Zm6 0V6h3v14h-3Zm6 0V9h3v11h-3Z" fill="currentColor" stroke="none"/>',
+    list:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/>',
+    historyClock:'<path d="M4 8V4m0 0h4M4 4a9 9 0 1 1-1 10"/><path d="M12 7v5l-3 2"/>',
+    upload:'<path d="M12 17V5M7 10l5-5 5 5"/><path d="M5 15v4h14v-4"/>',
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
     person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
@@ -207,15 +211,15 @@ function drawer(){
     <nav class="drawer-nav">
       ${primary(1,'Einzahlung','down','deposit')}
       ${primary(4,'Auszahlung','up','payout')}
-      ${primary(13,'Umsatz','chart','turnover')}
-      <div class="drawer-section-title"><span class="drawer-section-icon">${svgIcon('menu')}</span><strong>Weitere Bereiche</strong></div>
+      ${primary(13,'Umsatz','bars','turnover')}
+      <div class="drawer-section-title"><span class="drawer-section-icon">${svgIcon('list')}</span><strong>Weitere Bereiche</strong></div>
       ${item(7,'person')}
-      ${item(8,'transfer')}
+      ${item(8,'historyClock')}
       ${item(9,'user')}
       ${item(10,'ticket')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
-      ${item(14,'down')}
-      ${item(15,'up')}
+      ${item(14,'bars')}
+      ${item(15,'upload')}
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
         <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
