@@ -1754,3 +1754,18 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-compact-categories-v62:end */
+
+
+/* home-drawer-top-transition-v63:start */
+@media(max-width:520px){
+  .route-home + .drawer-backdrop{
+    top:79px;
+  }
+  .route-home + .drawer-backdrop + .drawer{
+    top:79px;
+    height:calc(100vh - 79px);
+    border-top-right-radius:16px;
+    overflow:hidden;
+  }
+}
+/* home-drawer-top-transition-v63:end */
