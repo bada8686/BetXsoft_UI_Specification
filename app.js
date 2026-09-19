@@ -211,12 +211,12 @@ function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Über
   ['turnover','dollar','Buchhaltung','Shop Umsatz & Agent Umsatz'],['coupons','ticket','Wettscheine','Wettscheine suchen & verwalten'],['create-user','user','Kunden anlegen','Shop oder Agent erstellen'],['customers','searchUser','Spieler suchen','Profil bearbeiten'],['customers','shop','Shop oder Agent suchen','Shop / Agent bearbeiten'],['history','transfer','Transaktionen','Einzahlungen, Auszahlungen & mehr']
   ].map((x,i)=>`<button class="menu-entry ${i===0?'primary-icon':''}" data-go="${x[0]}"><span>${svgIcon(x[1])}</span><span><strong>${x[2]}</strong><small>${x[3]}</small></span><span class="chev">${svgIcon('chevron')}</span></button>`).join('')}</div></section></div>`; }
 
-function depositClose(){ return `<button class="page-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
+function depositClose(){ return `<button class="page-close" data-close-page aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
 function deposit1(){ return `<section class="deposit-minimal-page">
   <div class="deposit-minimal-head">
     <button class="deposit-back" data-go="home" aria-label="Zurück zur Startseite">‹</button>
     <h1>Einzahlung</h1>
-    <button class="deposit-minimal-close" data-go="home" aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>
+    <button class="deposit-minimal-close" data-close-page aria-label="Einzahlung schließen" title="Schließen">${svgIcon('close')}</button>
   </div>
   ${steps(1)}
   <section class="deposit-minimal-form">
@@ -240,7 +240,7 @@ function deposit3(){
   return `${pageHead(svgIcon('depositWallet'),'Einzahlung','',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`;
 }
 
-function payoutClose(){ return `<button class="page-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
+function payoutClose(){ return `<button class="page-close" data-close-page aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>`; }
 
 function payout1(){
   const currentBalance=state.customer?customerBalanceValue(state.customer):0;
@@ -248,7 +248,7 @@ function payout1(){
   <div class="payout-minimal-head">
     <button class="payout-back payout-icon-button" data-go="home" aria-label="Zurück zur Startseite" title="Auszahlung">${svgIcon('payoutWallet')}</button>
     <h1>Auszahlung</h1>
-    <button class="payout-minimal-close" data-go="home" aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>
+    <button class="payout-minimal-close" data-close-page aria-label="Auszahlung schließen" title="Schließen">${svgIcon('close')}</button>
   </div>
   ${steps(1,'Auszahlung')}
   <section class="payout-minimal-form">
@@ -288,7 +288,7 @@ function createUserView(){ return `<section class="create-user-page">
       <span class="create-user-heading-icon">${svgIcon('user')}</span>
       <div><h1>Kunden erstellen</h1><p>Neuen Kunden anlegen</p></div>
     </div>
-    <button class="create-user-close" data-go="home" aria-label="Kunden erstellen schließen" title="Schließen">${svgIcon('close')}</button>
+    <button class="create-user-close" data-close-page aria-label="Kunden erstellen schließen" title="Schließen">${svgIcon('close')}</button>
   </div>
   <section class="create-user-form-card">
     <div class="create-user-form-title"><h2>Kundendaten</h2><p>Geben Sie die Daten des neuen Kunden ein.</p></div>
@@ -452,12 +452,18 @@ function bind(){
     });
   });
 
-  // All page close buttons always exit the current flow and return to the dashboard.
-  document.querySelectorAll('.page-close,.deposit-minimal-close,.payout-minimal-close,.create-user-close').forEach(el=>el.addEventListener('click',e=>{
+  // Close buttons are intentionally separate from regular navigation:
+  // close the current flow, replace its history entry and show the dashboard immediately.
+  document.querySelectorAll('[data-close-page]').forEach(el=>el.addEventListener('click',e=>{
     e.preventDefault();
-    e.stopImmediatePropagation();
+    e.stopPropagation();
     state.drawer=false;
-    go('home');
+    state.customer='';
+    state.amount='';
+    state.committedFlow='';
+    history.replaceState(null,'',location.pathname+location.search+'#home');
+    state.route='home';
+    render();
   }));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
