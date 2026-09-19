@@ -2568,3 +2568,27 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-qr-left-v68:end */
+
+
+/* drawer-footer-bottom-v69:start */
+@media(max-width:520px){
+  /* Keep the complete QR/footer block at the lower reference position. */
+  .route-home + .drawer-backdrop + .drawer .drawer-nav{
+    display:flex!important;
+    flex-direction:column!important;
+    height:100%!important;
+    padding-bottom:24px!important;
+  }
+  .route-home + .drawer-backdrop + .drawer .drawer-footer{
+    flex:0 0 auto!important;
+    width:100%!important;
+    margin-top:auto!important;
+    margin-bottom:0!important;
+    text-align:center!important;
+  }
+  /* Preserve the approved QR-only 11px left offset. */
+  .route-home + .drawer-backdrop + .drawer .drawer-qr-link{
+    transform:translateX(-11px)!important;
+  }
+}
+/* drawer-footer-bottom-v69:end */
