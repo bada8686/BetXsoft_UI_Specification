@@ -525,18 +525,22 @@ body.ios-keyboard-locked{
 .route-payout-1 .payout-back{
   width:40px;
   height:40px;
-  border:0;
+  border:1px solid #e1e6ef;
   border-radius:10px;
-  background:#f4f6fa;
-  color:#07142f;
+  background:#fff;
+  color:#0b50ea;
   display:grid;
   place-items:center;
-  font-size:31px;
-  font-weight:400;
   line-height:1;
+  box-shadow:0 2px 8px rgba(20,40,80,.04);
+}
+.route-payout-1 .payout-back .svg-icon{
+  width:22px;
+  height:22px;
+  stroke-width:1.9;
 }
 .route-payout-1 .payout-back:hover{
-  background:#edf1f7;
+  background:#f7f9fd;
 }
 .route-payout-1 .payout-minimal-close{
   width:40px;
