@@ -201,14 +201,30 @@ function steps(active,type='Einzahlung'){ const names=['Daten','Übersicht','Bes
 function footer(){ return `<footer class="footer"><span>© 2024 BetXsoft. Alle Rechte vorbehalten.</span><i class="mobile-home-indicator"></i></footer>`; }
 function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>368.161,00</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
 function drawer(){
-  const link=(routeIndex)=>{
-    const [r,n]=routes[routeIndex];
-    return `<button class="drawer-link ${r===state.route?'active':''}" data-go="${r}"><span>${n}</span></button>`;
-  };
-  const category=(title,icon,tone)=>`<div class="drawer-category ${tone}"><span class="drawer-category-icon">${svgIcon(icon)}</span><strong>${title}</strong></div>`;
-  const otherIndexes=[7,8,9,10,13,14,15];
-  const otherLinks=otherIndexes.map(routeIndex=>`${link(routeIndex)}${routeIndex===10?'<div class="drawer-menu-divider" aria-hidden="true"></div>':''}`).join('');
-  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}"><div class="drawer-head"><strong>Navigation</strong><button class="icon-button" data-drawer-close aria-label="Menü schließen">×</button></div><nav class="drawer-nav">${category('Einzahlung','down','deposit')}${[1,2,3].map(link).join('')}${category('Auszahlung','up','payout')}${[4,5,6].map(link).join('')}${category('Weitere Bereiche','menu','other')}${otherLinks}</nav></aside>`;
+  const primary=(routeIndex,label,icon,tone)=>`<button class="drawer-primary ${tone} ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-primary-icon">${svgIcon(icon)}</span><strong>${label}</strong><span class="drawer-primary-chevron">${svgIcon('chevron')}</span></button>`;
+  const item=(routeIndex,icon)=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${routes[routeIndex][1]}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
+  return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
+    <nav class="drawer-nav">
+      ${primary(1,'Einzahlung','down','deposit')}
+      ${primary(4,'Auszahlung','up','payout')}
+      ${primary(13,'Umsatz','chart','turnover')}
+      <div class="drawer-section-title"><span class="drawer-section-icon">${svgIcon('menu')}</span><strong>Weitere Bereiche</strong></div>
+      ${item(7,'person')}
+      ${item(8,'transfer')}
+      ${item(9,'user')}
+      ${item(10,'ticket')}
+      <div class="drawer-menu-divider" aria-hidden="true"></div>
+      ${item(14,'down')}
+      ${item(15,'up')}
+      <div class="drawer-footer">
+        <div class="drawer-footer-rule" aria-hidden="true"></div>
+        <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
+          <img class="drawer-qr" src="./assets/betxsoft-telegram-qr.svg" alt="QR-Code zu BetXsoft auf Telegram">
+        </a>
+        <div class="drawer-footer-copy"><span>2022</span><i aria-hidden="true"></i><span>BETXSOFT</span></div>
+      </div>
+    </nav>
+  </aside>`;
 }
 
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
