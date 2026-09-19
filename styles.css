@@ -1148,7 +1148,7 @@ body.ios-keyboard-locked{
 }
 @media(max-width:520px){
   #app > .app:not(.route-home) > .layout{
-    padding-top:29px!important;
+    padding-top:20px!important;
   }
 }
 /* unified-page-top-spacing:end */
