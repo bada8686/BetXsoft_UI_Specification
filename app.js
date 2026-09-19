@@ -19,7 +19,7 @@ const routes = [
 ];
 
 const customers = [
-  ['4258','Toni1234','40,00','Aktiv'],['800','akdag67','25,63','Aktiv'],['901','Sahin','20,00','Aktiv'],['4638','David','20,00','Aktiv'],
+  ['4258','Toni1234','40,00','Aktiv'],['800','akdag67','25,63','Aktiv'],['901','Sahin','40,00','Aktiv'],['4638','David','20,00','Aktiv'],
   ['1073','Halil2','13,97','Aktiv'],['2258','Ali elmali','10,00','Aktiv'],['1567','jassin','9,00','Aktiv'],['5067','mica','5,50','Gesperrt']
 ];
 
@@ -87,9 +87,30 @@ function parseAccountBalance(value){
 function formatAccountBalance(value){
   return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(Number(value)||0);
 }
-function customerBalanceValue(name){
+function storedCustomerBalances(){
+  try{ return JSON.parse(localStorage.getItem('betxsoftCustomerBalances')||'{}') || {}; }
+  catch(_){ return {}; }
+}
+function customerBaseBalance(name){
   const row=customers.concat(state.createdUsers).find(r=>r[1]===name);
   return row?parseAccountBalance(row[2]):0;
+}
+function customerBalanceValue(name){
+  const stored=storedCustomerBalances();
+  if(Object.prototype.hasOwnProperty.call(stored,name)){
+    const value=Number(stored[name]);
+    return Number.isFinite(value)?value:customerBaseBalance(name);
+  }
+  return customerBaseBalance(name);
+}
+function setCustomerBalance(name,value){
+  if(!name) return;
+  const safe=Math.max(0,Math.round((Number(value)||0)*100)/100);
+  const stored=storedCustomerBalances();
+  stored[name]=safe;
+  try{ localStorage.setItem('betxsoftCustomerBalances',JSON.stringify(stored)); }catch(_){}
+  const row=customers.concat(state.createdUsers).find(r=>r[1]===name);
+  if(row) row[2]=formatAccountBalance(safe);
 }
 
 const historyRows = [
@@ -214,12 +235,10 @@ function deposit2(){
   const amount=Number(state.amount||'0');
   const currentBalance=customerBalanceValue(state.customer);
   const newBalance=currentBalance+amount;
-  return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row deposit-amount-highlight"><span>Betrag</span><strong class="positive">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>${formatAccountBalance(currentBalance)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-go="deposit-3">Einzahlung bestätigen</button></div></section>`;
+  return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Angaben prüfen und Einzahlung bestätigen.',depositClose())} ${steps(2)}<section class="card card-pad flow-card"><h2>Einzahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row deposit-amount-highlight"><span>Betrag</span><strong class="positive">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>${formatAccountBalance(currentBalance)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div></div><div class="actions"><button class="btn secondary" data-go="deposit-1">Zurück</button><button class="btn success" data-confirm-deposit>Einzahlung bestätigen</button></div></section>`;
 }
 function deposit3(){
-  const amount=Number(state.amount||'0');
-  const currentBalance=customerBalanceValue(state.customer);
-  const newBalance=currentBalance+amount;
+  const newBalance=customerBalanceValue(state.customer);
   return `${pageHead(svgIcon('depositWallet'),'Einzahlung','Die Transaktion wurde abgeschlossen.',depositClose())} ${steps(3)}<section class="card flow-card success-panel"><div class="success-mark">✓</div><h2>Einzahlung erfolgreich!</h2><p class="muted">Ihre Einzahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong class="positive">${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`;
 }
 
@@ -253,15 +272,15 @@ function payout2(){
   const amount=Number(state.amount||'0');
   const currentBalance=customerBalanceValue(state.customer);
   const newBalance=Math.max(0,currentBalance-amount);
-  return `${pageHead(svgIcon('up'),'Auszahlung','Angaben prüfen und Auszahlung bestätigen.',payoutClose())} ${steps(2,'Auszahlung')}<section class="card card-pad flow-card"><h2>Auszahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row payout-amount-highlight"><span>Betrag</span><strong class="negative">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>${formatAccountBalance(currentBalance)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div></div><div class="actions"><button class="btn secondary" data-go="payout-1">Zurück</button><button class="btn danger" data-go="payout-3">Auszahlung bestätigen</button></div></section>`; }
+  return `${pageHead(svgIcon('up'),'Auszahlung','Angaben prüfen und Auszahlung bestätigen.',payoutClose())} ${steps(2,'Auszahlung')}<section class="card card-pad flow-card"><h2>Auszahlung bestätigen</h2><p class="muted">Bitte überprüfen Sie Ihre Angaben vor der Bestätigung.</p><div class="summary-list"><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row payout-amount-highlight"><span>Betrag</span><strong class="negative">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Aktuelles Guthaben</span><strong>${formatAccountBalance(currentBalance)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div></div><div class="actions"><button class="btn secondary" data-go="payout-1">Zurück</button><button class="btn danger" data-confirm-payout>Auszahlung bestätigen</button></div></section>`; }
 
 function payout3(){
   const amount=Number(state.amount||'0');
-  const currentBalance=customerBalanceValue(state.customer);
-  const newBalance=Math.max(0,currentBalance-amount);
-  return `${pageHead(svgIcon('up'),'Auszahlung','Die Transaktion wurde abgeschlossen.',payoutClose())} ${steps(3,'Auszahlung')}<section class="card flow-card success-panel"><div class="success-mark payout-success-mark">✓</div><h2>Auszahlung erfolgreich!</h2><p class="muted">Die Auszahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="negative">${formatAccountBalance(amount)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`; }
+  const newBalance=customerBalanceValue(state.customer);
+  return `${pageHead(svgIcon('up'),'Auszahlung','Die Transaktion wurde abgeschlossen.',payoutClose())} ${steps(3,'Auszahlung')}<section class="card flow-card success-panel"><div class="success-mark payout-success-mark">✓</div><h2>Auszahlung erfolgreich!</h2><p class="muted">Die Auszahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div><div class="summary-row"><span>Betrag</span><strong class="negative">${formatAccountBalance(amount)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`;
+}
 
-function customersView(){ const q=state.customerFilter.toLowerCase(); const rows=customers.concat(state.createdUsers).filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('♙','Kunden','Verwalten Sie Ihre Kunden.','<button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>')}<section class="card card-pad"><div class="filters"><div class="field"><label>ID</label>${input('z. B. 4590','data-filter="customer"')}</div><div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div><div class="field"><label>Status</label>${select(['Alle','Aktiv','Gesperrt'])}</div><div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${r[2]}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Kunden',12)}</section>`; }
+function customersView(){ const q=state.customerFilter.toLowerCase(); const rows=customers.concat(state.createdUsers).filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('♙','Kunden','Verwalten Sie Ihre Kunden.','<button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>')}<section class="card card-pad"><div class="filters"><div class="field"><label>ID</label>${input('z. B. 4590','data-filter="customer"')}</div><div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div><div class="field"><label>Status</label>${select(['Alle','Aktiv','Gesperrt'])}</div><div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Kunden',12)}</section>`; }
 
 function historyView(){ return `${pageHead('↔','Transaktionen','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}<section class="card card-pad"><div class="filters three"><div class="field"><label>Status</label>${select(['Alle','Erfolgreich','Ausstehend','Storniert'])}</div><div class="field"><label>Transaktionstyp</label>${select(['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'])}</div><div class="filter-actions"><button class="btn" data-demo="Filter angewendet">Filtern</button><button class="btn secondary" data-demo="Filter zurückgesetzt">Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Alt-Guthaben</th><th>Neu-Guthaben</th><th>Beschreibung</th></tr></thead><tbody>${historyRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===3?moneyClass(c):''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${tableBottom(10,'Transaktionen',5,42)}</section>`; }
 
@@ -374,13 +393,29 @@ function bind(){
   });
 
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
+  document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
+    if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
+    const amount=Number(state.amount||'0');
+    const current=customerBalanceValue(state.customer);
+    setCustomerBalance(state.customer,current+amount);
+    state.committedFlow='deposit';
+    go('deposit-3');
+  });
+  document.querySelector('[data-confirm-payout]')?.addEventListener('click',()=>{
+    if(state.committedFlow==='payout'){ go('payout-3'); return; }
+    const amount=Number(state.amount||'0');
+    const current=customerBalanceValue(state.customer);
+    setCustomerBalance(state.customer,Math.max(0,current-amount));
+    state.committedFlow='payout';
+    go('payout-3');
+  });
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
   document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();state.toggles[el.dataset.toggle]=!state.toggles[el.dataset.toggle];el.classList.toggle('on')}));
-  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;go('deposit-2')});
+  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;state.committedFlow='';go('deposit-2')});
   document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{
     const customer=document.querySelector('#payoutCustomer')?.value||'';
     const raw=document.querySelector('#payoutAmount').value.trim();
@@ -391,6 +426,7 @@ function bind(){
     if(amount>balance)return toast('Der Betrag übersteigt das aktuelle Guthaben.');
     state.amount=String(amount);
     state.customer=customer;
+    state.committedFlow='';
     go('payout-2');
   });
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
