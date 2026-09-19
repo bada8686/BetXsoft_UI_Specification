@@ -479,3 +479,17 @@ body{
   letter-spacing:.1px;
 }
 /* deposit-confirm-amount-highlight:end */
+
+
+/* ios-keyboard-layout-lock:start */
+/* While the iOS software keyboard is open, keep the document geometry fixed. */
+html.ios-keyboard-locked,
+body.ios-keyboard-locked{
+  overscroll-behavior:none;
+  overflow:hidden!important;
+  max-width:100%!important;
+}
+body.ios-keyboard-locked{
+  touch-action:none;
+}
+/* ios-keyboard-layout-lock:end */
