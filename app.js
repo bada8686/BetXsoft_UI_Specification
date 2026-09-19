@@ -226,5 +226,106 @@ function bind(){
   document.querySelectorAll('.tab:not([data-period])').forEach(el=>el.addEventListener('click',()=>{el.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
 }
 
+
+
+/* ios-keyboard-viewport-lock:start */
+const iosKeyboardViewportLock=(()=>{
+  const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
+  if(!isIOS) return {installed:false};
+
+  const editableSelector=[
+    'input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])',
+    'textarea',
+    '[contenteditable="true"]'
+  ].join(',');
+
+  let lock=null;
+  let restoreTimer=null;
+
+  function isEditable(el){
+    return el instanceof Element && el.matches(editableSelector);
+  }
+
+  function freeze(){
+    if(lock) return;
+    const x=window.scrollX || 0;
+    const y=window.scrollY || 0;
+    lock={
+      x,y,
+      bodyPosition:document.body.style.position,
+      bodyTop:document.body.style.top,
+      bodyLeft:document.body.style.left,
+      bodyRight:document.body.style.right,
+      bodyWidth:document.body.style.width,
+      bodyOverflow:document.body.style.overflow
+    };
+
+    document.documentElement.classList.add('ios-keyboard-locked');
+    document.body.classList.add('ios-keyboard-locked');
+    document.body.style.position='fixed';
+    document.body.style.top=`-${y}px`;
+    document.body.style.left=`-${x}px`;
+    document.body.style.right='0';
+    document.body.style.width='100%';
+    document.body.style.overflow='hidden';
+  }
+
+  function unfreeze(){
+    if(!lock) return;
+    const saved=lock;
+    lock=null;
+
+    document.documentElement.classList.remove('ios-keyboard-locked');
+    document.body.classList.remove('ios-keyboard-locked');
+
+    document.body.style.position=saved.bodyPosition;
+    document.body.style.top=saved.bodyTop;
+    document.body.style.left=saved.bodyLeft;
+    document.body.style.right=saved.bodyRight;
+    document.body.style.width=saved.bodyWidth;
+    document.body.style.overflow=saved.bodyOverflow;
+
+    requestAnimationFrame(()=>{
+      window.scrollTo({left:saved.x,top:saved.y,behavior:'instant'});
+      requestAnimationFrame(()=>window.scrollTo(saved.x,saved.y));
+    });
+  }
+
+  document.addEventListener('focusin',e=>{
+    if(!isEditable(e.target)) return;
+    clearTimeout(restoreTimer);
+    freeze();
+
+    // Safari can try to pan the visual viewport after focus; keep the document anchored.
+    requestAnimationFrame(()=>{
+      if(lock) window.scrollTo(lock.x,lock.y);
+      setTimeout(()=>{ if(lock) window.scrollTo(lock.x,lock.y); },80);
+      setTimeout(()=>{ if(lock) window.scrollTo(lock.x,lock.y); },260);
+    });
+  },true);
+
+  document.addEventListener('focusout',()=>{
+    clearTimeout(restoreTimer);
+    restoreTimer=setTimeout(()=>{
+      if(!isEditable(document.activeElement)) unfreeze();
+    },120);
+  },true);
+
+  // If Safari reports visual-viewport movement while the keyboard is open,
+  // immediately keep the layout viewport at the saved position.
+  if(window.visualViewport){
+    const keepAnchored=()=>{
+      if(!lock) return;
+      window.scrollTo(lock.x,lock.y);
+    };
+    window.visualViewport.addEventListener('resize',keepAnchored,{passive:true});
+    window.visualViewport.addEventListener('scroll',keepAnchored,{passive:true});
+  }
+
+  return {installed:true,unfreeze};
+})();
+/* ios-keyboard-viewport-lock:end */
+
 addEventListener('hashchange',render);
 render();
