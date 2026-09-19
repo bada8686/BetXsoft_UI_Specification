@@ -1134,3 +1134,21 @@ body.ios-keyboard-locked{
   }
 }
 /* single-customer-search-field:end */
+
+
+/* unified-page-top-spacing:start */
+/* Keep every internal page comfortably separated from the fixed top bar. */
+#app > .app:not(.route-home) > .layout{
+  padding-top:28px!important;
+}
+@media(max-width:850px){
+  #app > .app:not(.route-home) > .layout{
+    padding-top:26px!important;
+  }
+}
+@media(max-width:520px){
+  #app > .app:not(.route-home) > .layout{
+    padding-top:24px!important;
+  }
+}
+/* unified-page-top-spacing:end */
