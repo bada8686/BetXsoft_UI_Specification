@@ -3607,3 +3607,26 @@ body.ios-keyboard-locked{
   border-color:#9eb7ff;
 }
 /* coupon-detail-back-link-highlight-v123:end */
+
+
+/* coupon-detail-title-status-v126:start */
+.route-coupon-detail .ticket-title-label,
+.route-coupon-detail .ticket-title-number{
+  display:block;
+}
+.route-coupon-detail .ticket-title-number{
+  margin-top:2px;
+}
+.route-coupon-detail .ticket-meta .ticket-status-loss{
+  color:#EF4444;
+}
+.route-coupon-detail .ticket-meta .ticket-status-won{
+  color:#22C55E;
+}
+.route-coupon-detail .ticket-meta .ticket-status-open{
+  color:#111;
+}
+.route-coupon-detail .ticket-meta .ticket-status-cancelled{
+  color:#3B82F6;
+}
+/* coupon-detail-title-status-v126:end */
