@@ -3635,7 +3635,7 @@ body.ios-keyboard-locked{
 /* coupon-detail-user-heading-v127:start */
 .route-coupon-detail .ticket-head > strong{
   margin-left:auto;
-  margin-right:10px;
+  margin-right:15px;
   font-size:18px;
   font-weight:800;
   text-align:right;
@@ -3644,7 +3644,7 @@ body.ios-keyboard-locked{
 @media(max-width:520px){
   .route-coupon-detail .ticket-head > strong{
     margin-left:auto;
-    margin-right:10px;
+    margin-right:15px;
     font-size:18px;
     font-weight:800;
     text-align:right;
