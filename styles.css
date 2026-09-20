@@ -2594,20 +2594,20 @@ body.ios-keyboard-locked{
 /* drawer-footer-bottom-v69:end */
 
 
-/* home-topbar-height-v73:start */
+/* home-topbar-height-v80:start */
 @media(max-width:520px){
-  /* Increase only the top edge by another 4px.
-     Keep the inner content at its existing position. */
+  /* Extend only the top edge by exactly 3px.
+     Keep the bottom edge and all inner content at the same position. */
   .route-home .topbar{
-    top:-11px!important;
-    height:64px!important;
+    top:-14px!important;
+    height:67px!important;
   }
   .route-home .topbar-main{
     height:46px!important;
-    transform:translateY(11px)!important;
+    transform:translateY(14px)!important;
   }
 }
-/* home-topbar-height-v73:end */
+/* home-topbar-height-v80:end */
 
 
 /* drawer-bookkeeping-gap-v79:start */
