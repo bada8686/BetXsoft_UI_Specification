@@ -3110,3 +3110,32 @@ body.ios-keyboard-locked{
   }
 }
 /* coupon-filter-approved-v91:end */
+
+
+/* wettscheine-slim-toggle-cards-v92:start */
+@media(max-width:520px){
+  .route-coupons .toggle-grid{
+    gap:8px;
+    margin-bottom:14px;
+  }
+  .route-coupons .toggle-card{
+    padding:8px 12px;
+    min-height:42px;
+    border-radius:9px;
+    gap:10px;
+  }
+  .route-coupons .toggle-card .switch{
+    width:36px;
+    height:20px;
+  }
+  .route-coupons .toggle-card .switch:before{
+    width:14px;
+    height:14px;
+    top:3px;
+    left:3px;
+  }
+  .route-coupons .toggle-card .switch.on:before{
+    left:19px;
+  }
+}
+/* wettscheine-slim-toggle-cards-v92:end */
