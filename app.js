@@ -219,7 +219,6 @@ function drawer(){
       ${item(10,'ticket','Wettübersicht')}
       ${item(9,'userSolidAdd','Kundenverwaltung')}
       ${item(7,'personSolid','Kundensuche')}
-      ${item(8,'historyClock')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${item(14,'depositWallet')}
       ${item(15,'payoutWallet')}
