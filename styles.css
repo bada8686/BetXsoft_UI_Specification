@@ -2594,20 +2594,21 @@ body.ios-keyboard-locked{
 /* drawer-footer-bottom-v69:end */
 
 
-/* home-topbar-height-v81:start */
+/* home-topbar-visible-top-space-v82:start */
 @media(max-width:520px){
-  /* Extend only the top edge by exactly another 3px.
-     Keep the bottom edge and all inner content at the same position. */
+  /* Keep the top-bar outer geometry unchanged.
+     Move only its inner content 3px downward so 3px of the dark bar
+     becomes visibly exposed above the content. */
   .route-home .topbar{
     top:-17px!important;
     height:70px!important;
   }
   .route-home .topbar-main{
     height:46px!important;
-    transform:translateY(17px)!important;
+    transform:translateY(20px)!important;
   }
 }
-/* home-topbar-height-v81:end */
+/* home-topbar-visible-top-space-v82:end */
 
 
 /* drawer-bookkeeping-gap-v79:start */
