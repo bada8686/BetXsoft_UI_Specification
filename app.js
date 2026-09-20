@@ -209,20 +209,20 @@ function footer(){ return `<footer class="footer"><span>© 2024 BetXsoft. Alle R
 function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>368.161,00</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
 function drawer(){
   const primary=(routeIndex,label,icon,tone)=>`<button class="drawer-primary ${tone} ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-primary-icon">${svgIcon(icon)}</span><strong>${label}</strong><span class="drawer-primary-chevron">${svgIcon('chevron')}</span></button>`;
-  const item=(routeIndex,icon)=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${routes[routeIndex][1]}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
+  const item=(routeIndex,icon,label=routes[routeIndex][1])=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
   return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
     <nav class="drawer-nav">
       ${primary(1,'Einzahlung','down','deposit')}
       ${primary(4,'Auszahlung','up','payout')}
-      ${primary(13,'Umsatz','bars','turnover')}
+      ${primary(13,'Buchhaltung','bars','turnover')}
       <div class="drawer-section-title"><span class="drawer-section-icon">${svgIcon('list')}</span><strong>Weitere Bereiche</strong></div>
-      ${item(7,'personSolid')}
+      ${item(10,'ticket','Wettübersicht')}
+      ${item(9,'userSolidAdd','Kundenverwaltung')}
+      ${item(7,'personSolid','Kundensuche')}
       ${item(8,'historyClock')}
-      ${item(9,'userSolidAdd')}
-      ${item(10,'ticket')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
-      ${item(14,'bars')}
-      ${item(15,'upload')}
+      ${item(14,'depositWallet')}
+      ${item(15,'payoutWallet')}
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
         <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
