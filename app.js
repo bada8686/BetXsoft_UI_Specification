@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null
 };
 
@@ -485,12 +485,14 @@ const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3'
 
 function render(){
   const preservedScrollY=window.scrollY;
+  const scrollTopOnNextRender=state.scrollTopOnNextRender;
+  state.scrollTopOnNextRender=false;
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
   document.title=`${routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin'} | BetXsoft`;
   document.querySelector('#app').innerHTML=`<div class="app route-${state.route}">${header()}<main class="layout">${views[state.route]()}</main>${footer()}</div>${drawer()}`;
   bind();
   requestAnimationFrame(()=>{
-    window.scrollTo({top:preservedScrollY,left:0,behavior:'auto'});
+    window.scrollTo({top:scrollTopOnNextRender?0:preservedScrollY,left:0,behavior:'auto'});
   });
 }
 
@@ -622,6 +624,7 @@ function bind(){
   }));
   document.querySelectorAll('[data-open-coupon]').forEach(el=>el.addEventListener('click',()=>{
     state.selectedCouponId=el.dataset.openCoupon||'';
+    state.scrollTopOnNextRender=true;
     go('coupon-detail');
   }));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
