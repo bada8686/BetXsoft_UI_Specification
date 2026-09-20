@@ -2919,3 +2919,194 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-header-filter-v88:end */
+
+
+/* coupon-filter-approved-v91:start */
+.route-coupon-filters .coupon-filter-shell{
+  width:min(760px,100%);
+  margin:0 auto;
+}
+.route-coupon-filters .coupon-filter-hero{
+  display:grid;
+  grid-template-columns:72px minmax(0,1fr);
+  align-items:center;
+  gap:18px;
+  margin-bottom:16px;
+  padding:18px 20px;
+  border:1px solid #dbe4f2;
+  border-radius:16px;
+  background:
+    linear-gradient(130deg,transparent 0 72%,rgba(221,232,252,.58) 72% 82%,transparent 82%),
+    linear-gradient(135deg,#fff,#f8fbff);
+  box-shadow:0 4px 18px rgba(20,40,80,.035);
+}
+.route-coupon-filters .coupon-filter-hero-icon{
+  width:72px;
+  height:72px;
+  display:grid;
+  place-items:center;
+  border:1px solid #cbdcff;
+  border-radius:15px;
+  background:linear-gradient(145deg,#f8fbff,#edf4ff);
+  color:var(--blue);
+}
+.route-coupon-filters .coupon-filter-hero-icon .svg-icon{
+  width:36px;
+  height:36px;
+  stroke-width:2;
+}
+.route-coupon-filters .coupon-filter-hero-copy h1{
+  margin:0 0 7px;
+  font-size:28px;
+  line-height:1.08;
+  letter-spacing:-.5px;
+}
+.route-coupon-filters .coupon-filter-back{
+  border:0;
+  padding:0;
+  background:transparent;
+  color:var(--blue);
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  line-height:1.2;
+  text-align:left;
+}
+.route-coupon-filters .coupon-filter-back > span{
+  font-size:20px;
+  line-height:1;
+}
+.route-coupon-filters .coupon-filter-back strong{
+  font-weight:800;
+}
+.route-coupon-filters .coupon-filter-list{
+  display:grid;
+  gap:12px;
+}
+.route-coupon-filters .coupon-filter-row{
+  display:grid;
+  grid-template-columns:54px minmax(0,1fr);
+  align-items:center;
+  gap:16px;
+  min-height:92px;
+  padding:13px 16px;
+  border:1px solid #dfe5ef;
+  border-radius:14px;
+  background:#fff;
+  box-shadow:0 3px 14px rgba(20,40,80,.028);
+}
+.route-coupon-filters .coupon-filter-row-icon{
+  width:54px;
+  height:54px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:#f0f4f9;
+  color:#081a37;
+}
+.route-coupon-filters .coupon-filter-row-icon .svg-icon{
+  width:28px;
+  height:28px;
+  stroke-width:1.9;
+}
+.route-coupon-filters .coupon-filter-field{
+  min-width:0;
+}
+.route-coupon-filters .coupon-filter-field label{
+  display:block;
+  margin-bottom:7px;
+  font-size:16px;
+  font-weight:800;
+  color:#0c1930;
+}
+.route-coupon-filters .coupon-filter-field .control{
+  height:48px;
+  border-color:#d2dcee;
+  border-radius:10px;
+  font-size:15px;
+}
+.route-coupon-filters .coupon-filter-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-top:14px;
+}
+.route-coupon-filters .coupon-filter-actions .btn{
+  min-height:54px;
+  font-size:16px;
+  border-radius:11px;
+}
+@media(max-width:520px){
+  .route-coupon-filters .coupon-filter-shell{
+    width:100%;
+  }
+  .route-coupon-filters .coupon-filter-hero{
+    grid-template-columns:46px minmax(0,1fr);
+    gap:10px;
+    margin-bottom:12px;
+    padding:10px 11px;
+    border-radius:12px;
+  }
+  .route-coupon-filters .coupon-filter-hero-icon{
+    width:46px;
+    height:46px;
+    border-radius:10px;
+  }
+  .route-coupon-filters .coupon-filter-hero-icon .svg-icon{
+    width:25px;
+    height:25px;
+  }
+  .route-coupon-filters .coupon-filter-hero-copy h1{
+    margin-bottom:4px;
+    font-size:19px;
+    letter-spacing:-.25px;
+  }
+  .route-coupon-filters .coupon-filter-back{
+    gap:5px;
+    font-size:11px;
+  }
+  .route-coupon-filters .coupon-filter-back > span{
+    font-size:15px;
+  }
+  .route-coupon-filters .coupon-filter-list{
+    gap:9px;
+  }
+  .route-coupon-filters .coupon-filter-row{
+    grid-template-columns:42px minmax(0,1fr);
+    gap:11px;
+    min-height:70px;
+    padding:9px 11px;
+    border-radius:11px;
+  }
+  .route-coupon-filters .coupon-filter-row-icon{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+  }
+  .route-coupon-filters .coupon-filter-row-icon .svg-icon{
+    width:23px;
+    height:23px;
+  }
+  .route-coupon-filters .coupon-filter-field label{
+    margin-bottom:4px;
+    font-size:13px;
+  }
+  .route-coupon-filters .coupon-filter-field .control{
+    height:39px;
+    padding:0 11px;
+    border-radius:8px;
+    font-size:13px;
+  }
+  .route-coupon-filters .coupon-filter-actions{
+    gap:9px;
+    margin-top:10px;
+  }
+  .route-coupon-filters .coupon-filter-actions .btn{
+    min-height:46px;
+    padding:10px 12px;
+    font-size:14px;
+    border-radius:9px;
+  }
+}
+/* coupon-filter-approved-v91:end */
