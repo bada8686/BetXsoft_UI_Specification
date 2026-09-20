@@ -3466,3 +3466,24 @@ body.ios-keyboard-locked{
   background:rgba(245,158,11,.07);
 }
 /* wettscheine-status-cell-shading-v111:end */
+
+
+/* coupon-detail-mobile-horizontal-scroll-v120:start */
+@media(max-width:520px){
+  /* Horizontal swipe only for the Wett-Details table. */
+  .route-coupon-detail .table-card .table-wrap{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto!important;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior-x:contain;
+    touch-action:pan-x pan-y;
+  }
+  .route-coupon-detail .table-card .data-table{
+    min-width:820px;
+    width:100%;
+    table-layout:auto;
+  }
+}
+/* coupon-detail-mobile-horizontal-scroll-v120:end */
