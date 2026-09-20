@@ -360,8 +360,25 @@ function createUserView(){ return `<section class="create-user-page">
   </section>
 </section>`; }
 
-function toggleCards(){ return ['Nur offene Wettscheine','Nur Gewinner','Nur Verlierer','Stornierte Wettscheine','Verkaufte Wettscheine'].map((n,i)=>`<label class="toggle-card"><button class="switch ${state.toggles[i]?'on':''}" data-toggle="${i}" aria-label="${n}"></button><span>${n}</span></label>`).join(''); }
-function couponsView(){ const q=state.ticketFilter.toLowerCase(); const rows=coupons.filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('▧','Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.','<button class="btn outline" data-go="coupon-filters">⚙ Zusätzliche Filter</button>')}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. ali','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein Nummer</th><th>Einsatz</th><th>Status</th><th>Maximaler Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Wettscheine',8)}</section>`; }
+function toggleCards(){ return ['Offen','Gewonnen','Verloren','Storniert','Verkauft'].map((n,i)=>`<label class="toggle-card"><button class="switch ${state.toggles[i]?'on':''}" data-toggle="${i}" aria-label="${n}"></button><span>${n}</span></label>`).join(''); }
+function activeTicketStatus(){
+  const active=Object.keys(state.toggles).find(k=>state.toggles[k]);
+  return active===undefined ? '' : ({0:'OPEN',1:'WON',2:'LOSS',3:'CANCELLED',4:'SOLD'})[active] || '';
+}
+function couponMatchesStatus(row,status){
+  if(!status) return true;
+  const value=String(row[3]||'').toUpperCase();
+  if(status==='LOSS') return value==='LOSS' || value==='LOST';
+  if(status==='CANCELLED') return value==='CANCELLED' || value==='CANCELED' || value==='STORNIERT';
+  if(status==='SOLD') return value==='SOLD' || value==='VERKAUFT';
+  return value===status;
+}
+function couponsView(){
+  const q=state.ticketFilter.toLowerCase();
+  const status=activeTicketStatus();
+  const rows=coupons.filter(r=>(!q||r.join(' ').toLowerCase().includes(q)) && couponMatchesStatus(r,status));
+  return `${pageHead('▧','Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.','<button class="btn outline" data-go="coupon-filters">⚙ Zusätzliche Filter</button>')}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. ali','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein Nummer</th><th>Einsatz</th><th>Status</th><th>Maximaler Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Wettscheine',8)}</section>`;
+}
 
 function couponFiltersView(){ return `<button class="back-link" data-go="coupons">← Zurück zu Wettscheinen</button>${pageHead('⚙','Wettscheine – Zusätzliche Filter','Verfeinern Sie Ihre Suche mit zusätzlichen Kriterien.')}<section class="card card-pad"><h2 class="section-title">Zeitraum</h2><div class="form-grid">${field('Von',input('Von','type="date" value="2025-08-12"'))}${field('Bis',input('Bis','type="date" value="2026-08-12"'))}</div></section><section class="card card-pad" style="margin-top:16px"><h2 class="section-title">Basis Filter</h2><div class="form-grid">${field('Wettschein Nummer',input('z. B. 4590'))}${field('Kunden-ID',input('z. B. 4590'))}${field('Benutzername',input('z. B. jack'))}${field('Status',select(['Alle','Offen','Gewonnen','Verloren','Storniert']))}${field('Wett-Art',select(['Alle','Live','Prematch']))}${field('Wettschein-Art',select(['Alle','Einzelwette','Kombination','System']))}</div></section><section class="card card-pad" style="margin-top:16px"><h2 class="section-title">Weitere Optionen</h2><div class="toggle-grid">${toggleCards()}</div><div class="actions"><button class="btn secondary" data-demo="Alle Filter zurückgesetzt">Filter zurücksetzen</button><button class="btn" data-flow="filters-apply">Filter anwenden</button></div></section>`; }
 
@@ -531,7 +548,14 @@ function bind(){
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
-  document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();state.toggles[el.dataset.toggle]=!state.toggles[el.dataset.toggle];el.classList.toggle('on')}));
+  document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault();
+    const key=el.dataset.toggle;
+    const next=!state.toggles[key];
+    state.toggles={};
+    if(next) state.toggles[key]=true;
+    render();
+  }));
   document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;state.committedFlow='';go('deposit-2')});
   document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{
     const customer=document.querySelector('#payoutCustomer')?.value||'';
@@ -550,7 +574,7 @@ function bind(){
   document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value).find(Boolean)||'';render()});
   document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{state.customerFilter='';render()});
   document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';render()});
-  document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';render()});
+  document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.toggles={};render()});
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
   document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
   document.querySelectorAll('[data-period]').forEach(el=>el.addEventListener('click',()=>{state.dashboardPeriod=el.dataset.period;state.customRangeOpen=false;render();toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
