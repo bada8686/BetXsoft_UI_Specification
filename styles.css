@@ -3587,3 +3587,23 @@ body.ios-keyboard-locked{
   }
 }
 /* coupon-detail-approved-table-v122:end */
+
+
+/* coupon-detail-back-link-highlight-v123:start */
+.route-coupon-detail .back-link{
+  min-height:38px;
+  padding:8px 12px;
+  margin-bottom:18px;
+  border:1px solid #c9d7ff;
+  border-radius:10px;
+  background:#f3f6ff;
+  color:#0b50ea;
+  font-weight:800;
+  align-items:center;
+  box-shadow:0 2px 8px rgba(11,80,234,.06);
+}
+.route-coupon-detail .back-link:hover{
+  background:#eaf0ff;
+  border-color:#9eb7ff;
+}
+/* coupon-detail-back-link-highlight-v123:end */
