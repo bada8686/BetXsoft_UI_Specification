@@ -2897,3 +2897,25 @@ body.ios-keyboard-locked{
   }
 }
 /* all-pages-drawer-state-fix-v85:end */
+
+
+/* wettscheine-header-filter-v88:start */
+.route-coupons .wettscheine-extra-filter{
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  margin:0 0 16px;
+}
+.route-coupons .wettscheine-extra-filter .svg-icon{
+  width:18px;
+  height:18px;
+}
+@media(max-width:520px){
+  .route-coupons .wettscheine-extra-filter{
+    width:100%;
+    min-height:44px;
+    justify-content:flex-start;
+  }
+}
+/* wettscheine-header-filter-v88:end */
