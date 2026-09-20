@@ -3353,6 +3353,19 @@ body.ios-keyboard-locked{
 /* wettscheine-open-button-v102:end */
 
 
+/* wettscheine-max-profit-emphasis-v110:start */
+.route-coupons .data-table td:nth-child(4){
+  text-align:left;
+  font-weight:800;
+}
+@media(max-width:520px){
+  .route-coupons .data-table td:nth-child(4){
+    text-align:left;
+    font-weight:800;
+  }
+}
+/* wettscheine-max-profit-emphasis-v110:end */
+
 /* wettscheine-column-order-v106:start */
 .route-coupons .coupon-row-meta{
   display:block;
