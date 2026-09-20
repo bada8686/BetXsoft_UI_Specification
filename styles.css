@@ -3491,7 +3491,7 @@ body.ios-keyboard-locked{
 
 /* coupon-detail-title-29px-v121:start */
 .route-coupon-detail .ticket-head h1{
-  font-size:23px!important;
+  font-size:20px!important;
 }
 /* coupon-detail-title-29px-v121:end */
 
@@ -3630,3 +3630,23 @@ body.ios-keyboard-locked{
   color:#3B82F6;
 }
 /* coupon-detail-title-status-v126:end */
+
+
+/* coupon-detail-user-heading-v127:start */
+.route-coupon-detail .ticket-head > strong{
+  margin-left:auto;
+  font-size:18px;
+  font-weight:800;
+  text-align:right;
+  white-space:nowrap;
+}
+@media(max-width:520px){
+  .route-coupon-detail .ticket-head > strong{
+    margin-left:auto;
+    font-size:18px;
+    font-weight:800;
+    text-align:right;
+    white-space:nowrap;
+  }
+}
+/* coupon-detail-user-heading-v127:end */
