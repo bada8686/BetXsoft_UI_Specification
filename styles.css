@@ -2608,3 +2608,12 @@ body.ios-keyboard-locked{
   }
 }
 /* home-topbar-height-v73:end */
+
+
+/* drawer-bookkeeping-gap-v78:start */
+@media(max-width:520px){
+  .route-home + .drawer-backdrop + .drawer .drawer-primary.turnover{
+    margin-bottom:10px!important;
+  }
+}
+/* drawer-bookkeeping-gap-v78:end */
