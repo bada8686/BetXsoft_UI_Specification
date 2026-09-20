@@ -2592,3 +2592,19 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-footer-bottom-v69:end */
+
+
+/* home-topbar-height-v70:start */
+@media(max-width:520px){
+  /* Increase only the visual top-bar card by 4px: 2px upward + 2px downward.
+     Keep all other elements at their existing positions. */
+  .route-home .topbar{
+    top:-2px!important;
+    height:50px!important;
+  }
+  .route-home .topbar-main{
+    height:46px!important;
+    transform:translateY(2px)!important;
+  }
+}
+/* home-topbar-height-v70:end */
