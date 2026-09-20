@@ -3351,3 +3351,71 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-open-button-v102:end */
+
+
+/* wettscheine-column-order-v106:start */
+.route-coupons .coupon-row-meta{
+  display:block;
+  margin-top:3px;
+  color:#8a94a5;
+  font-size:9px;
+  font-weight:600;
+  line-height:1.05;
+  white-space:nowrap;
+}
+.route-coupons .coupon-type{
+  font-size:10px;
+  font-weight:800;
+  color:#26354f;
+  white-space:nowrap;
+}
+@media(max-width:520px){
+  .route-coupons .data-table th,
+  .route-coupons .data-table td{
+    padding-left:5px;
+    padding-right:5px;
+  }
+  .route-coupons .data-table th:nth-child(1),
+  .route-coupons .data-table td:nth-child(1){
+    width:auto;
+    min-width:88px;
+    max-width:110px;
+  }
+  .route-coupons .data-table th:nth-child(2),
+  .route-coupons .data-table td:nth-child(2){
+    width:auto;
+    min-width:52px;
+    text-align:right;
+  }
+  .route-coupons .data-table th:nth-child(3),
+  .route-coupons .data-table td:nth-child(3){
+    width:auto;
+    min-width:56px;
+    text-align:center;
+  }
+  .route-coupons .data-table th:nth-child(4),
+  .route-coupons .data-table td:nth-child(4){
+    width:auto;
+    min-width:68px;
+    text-align:right;
+  }
+  .route-coupons .data-table th:nth-child(5),
+  .route-coupons .data-table td:nth-child(5){
+    width:auto;
+    min-width:46px;
+    text-align:center;
+  }
+  .route-coupons .data-table th:nth-child(6),
+  .route-coupons .data-table td:nth-child(6){
+    width:auto;
+    min-width:66px;
+    text-align:center;
+  }
+  .route-coupons .data-table th:nth-child(7),
+  .route-coupons .data-table td:nth-child(7){
+    width:auto;
+    min-width:70px;
+    text-align:left;
+  }
+}
+/* wettscheine-column-order-v106:end */
