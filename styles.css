@@ -2618,3 +2618,14 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-bookkeeping-gap-v79:end */
+
+
+/* drawer-deposit-down-v83:start */
+@media(max-width:520px){
+  /* Move only the Einzahlung card visually 10px downward.
+     All other drawer elements keep their exact layout positions. */
+  .route-home + .drawer-backdrop + .drawer .drawer-primary.deposit{
+    transform:translateY(10px)!important;
+  }
+}
+/* drawer-deposit-down-v83:end */
