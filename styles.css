@@ -2629,3 +2629,255 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-deposit-down-v83:end */
+
+
+/* unified-home-topbar-drawer-v84:start */
+@media(max-width:520px){
+  /* Apply the Startseite top-bar appearance to every route.
+     Page content spacing/layout is intentionally untouched. */
+  #app > .app .topbar{
+    top:-17px!important;
+    height:70px!important;
+    background:linear-gradient(112deg,#02091a 0%,#031027 66%,#071936 100%)!important;
+    overflow:hidden!important;
+  }
+  #app > .app .topbar-main{
+    height:46px!important;
+    padding:0 13px!important;
+    gap:9px!important;
+    align-items:center!important;
+    transform:translateY(20px)!important;
+  }
+  #app > .app .menu-button{
+    order:1!important;
+    flex:0 0 34px!important;
+    width:34px!important;
+    height:34px!important;
+    margin:0!important;
+    border-radius:8px!important;
+    background:rgba(26,75,145,.40)!important;
+    color:#fff!important;
+  }
+  #app > .app .menu-button .svg-icon{
+    width:22px!important;
+    height:22px!important;
+    stroke-width:1.7!important;
+  }
+  #app > .app .brand-zone{
+    order:2!important;
+    flex:1 1 auto!important;
+    min-width:0!important;
+    height:auto!important;
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) auto!important;
+    align-items:center!important;
+    gap:9px!important;
+  }
+  #app > .app .brand{
+    min-width:0!important;
+    font-size:20px!important;
+    line-height:1!important;
+    letter-spacing:-.8px!important;
+    text-align:left!important;
+  }
+  #app > .app .brand small{
+    display:block!important;
+    margin-top:4px!important;
+    color:#fff!important;
+    font-size:8.5px!important;
+    line-height:1!important;
+    letter-spacing:.1px!important;
+    text-transform:none!important;
+    font-weight:500!important;
+  }
+  #app > .app .mobile-total{
+    display:block!important;
+    min-width:110px!important;
+    padding-left:11px!important;
+    border-left:1px solid rgba(255,255,255,.78)!important;
+    text-align:left!important;
+    white-space:nowrap!important;
+  }
+  #app > .app .mobile-total small{
+    margin-bottom:3px!important;
+    color:#eef2f8!important;
+    font-size:8.5px!important;
+    line-height:1!important;
+  }
+  #app > .app .mobile-total strong{
+    color:#fff!important;
+    font-size:17px!important;
+    line-height:1!important;
+    font-weight:800!important;
+    letter-spacing:.1px!important;
+  }
+  #app > .app .home-button,
+  #app > .app .top-spacer,
+  #app > .app .balance{
+    display:none!important;
+  }
+
+  /* Apply the Startseite drawer appearance to every route. */
+  #app > .app + .drawer-backdrop{
+    top:46px!important;
+    background:rgba(4,10,20,.48)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer{
+    top:46px!important;
+    left:0!important;
+    right:auto!important;
+    width:60.5vw!important;
+    max-width:none!important;
+    height:calc(100dvh - 46px)!important;
+    border-top-right-radius:12px!important;
+    overflow:hidden!important;
+    background:linear-gradient(112deg,#02091a 0%,#031027 66%,#071936 100%)!important;
+    box-shadow:20px 0 50px rgba(0,0,0,.2)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-nav{
+    display:flex!important;
+    flex-direction:column!important;
+    height:100%!important;
+    padding:12px 13px 24px!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-title{
+    min-height:32px!important;
+    margin:0 0 9px!important;
+    padding:2px 7px 2px 5px!important;
+    border:1px solid rgba(25,116,230,.34)!important;
+    border-radius:8px!important;
+    background:linear-gradient(90deg,rgba(4,47,95,.82),rgba(6,65,127,.54))!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary{
+    grid-template-columns:30px minmax(0,1fr) 15px!important;
+    gap:8px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-title{
+    grid-template-columns:30px minmax(0,1fr)!important;
+    gap:8px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary-icon,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-icon{
+    width:30px!important;
+    height:30px!important;
+    border-radius:7px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary-icon .svg-icon,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-icon .svg-icon{
+    width:20px!important;
+    height:20px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary strong,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-title strong{
+    font-size:13px!important;
+    line-height:1!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary.deposit .drawer-primary-icon{
+    background:#07995f!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary.payout .drawer-primary-icon{
+    background:#f21643!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary.turnover .drawer-primary-icon{
+    background:linear-gradient(145deg,#7a35bd,#9d43d0)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-icon{
+    background:linear-gradient(145deg,#0875e8,#075fc6)!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-link{
+    min-height:28px!important;
+    padding:2px 7px!important;
+    grid-template-columns:27px minmax(0,1fr) 15px!important;
+    gap:8px!important;
+    border-radius:7px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-icon{
+    width:27px!important;
+    height:27px!important;
+    border-radius:7px!important;
+    background:linear-gradient(145deg,#0a79ea,#0863c9)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-icon .svg-icon{
+    width:17px!important;
+    height:17px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-label{
+    font-size:11px!important;
+    line-height:1!important;
+    font-weight:530!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary-chevron .svg-icon,
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-chevron .svg-icon{
+    width:13px!important;
+    height:13px!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-menu-divider{
+    margin:5px 0 8px!important;
+    opacity:.95!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary.turnover{
+    margin-bottom:30px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary.deposit{
+    transform:translateY(10px)!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-footer{
+    flex:0 0 auto!important;
+    width:100%!important;
+    margin-top:auto!important;
+    margin-bottom:0!important;
+    text-align:center!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-footer-rule{
+    margin-bottom:18px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-qr-link{
+    position:relative!important;
+    width:60px!important;
+    height:60px!important;
+    transform:translateX(-11px)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-qr{
+    width:60px!important;
+    height:60px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-qr-telegram{
+    position:absolute!important;
+    left:50%!important;
+    top:50%!important;
+    width:21px!important;
+    height:21px!important;
+    transform:translate(-50%,-50%)!important;
+    border:2px solid #fff!important;
+    border-radius:50%!important;
+    background:#0796e8!important;
+    color:#fff!important;
+    display:grid!important;
+    place-items:center!important;
+    box-shadow:0 1px 4px rgba(0,0,0,.25)!important;
+    pointer-events:none!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-qr-telegram .svg-icon{
+    width:12px!important;
+    height:12px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-footer-copy{
+    margin-top:18px!important;
+    gap:12px!important;
+    color:#fff!important;
+    font-size:10.5px!important;
+    line-height:1!important;
+    transform:none!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-footer-copy i{
+    height:17px!important;
+  }
+}
+/* unified-home-topbar-drawer-v84:end */
