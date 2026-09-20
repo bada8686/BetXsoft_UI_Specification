@@ -3264,12 +3264,15 @@ body.ios-keyboard-locked{
     min-width:58px;
   }
 
+  .route-coupons .data-table td:first-child,
+  .route-coupons .data-table td:first-child strong{
+    white-space:normal;
+  }
   .route-coupons .data-table td:first-child strong{
     display:block;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
-    max-width:148px;
+    overflow:visible;
+    text-overflow:clip;
+    line-height:1.15;
   }
   .route-coupons .data-table .status{
     padding:4px 6px;
