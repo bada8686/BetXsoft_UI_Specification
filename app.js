@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', ticketFilter: '', toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', ticketFilter: '', ticketPage: 1, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null
 };
 
@@ -125,12 +125,26 @@ const historyRows = [
   ['53063881','28.09.25 16:54:12','Auszahlung','-30,00','70,35','40,35','Auszahlung via Skrill']
 ];
 
-const coupons = [
+const couponsSeed = [
   ['ali','1377640','5,00','LOSS','93,04','5172'],['ali','1377639','10,00','WON','34,50','5171'],['ali','1377638','3,50','OPEN','68,10','5170'],
   ['Deniz Çelik','1377637','20,00','LOSS','142,00','5169'],['Ucell061','1377636','5,00','WON','18,45','5168'],['Tona','1377635','15,00','OPEN','109,70','5167'],
   ['Amir1','1377634','8,00','LOSS','55,20','5166'],['Marlboro','1377633','12,00','WON','76,80','5165'],
   ['David','1377632','7,50','OPEN','48,60','5164'],['Sahin','1377631','25,00','WON','121,40','5163']
 ];
+const couponNames=['ali','Deniz Çelik','Ucell061','Tona','Amir1','Marlboro','David','Sahin','Toni1234','Halil2','Ali elmali','jassin'];
+const couponStatuses=['LOSS','WON','OPEN','LOSS','WON','OPEN','LOSS','WON','OPEN','WON'];
+const coupons = Array.from({length:80},(_,i)=>{
+  if(i<couponsSeed.length) return [...couponsSeed[i]];
+  const name=couponNames[i%couponNames.length];
+  const ticket=String(1377640-i);
+  const stakeValue=3.5+((i*7)%47)*0.5;
+  const stake=stakeValue.toFixed(2).replace('.',',');
+  const status=couponStatuses[i%couponStatuses.length];
+  const maxValue=stakeValue*(2.4+((i%9)*0.65));
+  const max=maxValue.toFixed(2).replace('.',',');
+  const id=String(5172-i);
+  return [name,ticket,stake,status,max,id];
+});
 
 const deposits = [
   ['233602','13.8.2026, 00:02:02','4638','David','104.28.62.88','Card','20'],['233597','12.8.2026, 21:26:01','4145','Amir1','193.5.238.77','Crypto','50'],
@@ -375,13 +389,37 @@ function couponMatchesStatus(row,status){
   if(status==='SOLD') return value==='SOLD' || value==='VERKAUFT';
   return value===status;
 }
+function couponPagination(totalPages,currentPage){
+  if(totalPages<=1) return '';
+  const pages=[];
+  const addPage=p=>{ if(p>=1&&p<=totalPages&&!pages.includes(p)) pages.push(p); };
+  if(totalPages<=7){
+    for(let p=1;p<=totalPages;p++) addPage(p);
+  }else if(currentPage<=3){
+    addPage(1);addPage(2);addPage(3);pages.push('…');addPage(totalPages);
+  }else if(currentPage>=totalPages-2){
+    addPage(1);pages.push('…');addPage(totalPages-2);addPage(totalPages-1);addPage(totalPages);
+  }else{
+    addPage(1);pages.push('…');addPage(currentPage);pages.push('…');addPage(totalPages);
+  }
+  const pageButtons=pages.map(p=>p==='…'
+    ? '<span class="page-ellipsis">…</span>'
+    : `<button class="page-btn ${p===currentPage?'active':''}" data-ticket-page="${p}">${p}</button>`
+  ).join('');
+  return `<div class="table-bottom coupon-pagination-only"><div class="pagination"><button class="page-btn" data-ticket-page="${Math.max(1,currentPage-1)}" ${currentPage===1?'disabled':''}>‹</button>${pageButtons}<button class="page-btn" data-ticket-page="${Math.min(totalPages,currentPage+1)}" ${currentPage===totalPages?'disabled':''}>›</button></div></div>`;
+}
+
 function couponsView(){
   const q=state.ticketFilter.toLowerCase();
   const status=activeTicketStatus();
   const rows=coupons.filter(r=>(!q||r.join(' ').toLowerCase().includes(q)) && couponMatchesStatus(r,status));
-  const pageRows=rows.slice(0,10);
+  const totalPages=Math.max(1,Math.ceil(rows.length/10));
+  const currentPage=Math.min(Math.max(1,Number(state.ticketPage)||1),totalPages);
+  state.ticketPage=currentPage;
+  const start=(currentPage-1)*10;
+  const pageRows=rows.slice(start,start+10);
   const closeButton=`<button class="page-close" data-close-page aria-label="Wettscheine schließen" title="Schließen">${svgIcon('close')}</button>`;
-  return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. Max','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein-Nr.</th><th>Einsatz</th><th>Status</th><th>Max. Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${pageRows.length?pageRows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${tableBottom(pageRows.length,'Wettscheine',Math.max(1,Math.ceil(rows.length/10)),rows.length)}</section>`;
+  return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. Max','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein-Nr.</th><th>Einsatz</th><th>Status</th><th>Max. Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${pageRows.length?pageRows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${couponPagination(totalPages,currentPage)}</section>`;
 }
 
 function couponFilterRow(icon,label,control){
@@ -554,6 +592,11 @@ function bind(){
     state.route='home';
     render();
   }));
+  document.querySelectorAll('[data-ticket-page]').forEach(el=>el.addEventListener('click',()=>{
+    if(el.disabled) return;
+    state.ticketPage=Number(el.dataset.ticketPage)||1;
+    render();
+  }));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
     if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
@@ -582,6 +625,7 @@ function bind(){
     const next=!state.toggles[key];
     state.toggles={};
     if(next) state.toggles[key]=true;
+    state.ticketPage=1;
     render();
   }));
   document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;state.committedFlow='';go('deposit-2')});
@@ -601,8 +645,8 @@ function bind(){
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
   document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value).find(Boolean)||'';render()});
   document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{state.customerFilter='';render()});
-  document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';render()});
-  document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.toggles={};render()});
+  document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';state.ticketPage=1;render()});
+  document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.ticketPage=1;state.toggles={};render()});
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
   document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
   document.querySelectorAll('[data-period]').forEach(el=>el.addEventListener('click',()=>{state.dashboardPeriod=el.dataset.period;state.customRangeOpen=false;render();toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
