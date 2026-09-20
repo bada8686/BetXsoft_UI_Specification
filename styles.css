@@ -2594,18 +2594,17 @@ body.ios-keyboard-locked{
 /* drawer-footer-bottom-v69:end */
 
 
-/* home-topbar-height-v72:start */
+/* home-topbar-height-v73:start */
 @media(max-width:520px){
-  /* Increase the visual top-bar card by another 6px:
-     3px upward + 3px downward.
-     Keep all inner content at its existing position. */
+  /* Increase only the top edge by another 4px.
+     Keep the inner content at its existing position. */
   .route-home .topbar{
-    top:-7px!important;
-    height:60px!important;
+    top:-11px!important;
+    height:64px!important;
   }
   .route-home .topbar-main{
     height:46px!important;
-    transform:translateY(7px)!important;
+    transform:translateY(11px)!important;
   }
 }
-/* home-topbar-height-v72:end */
+/* home-topbar-height-v73:end */
