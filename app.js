@@ -483,10 +483,14 @@ function tableBottom(count,label,pages=5,total=count){ return `<div class="table
 const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout')};
 
 function render(){
+  const preservedScrollY=window.scrollY;
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
   document.title=`${routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin'} | BetXsoft`;
   document.querySelector('#app').innerHTML=`<div class="app route-${state.route}">${header()}<main class="layout">${views[state.route]()}</main>${footer()}</div>${drawer()}`;
-  bind(); window.scrollTo({top:0,behavior:'smooth'});
+  bind();
+  requestAnimationFrame(()=>{
+    window.scrollTo({top:preservedScrollY,left:0,behavior:'auto'});
+  });
 }
 
 function bind(){
