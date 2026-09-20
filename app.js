@@ -134,14 +134,17 @@ const couponsSeed = [
 const couponNames=['ali','Deniz Çelik','Ucell061','Tona','Amir1','Marlboro','David','Sahin','Toni1234','Halil2','Ali elmali','jassin'];
 const couponStatuses=['LOSS','WON','OPEN','LOSS','WON','OPEN','LOSS','WON','OPEN','WON'];
 const couponTypes=['Single','Kombiwette (5)','Single','Kombiwette (3)','Kombiwette (6)'];
+const couponTimes=['23:07','22:41','21:56','20:34','19:48','18:22','17:15','16:03'];
 function couponDate(i){
   const d=new Date(Date.UTC(2026,7,11-Math.floor(i/8)));
   return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit',timeZone:'UTC'}).format(d);
 }
+function couponTime(i){ return couponTimes[i%couponTimes.length]; }
 const coupons = Array.from({length:80},(_,i)=>{
   const date=couponDate(i);
+  const time=couponTime(i);
   const type=couponTypes[i%couponTypes.length];
-  if(i<couponsSeed.length) return [...couponsSeed[i],date,type];
+  if(i<couponsSeed.length) return [...couponsSeed[i],date,type,time];
   const name=couponNames[i%couponNames.length];
   const ticket=String(1377640-i);
   const stakeValue=3.5+((i*7)%47)*0.5;
@@ -150,7 +153,7 @@ const coupons = Array.from({length:80},(_,i)=>{
   const maxValue=stakeValue*(2.4+((i%9)*0.65));
   const max=maxValue.toFixed(2).replace('.',',');
   const id=String(5172-i);
-  return [name,ticket,stake,status,max,id,date,type];
+  return [name,ticket,stake,status,max,id,date,type,time];
 });
 
 const deposits = [
@@ -427,7 +430,7 @@ function couponsView(){
   const start=(currentPage-1)*10;
   const pageRows=rows.slice(start,start+10);
   const closeButton=`<button class="page-close" data-close-page aria-label="Wettscheine schließen" title="Schließen">${svgIcon('close')}</button>`;
-  return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. Max','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Einsatz</th><th>Status</th><th>Max. Gewinn</th><th>Aktion</th><th>Datum</th><th>Wettart</th></tr></thead><tbody>${pageRows.length?pageRows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="coupon-open-btn" data-open-coupon="${r[1]}" aria-label="Wettschein ${r[1]} öffnen"><span class="coupon-open-eye">${svgIcon('eye')}</span><span class="coupon-open-arrow" aria-hidden="true">›</span></button></td><td>${r[6]}</td><td><strong class="coupon-type">${r[7]}</strong></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${couponPagination(totalPages,currentPage)}</section>`;
+  return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. Max','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Einsatz</th><th>Status</th><th>Max. Gewinn</th><th>Aktion</th><th>Datum</th><th>Wettart</th></tr></thead><tbody>${pageRows.length?pageRows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="coupon-open-btn" data-open-coupon="${r[1]}" aria-label="Wettschein ${r[1]} öffnen"><span class="coupon-open-eye">${svgIcon('eye')}</span><span class="coupon-open-arrow" aria-hidden="true">›</span></button></td><td>${r[6]}<small class="coupon-row-meta">${r[8]}</small></td><td><strong class="coupon-type">${r[7]}</strong></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${couponPagination(totalPages,currentPage)}</section>`;
 }
 
 function couponFilterRow(icon,label,control){
