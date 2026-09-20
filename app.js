@@ -225,6 +225,7 @@ function drawer(){
       <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${item(14,'depositWallet')}
       ${item(15,'payoutWallet')}
+      <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${staticItem('Sprachen','globe')}
       ${staticItem('Abmelden','logout')}
       <div class="drawer-footer">
