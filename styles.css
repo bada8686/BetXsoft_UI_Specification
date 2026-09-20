@@ -2881,3 +2881,19 @@ body.ios-keyboard-locked{
   }
 }
 /* unified-home-topbar-drawer-v84:end */
+
+
+/* all-pages-drawer-state-fix-v85:start */
+@media(max-width:520px){
+  /* On every page/subpage, keep the left drawer fully outside the
+     viewport while closed, and place it exactly at the Startseite
+     position when opened. This fixes the partially visible drawer
+     on internal pages without changing its dimensions or contents. */
+  #app > .app + .drawer-backdrop + .drawer{
+    transform:translateX(-105%)!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer.open{
+    transform:none!important;
+  }
+}
+/* all-pages-drawer-state-fix-v85:end */
