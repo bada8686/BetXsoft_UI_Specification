@@ -198,6 +198,7 @@ function svgIcon(name){
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
     shop:'<path d="M4 9v11h16V9M3 9l2-5h14l2 5"/><path d="M3 9a3 3 0 0 0 5 2 3 3 0 0 0 4 0 3 3 0 0 0 4 0 3 3 0 0 0 5-2M9 20v-5h6v5"/>',
     transfer:'<path d="M4 7h15M16 4l3 3-3 3M20 17H5M8 14l-3 3 3 3"/>',
+    filter:'<path d="M4 5h16l-6.2 7v5.1L10 19v-7L4 5Z"/>',
     calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
     chevron:'<path d="m9 5 7 7-7 7"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',close:'<path d="M5 5l14 14M19 5 5 19"/>',
     depositWallet:'<path d="M4 9h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h9"/><path d="M16 13h5v5h-5a2.5 2.5 0 0 1 0-5ZM14 2v7M10.5 5.5 14 9l3.5-3.5"/>',
@@ -381,7 +382,31 @@ function couponsView(){
   return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. ali','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Wettschein Nummer</th><th>Einsatz</th><th>Status</th><th>Maximaler Gewinn</th><th>Aktion</th><th>ID</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="btn small" data-go="coupon-detail">Details</button></td><td>${r[5]}</td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Wettscheine',8)}</section>`;
 }
 
-function couponFiltersView(){ return `<button class="back-link" data-go="coupons">← Zurück zu Wettscheinen</button>${pageHead('⚙','Wettscheine – Zusätzliche Filter','Verfeinern Sie Ihre Suche mit zusätzlichen Kriterien.')}<section class="card card-pad"><h2 class="section-title">Zeitraum</h2><div class="form-grid">${field('Von',input('Von','type="date" value="2025-08-12"'))}${field('Bis',input('Bis','type="date" value="2026-08-12"'))}</div></section><section class="card card-pad" style="margin-top:16px"><h2 class="section-title">Basis Filter</h2><div class="form-grid">${field('Wettschein Nummer',input('z. B. 4590'))}${field('Kunden-ID',input('z. B. 4590'))}${field('Benutzername',input('z. B. jack'))}${field('Status',select(['Alle','Offen','Gewonnen','Verloren','Storniert']))}${field('Wett-Art',select(['Alle','Live','Prematch']))}${field('Wettschein-Art',select(['Alle','Einzelwette','Kombination','System']))}</div></section>`; }
+function couponFilterRow(icon,label,control){
+  return `<div class="coupon-filter-row"><div class="coupon-filter-row-icon">${svgIcon(icon)}</div><div class="coupon-filter-field"><label>${label}</label>${control}</div></div>`;
+}
+function couponFiltersView(){
+  return `<section class="coupon-filter-shell">
+    <div class="coupon-filter-hero">
+      <div class="coupon-filter-hero-icon">${svgIcon('filter')}</div>
+      <div class="coupon-filter-hero-copy">
+        <h1>Zusätzliche Filter</h1>
+        <button class="coupon-filter-back" data-go="coupons"><span aria-hidden="true">←</span><strong>Zurück zur Wettscheinübersicht</strong></button>
+      </div>
+    </div>
+    <div class="coupon-filter-list">
+      ${couponFilterRow('calendar','Zeitraum',select(['Alle','Heute','Gestern','7 Tage','30 Tage'],'data-advanced-filter="period"'))}
+      ${couponFilterRow('list','Wettart',select(['Alle','Live','Prematch'],'data-advanced-filter="bet-type"'))}
+      ${couponFilterRow('bars','Status',select(['Alle','Offen','Gewonnen','Verloren','Storniert'],'data-advanced-filter="status"'))}
+      ${couponFilterRow('person','Kunde',input('Benutzername oder ID','data-advanced-filter="customer"'))}
+      ${couponFilterRow('ticket','Wettschein Nummer',input('z. B. 1377640','data-advanced-filter="ticket"'))}
+    </div>
+    <div class="coupon-filter-actions">
+      <button class="btn coupon-filter-apply" data-flow="filters-apply">Filter anwenden</button>
+      <button class="btn secondary coupon-filter-reset" data-demo="Alle Filter zurückgesetzt">Zurücksetzen</button>
+    </div>
+  </section>`;
+}
 
 function couponDetailView(){ const bets=[
   ['1','NEC Nijmegen – Olympiacos Piräus','Europe / UEFA Champions League Qualification','Beide Teams treffen','Ja','1.75','2–1','WON'],
