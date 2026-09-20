@@ -191,6 +191,8 @@ function svgIcon(name){
     personSolid:'<circle cx="12" cy="7.5" r="4" fill="currentColor" stroke="none"/><path d="M4.5 21c.6-4.7 3.2-7 7.5-7s6.9 2.3 7.5 7H4.5Z" fill="currentColor" stroke="none"/>',
     userSolidAdd:'<circle cx="9" cy="7.2" r="3.5" fill="currentColor" stroke="none"/><path d="M3 20c.5-4.1 2.7-6.1 6-6.1 2.2 0 3.9.8 4.9 2.4" fill="currentColor" stroke="none"/><path d="M18 10v7M14.5 13.5h7"/>',
     telegram:'<path d="M21.4 3.4 2.9 10.6c-1.3.5-1.3 1.2-.2 1.5l4.7 1.5 1.8 5.5c.2.7.1 1 .8 1 .5 0 .8-.2 1-.4l2.3-2.2 4.8 3.5c.9.5 1.5.2 1.8-.8l3.1-14.7c.4-1.3-.5-1.9-1.6-1.5ZM8.2 13.3l9.2-5.8c.5-.3.9-.1.5.2l-7.6 6.9-.3 3.1-1.8-4.4Z" fill="currentColor" stroke="none"/>',
+    globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/>',
+    logout:'<path d="M10 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5M14 8l4 4-4 4M18 12H8"/>',
     lock:'<rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3M12 14v2"/>',
     coins:'<ellipse cx="12" cy="6.2" rx="6.3" ry="2.7"/><path d="M5.7 6.2v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7V6.2M5.7 10.3v4.1c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-4.1M5.7 14.4v3.4c0 1.5 2.8 2.7 6.3 2.7s6.3-1.2 6.3-2.7v-3.4"/>',
     searchUser:'<circle cx="9" cy="8" r="3"/><path d="M3.5 19c.7-3.1 2.6-4.8 5.5-4.8 1.3 0 2.4.3 3.3 1M17 14a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm2.2 5.2L22 22"/>',
@@ -210,6 +212,7 @@ function header(){ return `<header class="topbar"><div class="topbar-main"><div 
 function drawer(){
   const primary=(routeIndex,label,icon,tone)=>`<button class="drawer-primary ${tone} ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-primary-icon">${svgIcon(icon)}</span><strong>${label}</strong><span class="drawer-primary-chevron">${svgIcon('chevron')}</span></button>`;
   const item=(routeIndex,icon,label=routes[routeIndex][1])=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
+  const staticItem=(label,icon)=>`<button class="drawer-sub-link" type="button"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
   return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
     <nav class="drawer-nav">
       ${primary(1,'Einzahlung','down','deposit')}
@@ -222,6 +225,8 @@ function drawer(){
       <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${item(14,'depositWallet')}
       ${item(15,'payoutWallet')}
+      ${staticItem('Sprachen','globe')}
+      ${staticItem('Abmelden','logout')}
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
         <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
