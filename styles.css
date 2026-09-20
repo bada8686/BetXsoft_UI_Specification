@@ -3182,3 +3182,15 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-compact-search-actions-v94:end */
+
+
+/* unified-subpage-top-gap-v97:start */
+@media(max-width:520px){
+  /* Keep the mobile top bar unchanged. Only reduce the content's
+     top offset on every page/subpage except the Startseite.
+     Existing internal spacing, sizes and horizontal positioning stay intact. */
+  #app > .app:not(.route-home) > .layout{
+    padding-top:8px!important;
+  }
+}
+/* unified-subpage-top-gap-v97:end */
