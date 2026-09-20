@@ -3432,3 +3432,37 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-column-order-v106:end */
+
+
+/* wettscheine-status-cell-shading-v111:start */
+/* Very subtle status shading only for Einsatz, Status and Max. Gewinn. */
+.route-coupons .coupon-status-row.coupon-status-loss > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-loss > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-loss > td:nth-child(4){
+  background:rgba(239,68,68,.065);
+}
+.route-coupons .coupon-status-row.coupon-status-won > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-won > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-won > td:nth-child(4){
+  background:rgba(34,197,94,.065);
+}
+.route-coupons .coupon-status-row.coupon-status-cancelled > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-cancelled > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-cancelled > td:nth-child(4),
+.route-coupons .coupon-status-row.coupon-status-canceled > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-canceled > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-canceled > td:nth-child(4),
+.route-coupons .coupon-status-row.coupon-status-storniert > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-storniert > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-storniert > td:nth-child(4){
+  background:rgba(59,130,246,.065);
+}
+.route-coupons .coupon-status-row.coupon-status-sold > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-sold > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-sold > td:nth-child(4),
+.route-coupons .coupon-status-row.coupon-status-verkauft > td:nth-child(2),
+.route-coupons .coupon-status-row.coupon-status-verkauft > td:nth-child(3),
+.route-coupons .coupon-status-row.coupon-status-verkauft > td:nth-child(4){
+  background:rgba(245,158,11,.07);
+}
+/* wettscheine-status-cell-shading-v111:end */
