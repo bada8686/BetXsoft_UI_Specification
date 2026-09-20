@@ -424,11 +424,12 @@ function couponsView(){
   const q=state.ticketFilter.toLowerCase();
   const status=activeTicketStatus();
   const rows=coupons.filter(r=>(!q||r.join(' ').toLowerCase().includes(q)) && couponMatchesStatus(r,status));
-  const totalPages=Math.max(1,Math.ceil(rows.length/10));
+  const pageSize=20;
+  const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
   const currentPage=Math.min(Math.max(1,Number(state.ticketPage)||1),totalPages);
   state.ticketPage=currentPage;
-  const start=(currentPage-1)*10;
-  const pageRows=rows.slice(start,start+10);
+  const start=(currentPage-1)*pageSize;
+  const pageRows=rows.slice(start,start+pageSize);
   const closeButton=`<button class="page-close" data-close-page aria-label="Wettscheine schließen" title="Schließen">${svgIcon('close')}</button>`;
   return `${pageHead(svgIcon('ticket'),'Wettscheine','Verwalten und durchsuchen Sie alle Wettscheine.',closeButton)}<section class="card card-pad"><div class="toggle-grid">${toggleCards()}</div><button class="btn outline wettscheine-extra-filter" data-go="coupon-filters">${svgIcon('list')} Zusätzliche Filter</button><div class="filters three"><div class="field"><label>Wettschein Nummer</label>${input('z. B. 1377640','data-filter="ticket"')}</div><div class="field"><label>Benutzername</label>${input('z. B. Max','data-filter="ticket"')}</div><div class="filter-actions"><button class="btn" data-apply-ticket>Filtern</button><button class="btn secondary" data-reset-ticket>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>Kunde</th><th>Einsatz</th><th>Status</th><th>Max.<br>Gewinn</th><th>Aktion</th><th>Datum</th><th>Wettart</th></tr></thead><tbody>${pageRows.length?pageRows.map(r=>`<tr class="coupon-status-row coupon-status-${r[3].toLowerCase()}"><td><strong>${r[0]}</strong></td><td>${r[2]}</td><td><span class="status ${r[3].toLowerCase()}">${r[3]}</span></td><td>${r[4]}</td><td><button class="coupon-open-btn" data-open-coupon="${r[1]}" aria-label="Wettschein ${r[1]} öffnen"><span class="coupon-open-eye">${svgIcon('eye')}</span><span class="coupon-open-arrow" aria-hidden="true">›</span></button></td><td>${r[6]}<small class="coupon-row-meta">${r[8]}</small></td><td><strong class="coupon-type">${r[7]}</strong></td></tr>`).join(''):`<tr><td colspan="7" class="empty">Keine Wettscheine gefunden.</td></tr>`}</tbody></table></div>${couponPagination(totalPages,currentPage)}</section>`;
 }
