@@ -3487,3 +3487,10 @@ body.ios-keyboard-locked{
   }
 }
 /* coupon-detail-mobile-horizontal-scroll-v120:end */
+
+
+/* coupon-detail-title-29px-v121:start */
+.route-coupon-detail .ticket-head h1{
+  font-size:29px!important;
+}
+/* coupon-detail-title-29px-v121:end */
