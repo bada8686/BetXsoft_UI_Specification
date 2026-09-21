@@ -601,8 +601,8 @@ function turnoverTotals(rows){
   return rows.reduce((sum,r)=>({deposit:sum.deposit+r.deposit,payout:sum.payout+r.payout,profit:sum.profit+r.profit,card:sum.card+r.card,crypto:sum.crypto+r.crypto}),{deposit:0,payout:0,profit:0,card:0,crypto:0});
 }
 function turnoverPeriodText(){
-  const labels={today:'Heute',yesterday:'Gestern',week:'7 Tage',month:'Diesen Monat'};
-  if(state.turnoverPeriod!=='custom') return labels[state.turnoverPeriod]||'7 Tage';
+  const labels={today:'Heute',yesterday:'Gestern',week:'1 Woche',month:'Diesen Monat'};
+  if(state.turnoverPeriod!=='custom') return labels[state.turnoverPeriod]||'1 Woche';
   const from=new Date(state.turnoverFrom+'T12:00:00').toLocaleDateString('de-DE');
   const to=new Date(state.turnoverTo+'T12:00:00').toLocaleDateString('de-DE');
   return `${from} – ${to}`;
@@ -641,7 +641,7 @@ function turnoverView(){
     <div class="date-tabs turnover-date-tabs">
       <button class="tab ${state.turnoverPeriod==='today'?'active':''}" data-turnover-period="today">Heute</button>
       <button class="tab ${state.turnoverPeriod==='yesterday'?'active':''}" data-turnover-period="yesterday">Gestern</button>
-      <button class="tab ${state.turnoverPeriod==='week'?'active':''}" data-turnover-period="week">7 Tage</button>
+      <button class="tab ${state.turnoverPeriod==='week'?'active':''}" data-turnover-period="week">1 Woche</button>
       <button class="tab ${state.turnoverPeriod==='month'?'active':''}" data-turnover-period="month">Diesen Monat</button>
     </div>
     <button class="custom-date turnover-custom-date ${state.turnoverPeriod==='custom'?'active':''}" data-turnover-custom-range><span>${svgIcon('calendar')}</span><span class="custom-date-label">${state.turnoverPeriod==='custom'?periodText:'Individuell'}</span><span>${svgIcon('chevron')}</span></button>
