@@ -229,7 +229,8 @@ function svgIcon(name){
     calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4m10-4v4M3 10h18"/>',
     chevron:'<path d="m9 5 7 7-7 7"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',close:'<path d="M5 5l14 14M19 5 5 19"/>',
     depositWallet:'<path d="M4 9h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h9"/><path d="M16 13h5v5h-5a2.5 2.5 0 0 1 0-5ZM14 2v7M10.5 5.5 14 9l3.5-3.5"/>',
-    payoutWallet:'<path d="M4 9h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h8"/><path d="M15 13h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><path d="M12 10 19 3M14 3h5v5"/>'
+    payoutWallet:'<path d="M4 9h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h8"/><path d="M15 13h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><path d="M12 10 19 3M14 3h5v5"/>',
+    reset:'<path d="M20 6v5h-5"/><path d="M19.1 14a8 8 0 1 1-.7-6.5L20 11"/>'
   };
   return `<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name]||''}</svg>`;
 }
@@ -649,7 +650,7 @@ function turnoverView(){
   </section>
   <section class="card turnover-summary-card" style="margin-top:16px"><div class="revenue-top">${stats.map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]})">${formatDashboardValue(x[2])}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]==='ink'?'line':x[3]});transform:skewY(-5deg)"></div></div>`).join('')}</div></section>
   <section class="card table-card turnover-shop-card" style="margin-top:16px">
-    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover><span class="turnover-reset-icon" aria-hidden="true">⟳</span><span>Kasse zurücksetzen</span></button></div>
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover><span class="turnover-reset-icon" aria-hidden="true">${svgIcon('reset')}</span><span>Kasse zurücksetzen</span></button></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(till.deposit)}</td><td class="negative">${formatDashboardValue(till.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(till.profit)}</td></tr></tbody></table></div>
   </section>
   <section class="card table-card turnover-records-card" style="margin-top:16px">
