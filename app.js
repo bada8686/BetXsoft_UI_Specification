@@ -536,6 +536,7 @@ function turnoverView(){
   const totals=turnoverTotals(rows);
   const periodText=turnoverPeriodText();
   const recordRows=rows.slice(0,8);
+  const closeButton=`<button class="page-close" data-close-page aria-label="Buchhaltung schließen" title="Schließen">${svgIcon('close')}</button>`;
   const stats=[
     [svgIcon('down'),'Einzahlung',totals.deposit,'green'],
     [svgIcon('up'),'Auszahlung',totals.payout,'red'],
@@ -543,7 +544,7 @@ function turnoverView(){
     ['▤','Card Deposit',totals.card,'ink'],
     ['₿','Crypto Deposit',totals.crypto,'ink']
   ];
-  return `${pageHead(svgIcon('chart'),'Umsatz / Turnover','Übersicht Ihrer Umsätze.')}
+  return `${pageHead(svgIcon('chart'),'Umsatz / Turnover','Übersicht Ihrer Umsätze.',closeButton)}
   <section class="card card-pad turnover-period-card">
     <h2 class="section-title">Zeitraum wählen</h2>
     <div class="date-tabs turnover-date-tabs">
