@@ -2,7 +2,7 @@ const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
   customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
-  turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21'
+  turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1
 };
 
 const dashboardPeriods = {
@@ -504,6 +504,7 @@ function loadTurnoverLedger(){
   try{
     const stored=JSON.parse(localStorage.getItem(turnoverLedgerStorageKey)||'null');
     if(!stored||!stored.current||!Array.isArray(stored.records)) return cloneDefaultTurnoverLedger();
+    stored.records=stored.records.slice(0,40);
     return stored;
   }catch(_){
     return cloneDefaultTurnoverLedger();
@@ -536,6 +537,7 @@ function resetCurrentTurnoverTill(){
     payout:Number(current.payout||0),
     profit:Number(current.profit||0)
   });
+  ledger.records=ledger.records.slice(0,40);
   ledger.current={startDate:to,deposit:0,payout:0,profit:0,card:0,crypto:0};
   saveTurnoverLedger(ledger);
   return true;
@@ -590,13 +592,28 @@ function turnoverPeriodText(){
   const to=new Date(state.turnoverTo+'T12:00:00').toLocaleDateString('de-DE');
   return `${from} – ${to}`;
 }
+function turnoverRecordPagination(totalPages,currentPage){
+  if(totalPages<=1) return '';
+  const buttons=Array.from({length:totalPages},(_,i)=>{
+    const page=i+1;
+    return `<button class="page-btn ${page===currentPage?'active':''}" data-turnover-record-page="${page}">${page}</button>`;
+  }).join('');
+  return `<div class="table-bottom turnover-record-pagination"><div class="pagination"><button class="page-btn" data-turnover-record-page="${Math.max(1,currentPage-1)}" ${currentPage===1?'disabled':''}>‹</button>${buttons}<button class="page-btn" data-turnover-record-page="${Math.min(totalPages,currentPage+1)}" ${currentPage===totalPages?'disabled':''}>›</button></div></div>`;
+}
+
 function turnoverView(){
   const rows=filteredTurnoverData();
   const totals=turnoverTotals(rows);
   const periodText=turnoverPeriodText();
   const ledger=loadTurnoverLedger();
   const till=ledger.current||cloneDefaultTurnoverLedger().current;
-  const resetRecords=ledger.records||[];
+  const resetRecords=(ledger.records||[]).slice(0,40);
+  const recordPageSize=10;
+  const recordTotalPages=Math.max(1,Math.ceil(resetRecords.length/recordPageSize));
+  const recordCurrentPage=Math.min(Math.max(1,Number(state.turnoverRecordPage)||1),recordTotalPages);
+  state.turnoverRecordPage=recordCurrentPage;
+  const recordStart=(recordCurrentPage-1)*recordPageSize;
+  const visibleResetRecords=resetRecords.slice(recordStart,recordStart+recordPageSize);
   const closeButton=`<button class="page-close" data-close-page aria-label="Buchhaltung schließen" title="Schließen">${svgIcon('close')}</button>`;
   const stats=[
     [svgIcon('down'),'Einzahlung',totals.deposit,'green'],
@@ -625,8 +642,9 @@ function turnoverView(){
   <section class="card table-card turnover-records-card" style="margin-top:16px">
     <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Letzte Aufzeichnungen</h2><small class="muted">Kassen-Resets</small></div><span class="turnover-record-count">${resetRecords.length} ${resetRecords.length===1?'Eintrag':'Einträge'}</span></div>
     <div class="table-wrap"><table class="data-table turnover-reset-table"><thead><tr><th>Datum</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody>
-      ${resetRecords.length?resetRecords.map(r=>`<tr><td><strong>${resetLedgerPeriodLabel(r)}</strong></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
+      ${visibleResetRecords.length?visibleResetRecords.map(r=>`<tr><td><strong>${resetLedgerPeriodLabel(r)}</strong></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
     </tbody></table></div>
+    ${turnoverRecordPagination(recordTotalPages,recordCurrentPage)}
   </section>`;
 }
 
@@ -808,11 +826,17 @@ function bind(){
   });
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
+  document.querySelectorAll('[data-turnover-record-page]').forEach(el=>el.addEventListener('click',()=>{
+    if(el.disabled) return;
+    state.turnoverRecordPage=Number(el.dataset.turnoverRecordPage)||1;
+    render();
+  }));
   document.querySelector('[data-reset-turnover]')?.addEventListener('click',()=>{
     if(!resetCurrentTurnoverTill()){
       toast('Der Kassenstand ist bereits 0.');
       return;
     }
+    state.turnoverRecordPage=1;
     render();
     toast('Kasse zurückgesetzt und unter „Letzte Aufzeichnungen“ gespeichert.');
   });
