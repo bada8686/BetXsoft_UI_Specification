@@ -482,6 +482,65 @@ function couponDetailView(){
   return `<button class="back-link" data-coupon-back>← Zurück zu Wettscheinen</button><div class="ticket-head"><div><h1 style="margin:0;font-size:20px"><span class="ticket-title-label">Wettschein</span><span class="ticket-title-number">#${ticket}</span></h1></div><span class="avatar">♙</span><strong>(${id}) ${esc(customer)}</strong></div><section class="card" style="margin-top:20px"><div class="stats-row"><div class="stat"><small>Ticket Amount</small><strong class="positive">${stake}</strong></div><div class="stat"><small>Max Profit</small><strong style="color:var(--blue)">${maxProfit}</strong></div><div class="stat"><small>Winning Profit</small><strong style="color:var(--blue)">${winningProfit}</strong></div><div class="stat"><small>Status</small><span class="status ${statusClass}">${status}</span></div></div></section><section class="card table-card coupon-detail-table" style="margin-top:14px"><div class="card-pad" style="padding-bottom:10px"><h2 class="section-title" style="margin:0">▤ Wett-Details (5)</h2></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Teams</th><th>Markt</th><th>Wette</th><th>Quote</th><th>Score</th><th>Placed Score</th><th>Land / Liga</th><th>Status</th></tr></thead><tbody>${bets.map(r=>`<tr><td><div class="bet-team-cell">${statusDot(r[9])}<span class="bet-team-lines"><span>${r[0]}</span><span>${r[1]}</span></span></div></td><td><strong class="bet-detail-bold">${r[2]}</strong></td><td><strong class="bet-detail-bold">${r[3]}</strong></td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td><span class="bet-league-lines"><span>${r[7]}</span><span>${r[8]}</span></span></td><td><span class="status ${r[9].toLowerCase()}">${r[9]}</span></td></tr>`).join('')}</tbody></table></div></section><section class="ticket-meta"><div><small>Status</small><span class="status ${statusClass}">${status}</span></div><div><small>Winning Profit</small><strong>${winningProfit}</strong></div><div><small>Erstellt</small><strong>11.08.2026 20:41:28</strong></div><div><small>Wett-Typ</small><strong style="color:var(--blue)">LIVE</strong></div><div><small>IP-Adresse</small><strong>194.230.160.96</strong></div><div><small>Ergebniszeit</small><strong>11.08.2026 21:31:51</strong></div><div><small>Coupon Type</small><strong>KOMBINATION (5)</strong></div><div><small>Wettstatus</small><strong>COMPLETED</strong></div></section>`;
 }
 
+const turnoverLedgerStorageKey='betxsoftTurnoverLedgerV1';
+const defaultTurnoverLedger={
+  current:{
+    startDate:'2026-09-01',
+    deposit:410613,
+    payout:226509,
+    profit:184104,
+    card:76688,
+    crypto:19295
+  },
+  records:[
+    {from:'2026-01-18',to:'2026-02-28',time:'14:35',deposit:12777,payout:777,profit:12000},
+    {from:'2025-12-02',to:'2026-01-18',time:'09:42',deposit:25800,payout:7465,profit:18335}
+  ]
+};
+function cloneDefaultTurnoverLedger(){
+  return JSON.parse(JSON.stringify(defaultTurnoverLedger));
+}
+function loadTurnoverLedger(){
+  try{
+    const stored=JSON.parse(localStorage.getItem(turnoverLedgerStorageKey)||'null');
+    if(!stored||!stored.current||!Array.isArray(stored.records)) return cloneDefaultTurnoverLedger();
+    return stored;
+  }catch(_){
+    return cloneDefaultTurnoverLedger();
+  }
+}
+function saveTurnoverLedger(ledger){
+  try{ localStorage.setItem(turnoverLedgerStorageKey,JSON.stringify(ledger)); }catch(_){}
+}
+function shortLedgerDate(value){
+  const date=new Date(value+'T12:00:00');
+  return Number.isNaN(date.getTime())?'–':date.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'});
+}
+function resetLedgerPeriodLabel(record){
+  return `${shortLedgerDate(record.from)} – ${shortLedgerDate(record.to)}, ${record.time} Uhr`;
+}
+function resetCurrentTurnoverTill(){
+  const ledger=loadTurnoverLedger();
+  const current=ledger.current||{};
+  const hasBalance=['deposit','payout','profit','card','crypto'].some(key=>Number(current[key]||0)!==0);
+  if(!hasBalance) return false;
+
+  const now=new Date();
+  const to=turnoverDateKey(now);
+  const time=now.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit',hour12:false});
+  ledger.records.unshift({
+    from:current.startDate||to,
+    to,
+    time,
+    deposit:Number(current.deposit||0),
+    payout:Number(current.payout||0),
+    profit:Number(current.profit||0)
+  });
+  ledger.current={startDate:to,deposit:0,payout:0,profit:0,card:0,crypto:0};
+  saveTurnoverLedger(ledger);
+  return true;
+}
+
 function turnoverDateKey(date){
   const y=date.getFullYear();
   const m=String(date.getMonth()+1).padStart(2,'0');
@@ -535,7 +594,9 @@ function turnoverView(){
   const rows=filteredTurnoverData();
   const totals=turnoverTotals(rows);
   const periodText=turnoverPeriodText();
-  const recordRows=rows.slice(0,8);
+  const ledger=loadTurnoverLedger();
+  const till=ledger.current||cloneDefaultTurnoverLedger().current;
+  const resetRecords=ledger.records||[];
   const closeButton=`<button class="page-close" data-close-page aria-label="Buchhaltung schließen" title="Schließen">${svgIcon('close')}</button>`;
   const stats=[
     [svgIcon('down'),'Einzahlung',totals.deposit,'green'],
@@ -558,12 +619,14 @@ function turnoverView(){
   </section>
   <section class="card turnover-summary-card" style="margin-top:16px"><div class="revenue-top">${stats.map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]})">${formatDashboardValue(x[2])}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]==='ink'?'line':x[3]});transform:skewY(-5deg)"></div></div>`).join('')}</div></section>
   <section class="card table-card turnover-shop-card" style="margin-top:16px">
-    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">${periodText}</small></div><button class="btn small outline" data-demo="Kassenstand wurde neu geladen">⟳ Kasse zurücksetzen</button></div>
-    <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th><th>Card Deposit</th><th>Crypto Deposit</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(totals.deposit)}</td><td class="negative">${formatDashboardValue(totals.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(totals.profit)}</td><td>${formatDashboardValue(totals.card)}</td><td>${formatDashboardValue(totals.crypto)}</td></tr></tbody></table></div>
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover>⟳ Kasse zurücksetzen</button></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th><th>Card Deposit</th><th>Crypto Deposit</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(till.deposit)}</td><td class="negative">${formatDashboardValue(till.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(till.profit)}</td><td>${formatDashboardValue(till.card)}</td><td>${formatDashboardValue(till.crypto)}</td></tr></tbody></table></div>
   </section>
-  <section class="card turnover-records-card" style="margin-top:16px">
-    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Aufzeichnungen</h2><small class="muted">${periodText}</small></div><span class="turnover-record-count">${rows.length} ${rows.length===1?'Tag':'Tage'}</span></div>
-    <div class="record-list">${recordRows.length?recordRows.map(r=>`<div class="record"><strong>${r.date.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})}<small class="muted" style="display:block">${r.time}</small></strong><span class="positive">${formatDashboardValue(r.deposit)}</span><span class="negative">${formatDashboardValue(r.payout)}</span><span class="gain">${formatDashboardValue(r.profit)}</span><span>›</span></div>`).join(''):`<div class="empty">Für diesen Zeitraum sind keine Buchhaltungsdaten vorhanden.</div>`}</div>
+  <section class="card table-card turnover-records-card" style="margin-top:16px">
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Letzte Aufzeichnungen</h2><small class="muted">Kassen-Resets</small></div><span class="turnover-record-count">${resetRecords.length} ${resetRecords.length===1?'Eintrag':'Einträge'}</span></div>
+    <div class="table-wrap"><table class="data-table turnover-reset-table"><thead><tr><th>Datum</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody>
+      ${resetRecords.length?resetRecords.map(r=>`<tr><td><strong>${resetLedgerPeriodLabel(r)}</strong></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
+    </tbody></table></div>
   </section>`;
 }
 
@@ -745,6 +808,14 @@ function bind(){
   });
   document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
   document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
+  document.querySelector('[data-reset-turnover]')?.addEventListener('click',()=>{
+    if(!resetCurrentTurnoverTill()){
+      toast('Der Kassenstand ist bereits 0.');
+      return;
+    }
+    render();
+    toast('Kasse zurückgesetzt und unter „Letzte Aufzeichnungen“ gespeichert.');
+  });
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
