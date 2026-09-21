@@ -4026,7 +4026,7 @@ body.ios-keyboard-locked{
 /* turnover-reset-button-v147:end */
 
 
-/* turnover-records-deposit-align-v154:start */
+/* turnover-records-deposit-align-v156:start */
 @media(max-width:520px){
   .route-turnover .turnover-reset-table th:first-child,
   .route-turnover .turnover-reset-table td:first-child{
@@ -4035,8 +4035,9 @@ body.ios-keyboard-locked{
   .route-turnover .turnover-reset-table th:nth-child(2),
   .route-turnover .turnover-reset-table td:nth-child(2){
     padding-left:0;
-    position:relative;
-    left:-6px;
+    position:static;
+    left:auto;
+    text-indent:-6px;
   }
 }
-/* turnover-records-deposit-align-v154:end */
+/* turnover-records-deposit-align-v156:end */
