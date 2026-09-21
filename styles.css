@@ -3785,3 +3785,171 @@ body.ios-keyboard-locked{
   }
 }
 /* turnover-functional-layout-v134:end */
+
+
+/* turnover-summary-approved-design-v136:start */
+.route-turnover .turnover-summary-card{
+  border:0;
+  background:transparent;
+  box-shadow:none;
+  overflow:visible;
+}
+.route-turnover .turnover-summary-card .revenue-top{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+.route-turnover .turnover-summary-card .revenue-card{
+  position:relative;
+  overflow:hidden;
+  min-height:170px;
+  padding:22px 22px 20px;
+  border:1px solid #e3e8f1;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 8px 22px rgba(20,40,80,.055);
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr);
+  grid-template-rows:auto 1fr;
+  column-gap:14px;
+  row-gap:18px;
+  align-items:center;
+  text-align:left;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(5){
+  grid-column:1/-1;
+}
+.route-turnover .turnover-summary-card .revenue-card::after{
+  content:"";
+  position:absolute;
+  right:-8%;
+  bottom:-34%;
+  width:72%;
+  height:74%;
+  border-radius:62% 0 0 0;
+  opacity:.6;
+  transform:rotate(-5deg);
+  pointer-events:none;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(1){
+  background:linear-gradient(135deg,#ffffff 0%,#f7fffb 100%);
+  border-color:#d7f3e5;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(1)::after{
+  background:linear-gradient(135deg,rgba(34,197,94,.02),rgba(34,197,94,.22));
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(2){
+  background:linear-gradient(135deg,#ffffff 0%,#fff8fa 100%);
+  border-color:#f6dbe2;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(2)::after{
+  background:linear-gradient(135deg,rgba(255,20,56,.02),rgba(255,20,56,.20));
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(3){
+  background:linear-gradient(135deg,#ffffff 0%,#f7faff 100%);
+  border-color:#d9e4ff;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(3)::after{
+  background:linear-gradient(135deg,rgba(6,72,245,.02),rgba(6,72,245,.18));
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(4){
+  background:linear-gradient(135deg,#ffffff 0%,#fafbfd 100%);
+  border-color:#e0e5ed;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(4)::after{
+  background:linear-gradient(135deg,rgba(102,112,133,.02),rgba(102,112,133,.16));
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(5){
+  background:linear-gradient(135deg,#fffefa 0%,#fff9ec 100%);
+  border-color:#f3dfb2;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(5)::after{
+  width:60%;
+  height:86%;
+  right:-3%;
+  bottom:-43%;
+  background:linear-gradient(135deg,rgba(214,145,0,.02),rgba(214,145,0,.22));
+}
+.route-turnover .turnover-summary-card .revenue-card .bubble{
+  position:relative;
+  z-index:1;
+  width:54px;
+  height:54px;
+  margin:0;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  background:#f1f4f9;
+  font-size:22px;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(1) .bubble{
+  background:#dcf9e9;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(2) .bubble{
+  background:#ffe2e8;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(3) .bubble{
+  background:#e2ecff;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(4) .bubble{
+  background:#e9eef5;
+}
+.route-turnover .turnover-summary-card .revenue-card:nth-child(5) .bubble{
+  background:#ffefc9;
+  color:#d18a00!important;
+}
+.route-turnover .turnover-summary-card .revenue-card label{
+  position:relative;
+  z-index:1;
+  margin:0;
+  display:block;
+  font-size:17px;
+  line-height:1.2;
+  font-weight:800;
+  color:#101828;
+}
+.route-turnover .turnover-summary-card .revenue-card strong{
+  position:relative;
+  z-index:1;
+  grid-column:1/-1;
+  align-self:start;
+  font-size:32px;
+  line-height:1;
+  font-weight:850;
+  letter-spacing:-.7px;
+}
+.route-turnover .turnover-summary-card .revenue-card .spark{
+  display:none;
+}
+@media(max-width:520px){
+  .route-turnover .turnover-summary-card .revenue-top{
+    gap:9px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card{
+    min-height:126px;
+    padding:14px 12px 13px;
+    border-radius:13px;
+    column-gap:9px;
+    row-gap:11px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card .bubble{
+    width:38px;
+    height:38px;
+    font-size:17px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card .bubble .svg-icon{
+    width:20px;
+    height:20px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card label{
+    font-size:12px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card strong{
+    font-size:21px;
+    letter-spacing:-.4px;
+  }
+  .route-turnover .turnover-summary-card .revenue-card:nth-child(5){
+    min-height:118px;
+  }
+}
+/* turnover-summary-approved-design-v136:end */
