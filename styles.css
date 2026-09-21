@@ -3961,7 +3961,7 @@ body.ios-keyboard-locked{
 }
 .route-turnover .turnover-reset-table th:first-child,
 .route-turnover .turnover-reset-table td:first-child{
-  min-width:285px;
+  min-width:265px;
 }
 .route-turnover .turnover-reset-table td{
   vertical-align:middle;
@@ -3976,25 +3976,15 @@ body.ios-keyboard-locked{
   }
   .route-turnover .turnover-reset-table th:first-child,
   .route-turnover .turnover-reset-table td:first-child{
-    min-width:250px;
+    min-width:230px;
   }
 }
 /* turnover-independent-till-v138:end */
 
 
 /* turnover-records-pagination-v139:start */
-.route-turnover .turnover-reset-table td{
-  padding-top:4px;
-  padding-bottom:4px;
-}
 .route-turnover .turnover-record-pagination{
   justify-content:flex-end;
-}
-@media(max-width:520px){
-  .route-turnover .turnover-reset-table td{
-    padding-top:3px;
-    padding-bottom:3px;
-  }
 }
 .route-turnover .turnover-reset-time{
   font-weight:400;
