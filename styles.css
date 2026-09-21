@@ -4020,23 +4020,31 @@ body.ios-keyboard-locked{
   height:50px;
   min-height:50px;
   box-sizing:border-box;
-  padding:0 16px;
-  font-size:16px;
-  font-weight:700;
+  padding:0 16px 0 10px;
+  font-size:19px;
+  font-weight:750;
   line-height:1;
   border-radius:14px;
-  gap:8px;
+  gap:9px;
   background:#fff;
   color:var(--blue);
   border:1px solid #cfd8ff;
   box-shadow:0 2px 6px rgba(36,72,242,.06);
 }
 .route-turnover [data-reset-turnover] .turnover-reset-icon{
-  font-size:19px;
-  line-height:1;
+  width:34px;
+  height:34px;
+  flex:0 0 34px;
+  border-radius:50%;
+  background:#eef4ff;
   display:inline-flex;
   align-items:center;
   justify-content:center;
+}
+.route-turnover [data-reset-turnover] .turnover-reset-icon .svg-icon{
+  width:24px;
+  height:24px;
+  stroke-width:2.2;
 }
 /* turnover-reset-button-v147:end */
 
