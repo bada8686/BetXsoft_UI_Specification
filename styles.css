@@ -4017,17 +4017,22 @@ body.ios-keyboard-locked{
 
 /* turnover-reset-button-v147:start */
 .route-turnover [data-reset-turnover]{
-  height:60px;
-  min-height:60px;
+  height:50px;
+  min-height:50px;
   box-sizing:border-box;
-  padding:6px 18px;
-  font-size:33px;
+  padding:0 16px;
+  font-size:16px;
+  font-weight:700;
   line-height:1;
-  border-radius:12px;
-  gap:10px;
+  border-radius:14px;
+  gap:8px;
+  background:#fff;
+  color:var(--blue);
+  border:1px solid #cfd8ff;
+  box-shadow:0 2px 6px rgba(36,72,242,.06);
 }
 .route-turnover [data-reset-turnover] .turnover-reset-icon{
-  font-size:30px;
+  font-size:19px;
   line-height:1;
   display:inline-flex;
   align-items:center;
