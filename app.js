@@ -1,7 +1,8 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
   customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
-  customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null
+  customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
+  turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21'
 };
 
 const dashboardPeriods = {
@@ -481,7 +482,89 @@ function couponDetailView(){
   return `<button class="back-link" data-coupon-back>← Zurück zu Wettscheinen</button><div class="ticket-head"><div><h1 style="margin:0;font-size:20px"><span class="ticket-title-label">Wettschein</span><span class="ticket-title-number">#${ticket}</span></h1></div><span class="avatar">♙</span><strong>(${id}) ${esc(customer)}</strong></div><section class="card" style="margin-top:20px"><div class="stats-row"><div class="stat"><small>Ticket Amount</small><strong class="positive">${stake}</strong></div><div class="stat"><small>Max Profit</small><strong style="color:var(--blue)">${maxProfit}</strong></div><div class="stat"><small>Winning Profit</small><strong style="color:var(--blue)">${winningProfit}</strong></div><div class="stat"><small>Status</small><span class="status ${statusClass}">${status}</span></div></div></section><section class="card table-card coupon-detail-table" style="margin-top:14px"><div class="card-pad" style="padding-bottom:10px"><h2 class="section-title" style="margin:0">▤ Wett-Details (5)</h2></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Teams</th><th>Markt</th><th>Wette</th><th>Quote</th><th>Score</th><th>Placed Score</th><th>Land / Liga</th><th>Status</th></tr></thead><tbody>${bets.map(r=>`<tr><td><div class="bet-team-cell">${statusDot(r[9])}<span class="bet-team-lines"><span>${r[0]}</span><span>${r[1]}</span></span></div></td><td><strong class="bet-detail-bold">${r[2]}</strong></td><td><strong class="bet-detail-bold">${r[3]}</strong></td><td>${r[4]}</td><td>${r[5]}</td><td>${r[6]}</td><td><span class="bet-league-lines"><span>${r[7]}</span><span>${r[8]}</span></span></td><td><span class="status ${r[9].toLowerCase()}">${r[9]}</span></td></tr>`).join('')}</tbody></table></div></section><section class="ticket-meta"><div><small>Status</small><span class="status ${statusClass}">${status}</span></div><div><small>Winning Profit</small><strong>${winningProfit}</strong></div><div><small>Erstellt</small><strong>11.08.2026 20:41:28</strong></div><div><small>Wett-Typ</small><strong style="color:var(--blue)">LIVE</strong></div><div><small>IP-Adresse</small><strong>194.230.160.96</strong></div><div><small>Ergebniszeit</small><strong>11.08.2026 21:31:51</strong></div><div><small>Coupon Type</small><strong>KOMBINATION (5)</strong></div><div><small>Wettstatus</small><strong>COMPLETED</strong></div></section>`;
 }
 
-function turnoverView(){ const records=[['23.08.26','18:55:56','191.576,00','96.256,00','95.320,00'],['04.08.26','22:43:11','9.758,00','3.480,00','6.278,00'],['25.04.26','21:32:29','41.320,00','22.514,00','18.806,00'],['29.06.23','13:25:11','135.466,00','61.523,00','73.943,00'],['29.06.23','13:24:09','0,00','0,00','0,00']]; return `${pageHead('↗','Umsatz / Turnover','Übersicht Ihrer Umsätze.')}<section class="card card-pad"><h2 class="section-title">Zeitraum wählen</h2><div class="date-tabs"><button class="tab">Heute</button><button class="tab">Gestern</button><button class="tab active">7 Tage</button><button class="tab">Diesen Monat</button><button class="tab">▣ Individuell</button></div></section><section class="card" style="margin-top:16px"><div class="revenue-top">${[['↗','Einzahlung','140.172,00','green'],['↘','Auszahlung','59.640,00','red'],['▣','Gewinn','80.532,00','blue'],['▤','Card Deposit','0,00',''],['₿','Crypto Deposit','0,00','']].map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]||'ink'})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]||'ink'})">${x[2]}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]||'line'});transform:skewY(-5deg)"></div></div>`).join('')}</div></section><section class="card table-card" style="margin-top:16px"><div class="card-pad" style="display:flex;align-items:center;justify-content:space-between;padding-bottom:10px"><h2 class="section-title" style="margin:0">Shop Umsatz</h2><button class="btn small outline" data-demo="Kassenstand wurde neu geladen">⟳ Kasse zurücksetzen</button></div><div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th><th>Card Deposit</th><th>Crypto Deposit</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">140.172,00</td><td class="negative">59.640,00</td><td style="color:var(--blue)">80.532,00</td><td>0,00</td><td>0,00</td></tr></tbody></table></div></section><section class="card" style="margin-top:16px"><div class="card-pad" style="display:flex;justify-content:space-between;align-items:center;padding-bottom:6px"><h2 class="section-title" style="margin:0">Letzte Aufzeichnungen</h2><button class="back-link" style="margin:0" data-demo="Alle Aufzeichnungen geladen">Alle anzeigen ›</button></div><div class="record-list">${records.map(r=>`<div class="record"><strong>${r[0]}<small class="muted" style="display:block">${r[1]}</small></strong><span class="positive">${r[2]}</span><span class="negative">${r[3]}</span><span class="gain">${r[4]}</span><span>›</span></div>`).join('')}</div></section>`; }
+function turnoverDateKey(date){
+  const y=date.getFullYear();
+  const m=String(date.getMonth()+1).padStart(2,'0');
+  const d=String(date.getDate()).padStart(2,'0');
+  return `${y}-${m}-${d}`;
+}
+function turnoverData(){
+  const today=new Date();
+  today.setHours(12,0,0,0);
+  return Array.from({length:92},(_,i)=>{
+    const date=new Date(today);
+    date.setDate(today.getDate()-i);
+    const seed=Math.floor(date.getTime()/86400000);
+    const deposit=14800+((seed*1379)%9800);
+    const payout=7200+((seed*947)%7200);
+    const card=Math.round(deposit*(.16+(seed%4)*.018));
+    const crypto=Math.round(deposit*(.035+(seed%3)*.012));
+    const profit=deposit-payout;
+    const hour=16+(seed%7);
+    const minute=String((seed*13)%60).padStart(2,'0');
+    const second=String((seed*7)%60).padStart(2,'0');
+    return {key:turnoverDateKey(date),date,time:`${String(hour).padStart(2,'0')}:${minute}:${second}`,deposit,payout,profit,card,crypto};
+  });
+}
+function turnoverRange(){
+  const now=new Date();
+  now.setHours(12,0,0,0);
+  let start=new Date(now);
+  let end=new Date(now);
+  if(state.turnoverPeriod==='yesterday'){ start.setDate(start.getDate()-1); end=new Date(start); }
+  else if(state.turnoverPeriod==='week'){ start.setDate(start.getDate()-6); }
+  else if(state.turnoverPeriod==='month'){ start=new Date(now.getFullYear(),now.getMonth(),1,12,0,0,0); }
+  else if(state.turnoverPeriod==='custom'){ start=new Date(state.turnoverFrom+'T12:00:00'); end=new Date(state.turnoverTo+'T12:00:00'); }
+  return {start,end};
+}
+function filteredTurnoverData(){
+  const {start,end}=turnoverRange();
+  return turnoverData().filter(r=>r.date>=start && r.date<=end);
+}
+function turnoverTotals(rows){
+  return rows.reduce((sum,r)=>({deposit:sum.deposit+r.deposit,payout:sum.payout+r.payout,profit:sum.profit+r.profit,card:sum.card+r.card,crypto:sum.crypto+r.crypto}),{deposit:0,payout:0,profit:0,card:0,crypto:0});
+}
+function turnoverPeriodText(){
+  const labels={today:'Heute',yesterday:'Gestern',week:'7 Tage',month:'Diesen Monat'};
+  if(state.turnoverPeriod!=='custom') return labels[state.turnoverPeriod]||'7 Tage';
+  const from=new Date(state.turnoverFrom+'T12:00:00').toLocaleDateString('de-DE');
+  const to=new Date(state.turnoverTo+'T12:00:00').toLocaleDateString('de-DE');
+  return `${from} – ${to}`;
+}
+function turnoverView(){
+  const rows=filteredTurnoverData();
+  const totals=turnoverTotals(rows);
+  const periodText=turnoverPeriodText();
+  const recordRows=rows.slice(0,8);
+  const stats=[
+    [svgIcon('down'),'Einzahlung',totals.deposit,'green'],
+    [svgIcon('up'),'Auszahlung',totals.payout,'red'],
+    [svgIcon('chart'),'Gewinn',totals.profit,'blue'],
+    ['▤','Card Deposit',totals.card,'ink'],
+    ['₿','Crypto Deposit',totals.crypto,'ink']
+  ];
+  return `${pageHead(svgIcon('chart'),'Umsatz / Turnover','Übersicht Ihrer Umsätze.')}
+  <section class="card card-pad turnover-period-card">
+    <h2 class="section-title">Zeitraum wählen</h2>
+    <div class="date-tabs turnover-date-tabs">
+      <button class="tab ${state.turnoverPeriod==='today'?'active':''}" data-turnover-period="today">Heute</button>
+      <button class="tab ${state.turnoverPeriod==='yesterday'?'active':''}" data-turnover-period="yesterday">Gestern</button>
+      <button class="tab ${state.turnoverPeriod==='week'?'active':''}" data-turnover-period="week">7 Tage</button>
+      <button class="tab ${state.turnoverPeriod==='month'?'active':''}" data-turnover-period="month">Diesen Monat</button>
+    </div>
+    <button class="custom-date turnover-custom-date ${state.turnoverPeriod==='custom'?'active':''}" data-turnover-custom-range><span>${svgIcon('calendar')}</span><span class="custom-date-label">${state.turnoverPeriod==='custom'?periodText:'Individuell'}</span><span>${svgIcon('chevron')}</span></button>
+    ${state.turnoverRangeOpen?`<div class="date-range-panel turnover-date-range"><label>Von<input type="date" value="${state.turnoverFrom}" data-turnover-range-from></label><label>Bis<input type="date" value="${state.turnoverTo}" data-turnover-range-to></label><button data-turnover-range-apply>Anwenden</button></div>`:''}
+  </section>
+  <section class="card turnover-summary-card" style="margin-top:16px"><div class="revenue-top">${stats.map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]})">${formatDashboardValue(x[2])}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]==='ink'?'line':x[3]});transform:skewY(-5deg)"></div></div>`).join('')}</div></section>
+  <section class="card table-card turnover-shop-card" style="margin-top:16px">
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">${periodText}</small></div><button class="btn small outline" data-demo="Kassenstand wurde neu geladen">⟳ Kasse zurücksetzen</button></div>
+    <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th><th>Card Deposit</th><th>Crypto Deposit</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(totals.deposit)}</td><td class="negative">${formatDashboardValue(totals.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(totals.profit)}</td><td>${formatDashboardValue(totals.card)}</td><td>${formatDashboardValue(totals.crypto)}</td></tr></tbody></table></div>
+  </section>
+  <section class="card turnover-records-card" style="margin-top:16px">
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Aufzeichnungen</h2><small class="muted">${periodText}</small></div><span class="turnover-record-count">${rows.length} ${rows.length===1?'Tag':'Tage'}</span></div>
+    <div class="record-list">${recordRows.length?recordRows.map(r=>`<div class="record"><strong>${r.date.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit',year:'2-digit'})}<small class="muted" style="display:block">${r.time}</small></strong><span class="positive">${formatDashboardValue(r.deposit)}</span><span class="negative">${formatDashboardValue(r.payout)}</span><span class="gain">${formatDashboardValue(r.profit)}</span><span>›</span></div>`).join(''):`<div class="empty">Für diesen Zeitraum sind keine Buchhaltungsdaten vorhanden.</div>`}</div>
+  </section>`;
+}
 
 function transactionView(type){ const isDeposit=type==='deposit'; const data=isDeposit?deposits:payouts; const title=isDeposit?'Einzahlung Transaktionen':'Auszahlungen Transaktionen'; return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label>${input('Zeitraum','type="text" value="13.07.2026 - 13.08.2026"')}</div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`; }
 function transactionRows(data,isDeposit){ return data.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===6?(isDeposit?'positive':'negative'):''}">${c}</td>`).join('')}</tr>`).join(''); }
@@ -694,6 +777,32 @@ function bind(){
   document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.ticketPage=1;state.toggles={};render()});
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
   document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
+  document.querySelectorAll('[data-turnover-period]').forEach(el=>el.addEventListener('click',()=>{
+    state.turnoverPeriod=el.dataset.turnoverPeriod;
+    state.turnoverRangeOpen=false;
+    render();
+    toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`);
+  }));
+  document.querySelector('[data-turnover-custom-range]')?.addEventListener('click',()=>{
+    state.turnoverRangeOpen=!state.turnoverRangeOpen;
+    render();
+  });
+  document.querySelector('[data-turnover-range-apply]')?.addEventListener('click',()=>{
+    const from=document.querySelector('[data-turnover-range-from]')?.value||'';
+    const to=document.querySelector('[data-turnover-range-to]')?.value||'';
+    const start=new Date(from+'T12:00:00');
+    const end=new Date(to+'T12:00:00');
+    if(!from||!to||Number.isNaN(start.getTime())||Number.isNaN(end.getTime())||end<start){
+      toast('Bitte einen gültigen Zeitraum wählen.');
+      return;
+    }
+    state.turnoverFrom=from;
+    state.turnoverTo=to;
+    state.turnoverPeriod='custom';
+    state.turnoverRangeOpen=false;
+    render();
+    toast('Individueller Zeitraum angewendet.');
+  });
   document.querySelectorAll('[data-period]').forEach(el=>el.addEventListener('click',()=>{state.dashboardPeriod=el.dataset.period;state.customRangeOpen=false;render();toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
   document.querySelector('[data-custom-range]')?.addEventListener('click',()=>{state.customRangeOpen=!state.customRangeOpen;render()});
   document.querySelector('[data-range-apply]')?.addEventListener('click',()=>{const from=document.querySelector('[data-range-from]').value;const to=document.querySelector('[data-range-to]').value;const start=new Date(from+'T00:00:00');const end=new Date(to+'T00:00:00');if(!from||!to||end<start)return toast('Bitte einen gültigen Zeitraum wählen.');const days=Math.min(366,Math.floor((end-start)/86400000)+1);const deposit=Math.round(days*12175.35+(days%7)*420);const payout=Math.round(deposit*(.63+Math.min(days,30)*.001));state.customFrom=from;state.customTo=to;state.customDashboard={deposit,payout,profit:deposit-payout};state.dashboardPeriod='custom';state.customRangeOpen=false;render();toast(`${days} Tage ausgewertet.`)});
