@@ -505,6 +505,21 @@ function loadTurnoverLedger(){
     const stored=JSON.parse(localStorage.getItem(turnoverLedgerStorageKey)||'null');
     if(!stored||!stored.current||!Array.isArray(stored.records)) return cloneDefaultTurnoverLedger();
     stored.records=stored.records.slice(0,40);
+
+    // One-time demo seed for the Shop Umsatz till. Existing reset history is preserved.
+    if(Number(stored.shopTurnoverSeedVersion||0)<1){
+      const current=stored.current||{};
+      const isEmpty=['deposit','payout','profit'].every(key=>Number(current[key]||0)===0);
+      if(isEmpty){
+        current.deposit=685420;
+        current.payout=412780;
+        current.profit=272640;
+        stored.current=current;
+      }
+      stored.shopTurnoverSeedVersion=1;
+      try{ localStorage.setItem(turnoverLedgerStorageKey,JSON.stringify(stored)); }catch(_){}
+    }
+
     return stored;
   }catch(_){
     return cloneDefaultTurnoverLedger();
