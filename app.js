@@ -642,7 +642,7 @@ function turnoverView(){
   <section class="card table-card turnover-records-card" style="margin-top:16px">
     <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Letzte Aufzeichnungen</h2><small class="muted">Kassen-Resets</small></div><span class="turnover-record-count">${resetRecords.length} ${resetRecords.length===1?'Eintrag':'Einträge'}</span></div>
     <div class="table-wrap"><table class="data-table turnover-reset-table"><thead><tr><th>Datum</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody>
-      ${visibleResetRecords.length?visibleResetRecords.map(r=>`<tr><td><strong>${resetLedgerPeriodLabel(r)}</strong></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
+      ${visibleResetRecords.length?visibleResetRecords.map(r=>`<tr><td><span class="turnover-reset-period"><strong>${shortLedgerDate(r.from)} – ${shortLedgerDate(r.to)}</strong><span class="turnover-reset-time">, ${r.time} Uhr</span></span></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
     </tbody></table></div>
     ${turnoverRecordPagination(recordTotalPages,recordCurrentPage)}
   </section>`;
