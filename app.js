@@ -230,7 +230,7 @@ function svgIcon(name){
     chevron:'<path d="m9 5 7 7-7 7"/>',menu:'<path d="M3 6h18M3 12h18M3 18h18"/>',close:'<path d="M5 5l14 14M19 5 5 19"/>',
     depositWallet:'<path d="M4 9h15a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h9"/><path d="M16 13h5v5h-5a2.5 2.5 0 0 1 0-5ZM14 2v7M10.5 5.5 14 9l3.5-3.5"/>',
     payoutWallet:'<path d="M4 9h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a3 3 0 0 1-3-3V8a3 3 0 0 1 3-3h8"/><path d="M15 13h5v5h-5a2.5 2.5 0 0 1 0-5Z"/><path d="M12 10 19 3M14 3h5v5"/>',
-    reset:'<path d="M20 6v5h-5"/><path d="M19.1 14a8 8 0 1 1-.7-6.5L20 11"/>'
+    reset:'<path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 5v7h-7"/>'
   };
   return `<svg class="svg-icon" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${paths[name]||''}</svg>`;
 }
