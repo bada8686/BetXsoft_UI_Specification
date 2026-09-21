@@ -3984,16 +3984,19 @@ body.ios-keyboard-locked{
 
 /* turnover-records-pagination-v139:start */
 .route-turnover .turnover-reset-table td{
-  padding-top:7px;
-  padding-bottom:7px;
+  padding-top:4px;
+  padding-bottom:4px;
 }
 .route-turnover .turnover-record-pagination{
   justify-content:flex-end;
 }
 @media(max-width:520px){
   .route-turnover .turnover-reset-table td{
-    padding-top:5.5px;
-    padding-bottom:5.5px;
+    padding-top:3px;
+    padding-bottom:3px;
   }
+}
+.route-turnover .turnover-reset-time{
+  font-weight:400;
 }
 /* turnover-records-pagination-v139:end */
