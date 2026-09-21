@@ -3961,7 +3961,7 @@ body.ios-keyboard-locked{
 }
 .route-turnover .turnover-reset-table th:first-child,
 .route-turnover .turnover-reset-table td:first-child{
-  min-width:243px;
+  min-width:195px;
 }
 .route-turnover .turnover-reset-table td{
   vertical-align:middle;
@@ -3976,7 +3976,7 @@ body.ios-keyboard-locked{
   }
   .route-turnover .turnover-reset-table th:first-child,
   .route-turnover .turnover-reset-table td:first-child{
-    min-width:216px;
+    min-width:183px;
   }
 }
 /* turnover-independent-till-v138:end */
