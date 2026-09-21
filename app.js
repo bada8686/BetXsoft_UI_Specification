@@ -649,7 +649,7 @@ function turnoverView(){
   </section>
   <section class="card turnover-summary-card" style="margin-top:16px"><div class="revenue-top">${stats.map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]})">${formatDashboardValue(x[2])}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]==='ink'?'line':x[3]});transform:skewY(-5deg)"></div></div>`).join('')}</div></section>
   <section class="card table-card turnover-shop-card" style="margin-top:16px">
-    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover>⟳ Kasse zurücksetzen</button></div>
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover><span class="turnover-reset-icon" aria-hidden="true">⟳</span><span>Kasse zurücksetzen</span></button></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(till.deposit)}</td><td class="negative">${formatDashboardValue(till.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(till.profit)}</td></tr></tbody></table></div>
   </section>
   <section class="card table-card turnover-records-card" style="margin-top:16px">
