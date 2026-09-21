@@ -618,9 +618,7 @@ function turnoverView(){
   const stats=[
     [svgIcon('down'),'Einzahlung',totals.deposit,'green'],
     [svgIcon('up'),'Auszahlung',totals.payout,'red'],
-    [svgIcon('chart'),'Gewinn',totals.profit,'blue'],
-    ['▤','Card Deposit',totals.card,'ink'],
-    ['₿','Crypto Deposit',totals.crypto,'ink']
+    [svgIcon('chart'),'Gewinn',totals.profit,'blue']
   ];
   return `${pageHead(svgIcon('chart'),'Umsatz / Turnover','Übersicht Ihrer Umsätze.',closeButton)}
   <section class="card card-pad turnover-period-card">
