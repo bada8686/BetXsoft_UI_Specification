@@ -4002,5 +4002,14 @@ body.ios-keyboard-locked{
     padding-left:4px;
     padding-right:4px;
   }
+  .route-turnover .turnover-shop-card .data-table th:first-child,
+  .route-turnover .turnover-shop-card .data-table td:first-child{
+    width:1%;
+    padding-right:.4px;
+  }
+  .route-turnover .turnover-shop-card .data-table th:nth-child(2),
+  .route-turnover .turnover-shop-card .data-table td:nth-child(2){
+    padding-left:.4px;
+  }
 }
 /* turnover-shop-compact-columns-v144:end */
