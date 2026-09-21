@@ -3953,3 +3953,30 @@ body.ios-keyboard-locked{
   }
 }
 /* turnover-summary-approved-design-v136:end */
+
+
+/* turnover-independent-till-v138:start */
+.route-turnover .turnover-reset-table{
+  min-width:680px;
+}
+.route-turnover .turnover-reset-table th:first-child,
+.route-turnover .turnover-reset-table td:first-child{
+  min-width:285px;
+}
+.route-turnover .turnover-reset-table td{
+  vertical-align:middle;
+}
+@media(max-width:520px){
+  .route-turnover .turnover-reset-table{
+    min-width:620px;
+  }
+  .route-turnover .turnover-reset-table th,
+  .route-turnover .turnover-reset-table td{
+    padding:9px 8px;
+  }
+  .route-turnover .turnover-reset-table th:first-child,
+  .route-turnover .turnover-reset-table td:first-child{
+    min-width:250px;
+  }
+}
+/* turnover-independent-till-v138:end */
