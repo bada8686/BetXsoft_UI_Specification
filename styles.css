@@ -3663,3 +3663,125 @@ body.ios-keyboard-locked{
   box-shadow:inset 3px 0 0 #6f8ff7,inset 0 1px 0 rgba(6,72,245,.18),inset 0 -1px 0 rgba(6,72,245,.18);
 }
 /* wettscheine-selected-row-v132:end */
+
+
+/* turnover-functional-layout-v134:start */
+.route-turnover .turnover-period-card,
+.route-turnover .turnover-summary-card,
+.route-turnover .turnover-shop-card,
+.route-turnover .turnover-records-card{
+  width:100%;
+}
+.route-turnover .turnover-date-tabs{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:8px;
+  margin-bottom:10px;
+}
+.route-turnover .turnover-date-tabs .tab{
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+.route-turnover .turnover-custom-date{
+  margin-bottom:0;
+}
+.route-turnover .turnover-date-range{
+  margin:10px 0 0;
+}
+.route-turnover .turnover-section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding-bottom:10px;
+}
+.route-turnover .turnover-section-head small{
+  display:block;
+  margin-top:4px;
+}
+.route-turnover .turnover-record-count{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+}
+.route-turnover .revenue-card .svg-icon{
+  width:24px;
+  height:24px;
+}
+@media(max-width:520px){
+  .route-turnover .page-head{
+    margin-bottom:18px;
+  }
+  .route-turnover .turnover-period-card{
+    padding:16px;
+  }
+  .route-turnover .turnover-period-card .section-title{
+    margin-bottom:12px;
+  }
+  .route-turnover .turnover-date-tabs{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:7px;
+  }
+  .route-turnover .turnover-date-tabs .tab{
+    min-height:40px;
+    padding:8px 6px;
+    font-size:12px;
+  }
+  .route-turnover .turnover-custom-date{
+    height:40px;
+    font-size:12px;
+  }
+  .route-turnover .turnover-date-range{
+    grid-template-columns:1fr 1fr;
+    padding:9px;
+    gap:7px;
+  }
+  .route-turnover .turnover-date-range button{
+    grid-column:1/-1;
+    min-height:36px;
+  }
+  .route-turnover .revenue-card{
+    min-height:132px;
+    padding:14px 8px 12px;
+  }
+  .route-turnover .revenue-card .bubble{
+    width:42px;
+    height:42px;
+    margin-bottom:9px;
+    font-size:18px;
+  }
+  .route-turnover .revenue-card label{
+    margin-bottom:6px;
+    font-size:11px;
+  }
+  .route-turnover .revenue-card strong{
+    font-size:16px;
+  }
+  .route-turnover .revenue-card .spark{
+    width:58px;
+    height:14px;
+    margin-top:8px;
+  }
+  .route-turnover .turnover-section-head{
+    padding:14px 12px 9px;
+  }
+  .route-turnover .turnover-section-head .section-title{
+    font-size:15px;
+  }
+  .route-turnover .turnover-shop-card .btn{
+    min-height:34px;
+    padding:6px 9px;
+    font-size:10px;
+  }
+  .route-turnover .record{
+    grid-template-columns:1.25fr repeat(3,1fr) 12px;
+    gap:5px;
+    padding:10px 8px;
+    font-size:9.5px;
+  }
+}
+/* turnover-functional-layout-v134:end */
