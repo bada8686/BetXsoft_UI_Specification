@@ -3802,7 +3802,7 @@ body.ios-keyboard-locked{
 .route-turnover .turnover-summary-card .revenue-card{
   position:relative;
   overflow:hidden;
-  min-height:170px;
+  min-height:160px;
   padding:22px 22px 20px;
   border:1px solid #e3e8f1;
   border-radius:16px;
@@ -3926,7 +3926,7 @@ body.ios-keyboard-locked{
     gap:9px;
   }
   .route-turnover .turnover-summary-card .revenue-card{
-    min-height:126px;
+    min-height:114px;
     padding:14px 12px 13px;
     border-radius:13px;
     column-gap:9px;
@@ -3949,7 +3949,7 @@ body.ios-keyboard-locked{
     letter-spacing:-.4px;
   }
   .route-turnover .turnover-summary-card .revenue-card:nth-child(5){
-    min-height:118px;
+    min-height:110px;
   }
 }
 /* turnover-summary-approved-design-v136:end */
