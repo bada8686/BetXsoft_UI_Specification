@@ -4028,7 +4028,7 @@ body.ios-keyboard-locked{
   border-radius:14px;
   gap:9px;
   background:#fff;
-  color:var(--blue);
+  color:#0B1F3A;
   border:1px solid #cfd8ff;
   box-shadow:0 2px 6px rgba(36,72,242,.06);
 }
@@ -4038,6 +4038,7 @@ body.ios-keyboard-locked{
   flex:0 0 34px;
   border-radius:50%;
   background:#eef4ff;
+  color:var(--blue);
   display:inline-flex;
   align-items:center;
   justify-content:center;
