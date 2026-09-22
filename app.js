@@ -24,7 +24,11 @@ const routes = [
 
 const customers = [
   ['4258','Toni1234','40,00','Aktiv'],['800','akdag67','25,63','Aktiv'],['901','Sahin','40,00','Aktiv'],['4638','David','20,00','Aktiv'],
-  ['1073','Halil2','13,97','Aktiv'],['2258','Ali elmali','10,00','Aktiv'],['1567','jassin','9,00','Aktiv'],['5067','mica','5,50','Gesperrt']
+  ['1073','Halil2','13,97','Aktiv'],['2258','Ali elmali','10,00','Aktiv'],['1567','jassin','9,00','Aktiv'],['5067','mica','5,50','Gesperrt'],
+  ['6121','Murat78','845,50','Aktiv'],['6122','Selim88','620,00','Aktiv'],['6123','Burak1907','410,75','Aktiv'],['6124','Emre34','305,40','Aktiv'],
+  ['6125','CanKaya','275,00','Aktiv'],['6126','Serkan10','198,60','Aktiv'],['6127','Mehmet06','155,20','Aktiv'],['6128','Eren27','119,90','Aktiv'],
+  ['6129','Kerem44','88,40','Aktiv'],['6130','Deniz81','64,75','Aktiv'],['6131','Onur23','52,30','Aktiv'],['6132','Yusuf55','34,80','Aktiv'],
+  ['6133','Ahmet11','18,25','Aktiv'],['6134','Cem2020','320,00','Gesperrt'],['6135','Arda67','75,00','Gesperrt'],['6136','Ozan09','12,50','Gesperrt']
 ];
 
 function allCustomerRows(){
