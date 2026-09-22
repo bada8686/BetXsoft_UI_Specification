@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', customerStatusFilter: 'Alle', customerPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -384,10 +384,12 @@ function customerPagination(total,currentPage,pageSize=20){
   return `<div class="table-bottom customer-table-bottom"><span>Zeige ${from} bis ${to} von ${total} Kunden</span><div class="pagination"><button class="page-btn" data-customer-page="${Math.max(1,page-1)}" ${page===1?'disabled':''}>‹</button>${buttons}<button class="page-btn" data-customer-page="${Math.min(totalPages,page+1)}" ${page===totalPages?'disabled':''}>›</button></div></div>`;
 }
 function customersView(){
-  const q=state.customerFilter.toLowerCase();
+  const idFilter=String(state.customerIdFilter||'').trim().toLowerCase();
+  const nameFilter=String(state.customerNameFilter||'').trim().toLowerCase();
   const statusFilter=state.customerStatusFilter||'Alle';
   const allRows=customers.concat(state.createdUsers)
-    .filter(r=>!q||r.join(' ').toLowerCase().includes(q))
+    .filter(r=>!idFilter||String(r[0]).toLowerCase().includes(idFilter))
+    .filter(r=>!nameFilter||String(r[1]).toLowerCase().includes(nameFilter))
     .filter(r=>statusFilter==='Alle'||r[3]===statusFilter);
   const rows=sortedCustomerRows(allRows);
   const pageSize=20;
@@ -401,8 +403,8 @@ function customersView(){
   const headActions=`<div class="customers-head-actions"><button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>${closeButton}</div>`;
   return `${pageHead(svgIcon('searchUser'),'Kundensuche','Verwalten Sie Ihre Kunden.',headActions)}
   <section class="card card-pad customers-filter-card"><div class="filters">
-    <div class="field"><label>ID</label>${input('z. B. 4590',`data-filter="customer" value="${esc(state.customerFilter)}"`)}</div>
-    <div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div>
+    <div class="field"><label>ID</label>${input('z. B. 4590',`data-customer-id-filter value="${esc(state.customerIdFilter)}"`)}</div>
+    <div class="field"><label>Benutzername</label>${input('z. B. David',`data-customer-name-filter value="${esc(state.customerNameFilter)}"`)}</div>
     <div class="field"><label>Status</label><select class="control" data-customer-status-filter>${statusOptions}</select></div>
     <div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div>
   </div></section>
@@ -1018,13 +1020,17 @@ function bind(){
   });
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
   document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{
-    state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value.trim()).find(Boolean)||'';
+    state.customerIdFilter=document.querySelector('[data-customer-id-filter]')?.value.trim()||'';
+    state.customerNameFilter=document.querySelector('[data-customer-name-filter]')?.value.trim()||'';
+    state.customerFilter='';
     state.customerStatusFilter=document.querySelector('[data-customer-status-filter]')?.value||'Alle';
     state.customerPage=1;
     render();
   });
   document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{
     state.customerFilter='';
+    state.customerIdFilter='';
+    state.customerNameFilter='';
     state.customerStatusFilter='Alle';
     state.customerPage=1;
     render();
