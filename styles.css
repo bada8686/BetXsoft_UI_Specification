@@ -4164,3 +4164,40 @@ body.ios-keyboard-locked{
   }
 }
 /* turnover-reset-confirm-v175:end */
+
+
+/* customer-search-layout-v180:start */
+.route-customers .customers-head-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.route-customers .customers-table-card .data-table td{
+  padding-top:8px;
+  padding-bottom:8px;
+}
+.route-customers .customer-table-bottom{
+  padding-top:9px;
+  padding-bottom:9px;
+}
+.route-customers .customer-table-bottom .pagination{
+  align-items:center;
+}
+@media(max-width:520px){
+  .route-customers .customers-head-actions{
+    gap:8px;
+  }
+  .route-customers .customers-head-actions .page-close{
+    width:44px;
+    height:44px;
+  }
+  .route-customers .customers-table-card .data-table td{
+    padding-top:6px;
+    padding-bottom:6px;
+  }
+  .route-customers .customer-table-bottom{
+    padding:7px 10px;
+    gap:7px;
+  }
+}
+/* customer-search-layout-v180:end */
