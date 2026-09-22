@@ -4064,3 +4064,30 @@ body.ios-keyboard-locked{
   }
 }
 /* turnover-records-deposit-align-v162:end */
+
+
+/* home-mobile-vertical-space-redistribution-v172:start */
+@media(max-width:520px){
+  /*
+    Split the previously bottom-only flexible free space equally above and
+    below the home content. This moves exactly half of that free space above
+    the quick-action cards without changing any card/section dimensions.
+  */
+  .route-home .layout{
+    display:flex;
+    flex-direction:column;
+  }
+  .route-home .layout::before,
+  .route-home .layout::after{
+    content:"";
+    display:block;
+    flex:1 1 0;
+    min-height:0;
+    pointer-events:none;
+  }
+  .route-home .quick-grid,
+  .route-home .dash-grid{
+    flex:0 0 auto;
+  }
+}
+/* home-mobile-vertical-space-redistribution-v172:end */
