@@ -7,7 +7,7 @@ const state = {
 
 const dashboardPeriods = {
   today: {deposit:12450, payout:8920, profit:3530},
-  days3: {deposit:39760, payout:26340, profit:13420},
+  yesterday: {deposit:39760, payout:26340, profit:13420},
   week: {deposit:92430, payout:61870, profit:30560},
   month: {deposit:368161, payout:244748, profit:123413}
 };
@@ -271,20 +271,18 @@ function drawer(){
 function formatDashboardValue(value){ return new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(value); }
 function currentDashboard(){
   if(state.dashboardPeriod==='custom' && state.customDashboard) return state.customDashboard;
-  if(state.dashboardPeriod==='month'){
-    const {start,end}=currentTurnoverMonthRange();
-    const rows=turnoverData().filter(r=>r.date>=start && r.date<=end);
-    const totals=turnoverTotals(rows);
+  if(['today','yesterday','week','month'].includes(state.dashboardPeriod)){
+    const totals=turnoverTotals(filteredDataForPeriod(state.dashboardPeriod));
     return {deposit:totals.deposit,payout:totals.payout,profit:totals.profit};
   }
-  return dashboardPeriods[state.dashboardPeriod] || dashboardPeriods.today;
+  return dashboardPeriods.today;
 }
 
 function homeView(){ const d=currentDashboard(); return `${pageHead('⌂','Übersicht','Alle wichtigen Kennzahlen und Schnellaktionen auf einen Blick.')}<div class="quick-grid">
   <button class="quick-card green" data-go="deposit-1"><span class="quick-icon">${svgIcon('down')}</span><span class="quick-copy"><strong>Einzahlung</strong><small>Geld einzahlen</small></span></button>
   <button class="quick-card red" data-go="payout-1"><span class="quick-icon">${svgIcon('up')}</span><span class="quick-copy"><strong>Auszahlung</strong><small>Geld auszahlen</small></span></button>
   <button class="quick-card blue" data-go="create-user"><span class="quick-icon">${svgIcon('user')}</span><span class="quick-copy"><strong>Neuer Kunde</strong><small>Neuen Kunden anlegen</small></span></button></div>
-  <div class="dash-grid"><section class="card card-pad"><h2 class="section-title overview-title">Übersicht</h2><div class="date-tabs"><button class="tab ${state.dashboardPeriod==='today'?'active':''}" data-period="today">Heute</button><button class="tab ${state.dashboardPeriod==='days3'?'active':''}" data-period="days3">3 Tage</button><button class="tab ${state.dashboardPeriod==='week'?'active':''}" data-period="week">1 Woche</button><button class="tab ${state.dashboardPeriod==='month'?'active':''}" data-period="month">Diesen Monat</button></div><button class="custom-date ${state.dashboardPeriod==='custom'?'active':''}" data-custom-range><span>${svgIcon('calendar')}</span><span class="custom-date-label">${state.dashboardPeriod==='custom' ? `${new Date(state.customFrom+'T00:00:00').toLocaleDateString('de-DE')} – ${new Date(state.customTo+'T00:00:00').toLocaleDateString('de-DE')}` : 'Individueller Zeitraum'}</span><span>${svgIcon('chevron')}</span></button>${state.customRangeOpen?`<div class="date-range-panel"><label>Von<input type="date" value="${state.customFrom}" data-range-from></label><label>Bis<input type="date" value="${state.customTo}" data-range-to></label><button data-range-apply>Anwenden</button></div>`:''}<div class="kpis"><div class="kpi green"><div class="kpi-icon">${svgIcon('wallet')}</div><label>Einzahlung</label><strong data-kpi="deposit">${formatDashboardValue(d.deposit)}</strong></div><div class="kpi red"><div class="kpi-icon">${svgIcon('wallet')}</div><label>Auszahlung</label><strong data-kpi="payout">${formatDashboardValue(d.payout)}</strong></div><div class="kpi orange"><div class="kpi-icon">${svgIcon('chart')}</div><label>Gewinn</label><strong data-kpi="profit">${formatDashboardValue(d.profit)}</strong></div><div class="kpi violet"><div class="kpi-icon">${svgIcon('ticket')}</div><label>Offene Wetten</label><strong data-kpi="open">${currentOpenTickets}</strong></div></div></section>
+  <div class="dash-grid"><section class="card card-pad"><h2 class="section-title overview-title">Übersicht</h2><div class="date-tabs"><button class="tab ${state.dashboardPeriod==='today'?'active':''}" data-period="today">Heute</button><button class="tab ${state.dashboardPeriod==='yesterday'?'active':''}" data-period="yesterday">Gestern</button><button class="tab ${state.dashboardPeriod==='week'?'active':''}" data-period="week">1 Woche</button><button class="tab ${state.dashboardPeriod==='month'?'active':''}" data-period="month">Diesen Monat</button></div><button class="custom-date ${state.dashboardPeriod==='custom'?'active':''}" data-custom-range><span>${svgIcon('calendar')}</span><span class="custom-date-label">${state.dashboardPeriod==='custom' ? `${new Date(state.customFrom+'T00:00:00').toLocaleDateString('de-DE')} – ${new Date(state.customTo+'T00:00:00').toLocaleDateString('de-DE')}` : 'Individueller Zeitraum'}</span><span>${svgIcon('chevron')}</span></button>${state.customRangeOpen?`<div class="date-range-panel"><label>Von<input type="date" value="${state.customFrom}" data-range-from></label><label>Bis<input type="date" value="${state.customTo}" data-range-to></label><button data-range-apply>Anwenden</button></div>`:''}<div class="kpis"><div class="kpi green"><div class="kpi-icon">${svgIcon('wallet')}</div><label>Einzahlung</label><strong data-kpi="deposit">${formatDashboardValue(d.deposit)}</strong></div><div class="kpi red"><div class="kpi-icon">${svgIcon('wallet')}</div><label>Auszahlung</label><strong data-kpi="payout">${formatDashboardValue(d.payout)}</strong></div><div class="kpi orange"><div class="kpi-icon">${svgIcon('chart')}</div><label>Gewinn</label><strong data-kpi="profit">${formatDashboardValue(d.profit)}</strong></div><div class="kpi violet"><div class="kpi-icon">${svgIcon('ticket')}</div><label>Offene Wetten</label><strong data-kpi="open">${currentOpenTickets}</strong></div></div></section>
   <section class="card card-pad"><h2 class="section-title">Menü</h2><div class="menu-list">${[
   ['turnover','dollar','Buchhaltung','Shop Umsatz & Agent Umsatz'],
   ['coupons','ticket','Wettscheine','Wettscheine verwalten'],
@@ -615,51 +613,54 @@ function turnoverData(){
     return {key:turnoverDateKey(date),date,time:`${String(hour).padStart(2,'0')}:${minute}:${second}`,deposit,payout,profit,card,crypto};
   });
 }
-function currentTurnoverMonthRange(){
-  const now=new Date();
-  return {
-    start:new Date(now.getFullYear(),now.getMonth(),1,0,0,0,0),
-    end:now
-  };
-}
-function turnoverRange(){
+function sharedPeriodRange(period,customFrom='',customTo=''){
   const now=new Date();
   let start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0);
   let end=new Date(now);
-  if(state.turnoverPeriod==='yesterday'){
+
+  if(period==='yesterday'){
     start.setDate(start.getDate()-1);
     end=new Date(start);
     end.setHours(23,59,59,999);
   }
-  else if(state.turnoverPeriod==='week'){
+  else if(period==='week'){
     start.setDate(start.getDate()-6);
   }
-  else if(state.turnoverPeriod==='month'){
-    ({start,end}=currentTurnoverMonthRange());
+  else if(period==='month'){
+    start=new Date(now.getFullYear(),now.getMonth(),1,0,0,0,0);
   }
-  else if(state.turnoverPeriod==='custom'){
-    start=new Date(state.turnoverFrom+'T00:00:00');
-    end=new Date(state.turnoverTo+'T23:59:59.999');
+  else if(period==='custom'){
+    start=new Date(customFrom+'T00:00:00');
+    end=new Date(customTo+'T23:59:59.999');
   }
+
   return {start,end};
 }
-function filteredTurnoverData(){
-  const {start,end}=turnoverRange();
+function currentTurnoverMonthRange(){
+  return sharedPeriodRange('month');
+}
+function filteredDataForPeriod(period,customFrom='',customTo=''){
+  const {start,end}=sharedPeriodRange(period,customFrom,customTo);
   return turnoverData().filter(r=>r.date>=start && r.date<=end);
+}
+function turnoverRange(){
+  return sharedPeriodRange(state.turnoverPeriod,state.turnoverFrom,state.turnoverTo);
+}
+function filteredTurnoverData(){
+  return filteredDataForPeriod(state.turnoverPeriod,state.turnoverFrom,state.turnoverTo);
 }
 function turnoverTotals(rows){
   return rows.reduce((sum,r)=>({deposit:sum.deposit+r.deposit,payout:sum.payout+r.payout,profit:sum.profit+r.profit,card:sum.card+r.card,crypto:sum.crypto+r.crypto}),{deposit:0,payout:0,profit:0,card:0,crypto:0});
 }
+function periodRangeText(period,customFrom='',customTo=''){
+  const {start,end}=sharedPeriodRange(period,customFrom,customTo);
+  return `${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
+}
 function turnoverPeriodText(){
   const labels={today:'Heute',yesterday:'Gestern',week:'1 Woche'};
-  if(state.turnoverPeriod==='month'){
-    const {start,end}=currentTurnoverMonthRange();
-    return `${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
-  }
+  if(state.turnoverPeriod==='month') return periodRangeText('month');
   if(state.turnoverPeriod!=='custom') return labels[state.turnoverPeriod]||'1 Woche';
-  const from=new Date(state.turnoverFrom+'T00:00:00').toLocaleDateString('de-DE');
-  const to=new Date(state.turnoverTo+'T00:00:00').toLocaleDateString('de-DE');
-  return `${from} – ${to}`;
+  return periodRangeText('custom',state.turnoverFrom,state.turnoverTo);
 }
 function turnoverRecordPagination(totalPages,currentPage){
   if(totalPages<=1) return '';
@@ -947,7 +948,9 @@ function bind(){
     state.turnoverRangeOpen=false;
     render();
     const selectedLabel=el.textContent.trim();
-    const selectedRange=state.turnoverPeriod==='month' ? ` (${turnoverPeriodText()})` : '';
+    const selectedRange=['today','yesterday','week','month'].includes(state.turnoverPeriod)
+      ? ` (${periodRangeText(state.turnoverPeriod)})`
+      : '';
     toast(`Zeitraum „${selectedLabel}“ ausgewählt.${selectedRange}`);
   }));
   document.querySelector('[data-turnover-custom-range]')?.addEventListener('click',()=>{
@@ -975,7 +978,9 @@ function bind(){
     state.customRangeOpen=false;
     render();
     const selectedLabel=el.textContent.trim();
-    const selectedRange=state.dashboardPeriod==='month' ? ` (${turnoverPeriodText()})` : '';
+    const selectedRange=['today','yesterday','week','month'].includes(state.dashboardPeriod)
+      ? ` (${periodRangeText(state.dashboardPeriod)})`
+      : '';
     toast(`Zeitraum „${selectedLabel}“ ausgewählt.${selectedRange}`);
   }));
   document.querySelector('[data-custom-range]')?.addEventListener('click',()=>{state.customRangeOpen=!state.customRangeOpen;render()});
