@@ -2,7 +2,7 @@ const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
   customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
-  turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1
+  turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
 
 const dashboardPeriods = {
@@ -706,7 +706,7 @@ function turnoverView(){
   </section>
   <section class="card turnover-summary-card" style="margin-top:16px"><div class="revenue-top">${stats.map(x=>`<div class="revenue-card"><div class="bubble" style="color:var(--${x[3]})">${x[0]}</div><label>${x[1]}</label><strong style="color:var(--${x[3]})">${formatDashboardValue(x[2])}</strong><div class="spark" style="border-bottom:2px solid var(--${x[3]==='ink'?'line':x[3]});transform:skewY(-5deg)"></div></div>`).join('')}</div></section>
   <section class="card table-card turnover-shop-card" style="margin-top:16px">
-    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover><span class="turnover-reset-icon" aria-hidden="true">${svgIcon('reset')}</span><span>Kasse zurücksetzen</span></button></div>
+    <div class="card-pad turnover-section-head"><div><h2 class="section-title" style="margin:0">Shop Umsatz</h2><small class="muted">Aktueller Kassenstand</small></div><button class="btn small outline" data-reset-turnover><span class="turnover-reset-icon" aria-hidden="true">${svgIcon('reset')}</span><span>Kasse auf 0 setzen</span></button></div>
     <div class="table-wrap"><table class="data-table"><thead><tr><th>#</th><th>Shop</th><th>Einzahlung</th><th>Auszahlung</th><th>Gewinn</th></tr></thead><tbody><tr><td>1</td><td><strong style="color:var(--blue)">Loca22</strong></td><td class="positive">${formatDashboardValue(till.deposit)}</td><td class="negative">${formatDashboardValue(till.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(till.profit)}</td></tr></tbody></table></div>
   </section>
   <section class="card table-card turnover-records-card" style="margin-top:16px">
@@ -715,7 +715,17 @@ function turnoverView(){
       ${visibleResetRecords.length?visibleResetRecords.map(r=>`<tr><td><span class="turnover-reset-period"><strong>${shortLedgerDate(r.from)} – ${shortLedgerDate(r.to)}</strong><span class="turnover-reset-time">, ${r.time} Uhr</span></span></td><td class="positive">${formatDashboardValue(r.deposit)}</td><td class="negative">${formatDashboardValue(r.payout)}</td><td style="color:var(--blue);font-weight:800">${formatDashboardValue(r.profit)}</td></tr>`).join(''):`<tr><td colspan="4" class="empty">Noch keine Kassen-Resets vorhanden.</td></tr>`}
     </tbody></table></div>
     ${turnoverRecordPagination(recordTotalPages,recordCurrentPage)}
-  </section>`;
+  </section>
+  ${state.turnoverResetConfirm?`<div class="turnover-reset-confirm-backdrop" data-turnover-reset-backdrop>
+    <div class="turnover-reset-confirm" role="dialog" aria-modal="true" aria-labelledby="turnoverResetConfirmTitle">
+      <h3 id="turnoverResetConfirmTitle">Sind Sie sicher?</h3>
+      <p>Die Kasse wird auf 0 gesetzt und der aktuelle Abschluss gespeichert.</p>
+      <div class="turnover-reset-confirm-actions">
+        <button type="button" class="btn outline" data-turnover-reset-cancel>Abbrechen</button>
+        <button type="button" class="btn" data-turnover-reset-confirm>Kasse auf 0 setzen</button>
+      </div>
+    </div>
+  </div>`:''}`;
 }
 
 function transactionView(type){ const isDeposit=type==='deposit'; const data=isDeposit?deposits:payouts; const title=isDeposit?'Einzahlung Transaktionen':'Auszahlungen Transaktionen'; return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label>${input('Zeitraum','type="text" value="13.07.2026 - 13.08.2026"')}</div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`; }
@@ -902,13 +912,34 @@ function bind(){
     render();
   }));
   document.querySelector('[data-reset-turnover]')?.addEventListener('click',()=>{
+    const current=loadTurnoverLedger().current||{};
+    const hasBalance=['deposit','payout','profit','card','crypto'].some(key=>Number(current[key]||0)!==0);
+    if(!hasBalance){
+      toast('Der Kassenstand ist bereits 0.');
+      return;
+    }
+    state.turnoverResetConfirm=true;
+    render();
+  });
+  document.querySelector('[data-turnover-reset-cancel]')?.addEventListener('click',()=>{
+    state.turnoverResetConfirm=false;
+    render();
+  });
+  document.querySelector('[data-turnover-reset-backdrop]')?.addEventListener('click',e=>{
+    if(e.target!==e.currentTarget) return;
+    state.turnoverResetConfirm=false;
+    render();
+  });
+  document.querySelector('[data-turnover-reset-confirm]')?.addEventListener('click',()=>{
+    state.turnoverResetConfirm=false;
     if(!resetCurrentTurnoverTill()){
+      render();
       toast('Der Kassenstand ist bereits 0.');
       return;
     }
     state.turnoverRecordPage=1;
     render();
-    toast('Kasse zurückgesetzt und unter „Letzte Aufzeichnungen“ gespeichert.');
+    toast('Kasse auf 0 gesetzt und unter „Letzte Aufzeichnungen“ gespeichert.');
   });
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
