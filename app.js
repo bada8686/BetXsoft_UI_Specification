@@ -495,7 +495,19 @@ const defaultTurnoverLedger={
   },
   records:[
     {from:'2026-01-18',to:'2026-02-28',time:'14:35',deposit:12777,payout:777,profit:12000},
-    {from:'2025-12-02',to:'2026-01-18',time:'09:42',deposit:25800,payout:7465,profit:18335}
+    {from:'2025-12-02',to:'2026-01-18',time:'09:42',deposit:25800,payout:7465,profit:18335},
+    {from:'2025-10-15',to:'2025-12-02',time:'16:20',deposit:48320,payout:21120,profit:27200},
+    {from:'2025-09-01',to:'2025-10-15',time:'11:05',deposit:57240,payout:24890,profit:32350},
+    {from:'2025-07-20',to:'2025-09-01',time:'18:12',deposit:69180,payout:31760,profit:37420},
+    {from:'2025-06-10',to:'2025-07-20',time:'13:48',deposit:44860,payout:19640,profit:25220},
+    {from:'2025-05-01',to:'2025-06-10',time:'10:26',deposit:53890,payout:24730,profit:29160},
+    {from:'2025-03-18',to:'2025-05-01',time:'17:54',deposit:76420,payout:34810,profit:41610},
+    {from:'2025-02-01',to:'2025-03-18',time:'12:17',deposit:62150,payout:28200,profit:33950},
+    {from:'2024-12-15',to:'2025-02-01',time:'15:33',deposit:89540,payout:41670,profit:47870},
+    {from:'2024-11-01',to:'2024-12-15',time:'09:58',deposit:71420,payout:32900,profit:38520},
+    {from:'2024-09-20',to:'2024-11-01',time:'14:41',deposit:58760,payout:26740,profit:32020},
+    {from:'2024-08-01',to:'2024-09-20',time:'19:06',deposit:66390,payout:30150,profit:36240},
+    {from:'2024-06-15',to:'2024-08-01',time:'11:29',deposit:51980,payout:23460,profit:28520}
   ]
 };
 function cloneDefaultTurnoverLedger(){
@@ -518,6 +530,17 @@ function loadTurnoverLedger(){
         stored.current=current;
       }
       stored.shopTurnoverSeedVersion=1;
+      try{ localStorage.setItem(turnoverLedgerStorageKey,JSON.stringify(stored)); }catch(_){}
+    }
+
+    // One-time migration: add 12 demo reset records while preserving existing records.
+    if(Number(stored.turnoverRecordSeedVersion||0)<1){
+      const extras=defaultTurnoverLedger.records.slice(2);
+      const existingKeys=new Set(stored.records.map(r=>`${r.from}|${r.to}|${r.time}`));
+      stored.records=stored.records.concat(
+        extras.filter(r=>!existingKeys.has(`${r.from}|${r.to}|${r.time}`))
+      ).slice(0,40);
+      stored.turnoverRecordSeedVersion=1;
       try{ localStorage.setItem(turnoverLedgerStorageKey,JSON.stringify(stored)); }catch(_){}
     }
 
