@@ -985,7 +985,7 @@ function bind(){
   }));
   document.querySelector('[data-custom-range]')?.addEventListener('click',()=>{state.customRangeOpen=!state.customRangeOpen;render()});
   document.querySelector('[data-range-apply]')?.addEventListener('click',()=>{const from=document.querySelector('[data-range-from]').value;const to=document.querySelector('[data-range-to]').value;const start=new Date(from+'T00:00:00');const end=new Date(to+'T00:00:00');if(!from||!to||end<start)return toast('Bitte einen gültigen Zeitraum wählen.');const days=Math.min(366,Math.floor((end-start)/86400000)+1);const deposit=Math.round(days*12175.35+(days%7)*420);const payout=Math.round(deposit*(.63+Math.min(days,30)*.001));state.customFrom=from;state.customTo=to;state.customDashboard={deposit,payout,profit:deposit-payout};state.dashboardPeriod='custom';state.customRangeOpen=false;render();toast(`${days} Tage ausgewertet.`)});
-  document.querySelectorAll('.tab:not([data-period])').forEach(el=>el.addEventListener('click',()=>{el.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
+  document.querySelectorAll('.tab:not([data-period]):not([data-turnover-period])').forEach(el=>el.addEventListener('click',()=>{el.parentElement.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));el.classList.add('active');toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`)}));
 }
 
 
