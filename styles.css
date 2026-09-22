@@ -4048,6 +4048,9 @@ body.ios-keyboard-locked{
   height:24px;
   stroke-width:2.2;
 }
+.route-turnover [data-reset-turnover] > span:last-child{
+  color:#000!important;
+}
 /* turnover-reset-button-v147:end */
 
 
