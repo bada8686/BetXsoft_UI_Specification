@@ -4091,3 +4091,71 @@ body.ios-keyboard-locked{
   }
 }
 /* home-mobile-vertical-space-redistribution-v172:end */
+
+
+/* turnover-reset-confirm-v175:start */
+.turnover-reset-confirm-backdrop{
+  position:fixed;
+  inset:0;
+  z-index:500;
+  display:grid;
+  place-items:center;
+  padding:20px;
+  background:rgba(5,13,30,.38);
+  backdrop-filter:blur(2px);
+}
+.turnover-reset-confirm{
+  width:min(430px,100%);
+  border:1px solid #e1e6ef;
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 24px 60px rgba(10,24,50,.22);
+  padding:24px;
+}
+.turnover-reset-confirm h3{
+  margin:0 0 10px;
+  color:#111827;
+  font-size:21px;
+  line-height:1.2;
+  font-weight:850;
+}
+.turnover-reset-confirm p{
+  margin:0;
+  color:#5f6b7d;
+  font-size:14px;
+  line-height:1.55;
+}
+.turnover-reset-confirm-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:22px;
+}
+.turnover-reset-confirm-actions .btn{
+  min-height:42px;
+}
+@media(max-width:520px){
+  .turnover-reset-confirm-backdrop{
+    padding:16px;
+  }
+  .turnover-reset-confirm{
+    border-radius:14px;
+    padding:20px 18px 18px;
+  }
+  .turnover-reset-confirm h3{
+    font-size:19px;
+  }
+  .turnover-reset-confirm p{
+    font-size:13px;
+  }
+  .turnover-reset-confirm-actions{
+    flex-direction:column-reverse;
+    gap:8px;
+    margin-top:20px;
+  }
+  .turnover-reset-confirm-actions .btn{
+    width:100%;
+    min-height:44px;
+  }
+}
+/* turnover-reset-confirm-v175:end */
