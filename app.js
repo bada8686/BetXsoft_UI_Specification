@@ -590,7 +590,7 @@ function turnoverDateKey(date){
 }
 function turnoverData(){
   const today=new Date();
-  today.setHours(12,0,0,0);
+  today.setHours(0,0,0,0);
   return Array.from({length:92},(_,i)=>{
     const date=new Date(today);
     date.setDate(today.getDate()-i);
@@ -606,15 +606,32 @@ function turnoverData(){
     return {key:turnoverDateKey(date),date,time:`${String(hour).padStart(2,'0')}:${minute}:${second}`,deposit,payout,profit,card,crypto};
   });
 }
+function currentTurnoverMonthRange(){
+  const now=new Date();
+  return {
+    start:new Date(now.getFullYear(),now.getMonth(),1,0,0,0,0),
+    end:now
+  };
+}
 function turnoverRange(){
   const now=new Date();
-  now.setHours(12,0,0,0);
-  let start=new Date(now);
+  let start=new Date(now.getFullYear(),now.getMonth(),now.getDate(),0,0,0,0);
   let end=new Date(now);
-  if(state.turnoverPeriod==='yesterday'){ start.setDate(start.getDate()-1); end=new Date(start); }
-  else if(state.turnoverPeriod==='week'){ start.setDate(start.getDate()-6); }
-  else if(state.turnoverPeriod==='month'){ start=new Date(now.getFullYear(),now.getMonth(),1,12,0,0,0); }
-  else if(state.turnoverPeriod==='custom'){ start=new Date(state.turnoverFrom+'T12:00:00'); end=new Date(state.turnoverTo+'T12:00:00'); }
+  if(state.turnoverPeriod==='yesterday'){
+    start.setDate(start.getDate()-1);
+    end=new Date(start);
+    end.setHours(23,59,59,999);
+  }
+  else if(state.turnoverPeriod==='week'){
+    start.setDate(start.getDate()-6);
+  }
+  else if(state.turnoverPeriod==='month'){
+    ({start,end}=currentTurnoverMonthRange());
+  }
+  else if(state.turnoverPeriod==='custom'){
+    start=new Date(state.turnoverFrom+'T00:00:00');
+    end=new Date(state.turnoverTo+'T23:59:59.999');
+  }
   return {start,end};
 }
 function filteredTurnoverData(){
@@ -625,10 +642,14 @@ function turnoverTotals(rows){
   return rows.reduce((sum,r)=>({deposit:sum.deposit+r.deposit,payout:sum.payout+r.payout,profit:sum.profit+r.profit,card:sum.card+r.card,crypto:sum.crypto+r.crypto}),{deposit:0,payout:0,profit:0,card:0,crypto:0});
 }
 function turnoverPeriodText(){
-  const labels={today:'Heute',yesterday:'Gestern',week:'1 Woche',month:'Diesen Monat'};
+  const labels={today:'Heute',yesterday:'Gestern',week:'1 Woche'};
+  if(state.turnoverPeriod==='month'){
+    const {start,end}=currentTurnoverMonthRange();
+    return `${start.toLocaleDateString('de-DE')} – ${end.toLocaleDateString('de-DE')}`;
+  }
   if(state.turnoverPeriod!=='custom') return labels[state.turnoverPeriod]||'1 Woche';
-  const from=new Date(state.turnoverFrom+'T12:00:00').toLocaleDateString('de-DE');
-  const to=new Date(state.turnoverTo+'T12:00:00').toLocaleDateString('de-DE');
+  const from=new Date(state.turnoverFrom+'T00:00:00').toLocaleDateString('de-DE');
+  const to=new Date(state.turnoverTo+'T00:00:00').toLocaleDateString('de-DE');
   return `${from} – ${to}`;
 }
 function turnoverRecordPagination(totalPages,currentPage){
@@ -916,7 +937,9 @@ function bind(){
     state.turnoverPeriod=el.dataset.turnoverPeriod;
     state.turnoverRangeOpen=false;
     render();
-    toast(`Zeitraum „${el.textContent.trim()}“ ausgewählt.`);
+    const selectedLabel=el.textContent.trim();
+    const selectedRange=state.turnoverPeriod==='month' ? ` (${turnoverPeriodText()})` : '';
+    toast(`Zeitraum „${selectedLabel}“ ausgewählt.${selectedRange}`);
   }));
   document.querySelector('[data-turnover-custom-range]')?.addEventListener('click',()=>{
     state.turnoverRangeOpen=!state.turnoverRangeOpen;
