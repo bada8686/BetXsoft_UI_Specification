@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerStatusFilter: 'Alle', customerPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -358,7 +358,56 @@ function payout3(){
   return `${pageHead(svgIcon('payoutWallet'),'Auszahlung','',payoutClose())} ${steps(3,'Auszahlung')}<section class="card flow-card success-panel"><div class="success-mark payout-success-mark">✓</div><h2>Auszahlung erfolgreich!</h2><p class="muted">Die Auszahlung wurde erfolgreich durchgeführt.</p><div class="summary-list"><div class="summary-row payout-amount-highlight"><span>Ausgezahlter Betrag</span><strong class="negative">${formatAccountBalance(amount)}</strong></div><div class="summary-row"><span>Neues Guthaben</span><strong>${formatAccountBalance(newBalance)}</strong></div><div class="summary-row"><span>Benutzer-ID</span><strong>${esc(state.customer)}</strong></div></div><div class="actions"><button class="btn block" data-go="home">Zurück zur Übersicht</button></div></section>`;
 }
 
-function customersView(){ const q=state.customerFilter.toLowerCase(); const rows=customers.concat(state.createdUsers).filter(r=>!q||r.join(' ').toLowerCase().includes(q)); return `${pageHead('♙','Kunden','Verwalten Sie Ihre Kunden.','<button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>')}<section class="card card-pad"><div class="filters"><div class="field"><label>ID</label>${input('z. B. 4590','data-filter="customer"')}</div><div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div><div class="field"><label>Status</label>${select(['Alle','Aktiv','Gesperrt'])}</div><div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${tableBottom(rows.length,'Kunden',12)}</section>`; }
+function customerIsActive(row){
+  return String(row?.[3]||'').trim().toLowerCase()==='aktiv';
+}
+function sortedCustomerRows(rows){
+  return rows
+    .map((row,index)=>({row,index,balance:customerBalanceValue(row[1]),active:customerIsActive(row)}))
+    .sort((a,b)=>{
+      if(a.active!==b.active) return a.active?-1:1;
+      if(b.balance!==a.balance) return b.balance-a.balance;
+      return a.index-b.index;
+    })
+    .map(x=>x.row);
+}
+function customerPagination(total,currentPage,pageSize=20){
+  const totalPages=Math.max(1,Math.ceil(total/pageSize));
+  if(totalPages<=1) return `<div class="table-bottom customer-table-bottom"><span>Zeige ${total?1:0} bis ${total} von ${total} Kunden</span></div>`;
+  const page=Math.min(Math.max(1,currentPage),totalPages);
+  const from=(page-1)*pageSize+1;
+  const to=Math.min(page*pageSize,total);
+  const buttons=Array.from({length:totalPages},(_,i)=>{
+    const p=i+1;
+    return `<button class="page-btn ${p===page?'active':''}" data-customer-page="${p}">${p}</button>`;
+  }).join('');
+  return `<div class="table-bottom customer-table-bottom"><span>Zeige ${from} bis ${to} von ${total} Kunden</span><div class="pagination"><button class="page-btn" data-customer-page="${Math.max(1,page-1)}" ${page===1?'disabled':''}>‹</button>${buttons}<button class="page-btn" data-customer-page="${Math.min(totalPages,page+1)}" ${page===totalPages?'disabled':''}>›</button></div></div>`;
+}
+function customersView(){
+  const q=state.customerFilter.toLowerCase();
+  const statusFilter=state.customerStatusFilter||'Alle';
+  const allRows=customers.concat(state.createdUsers)
+    .filter(r=>!q||r.join(' ').toLowerCase().includes(q))
+    .filter(r=>statusFilter==='Alle'||r[3]===statusFilter);
+  const rows=sortedCustomerRows(allRows);
+  const pageSize=20;
+  const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
+  const currentPage=Math.min(Math.max(1,Number(state.customerPage)||1),totalPages);
+  state.customerPage=currentPage;
+  const start=(currentPage-1)*pageSize;
+  const visibleRows=rows.slice(start,start+pageSize);
+  const statusOptions=['Alle','Aktiv','Gesperrt'].map(x=>`<option ${x===statusFilter?'selected':''}>${x}</option>`).join('');
+  const closeButton=`<button class="page-close" data-close-page aria-label="Kundensuche schließen" title="Schließen">${svgIcon('close')}</button>`;
+  const headActions=`<div class="customers-head-actions"><button class="btn" data-go="create-user">＋ Neuen Kunden erstellen</button>${closeButton}</div>`;
+  return `${pageHead(svgIcon('searchUser'),'Kundensuche','Verwalten Sie Ihre Kunden.',headActions)}
+  <section class="card card-pad customers-filter-card"><div class="filters">
+    <div class="field"><label>ID</label>${input('z. B. 4590',`data-filter="customer" value="${esc(state.customerFilter)}"`)}</div>
+    <div class="field"><label>Benutzername</label>${input('z. B. David','data-filter="customer"')}</div>
+    <div class="field"><label>Status</label><select class="control" data-customer-status-filter>${statusOptions}</select></div>
+    <div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div>
+  </div></section>
+  <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
+}
 
 function historyView(){ return `${pageHead('↔','Transaktionen','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}<section class="card card-pad"><div class="filters three"><div class="field"><label>Status</label>${select(['Alle','Erfolgreich','Ausstehend','Storniert'])}</div><div class="field"><label>Transaktionstyp</label>${select(['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'])}</div><div class="filter-actions"><button class="btn" data-demo="Filter angewendet">Filtern</button><button class="btn secondary" data-demo="Filter zurückgesetzt">Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Alt-Guthaben</th><th>Neu-Guthaben</th><th>Beschreibung</th></tr></thead><tbody>${historyRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===3?moneyClass(c):''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${tableBottom(10,'Transaktionen',5,42)}</section>`; }
 
@@ -968,8 +1017,23 @@ function bind(){
     go('payout-2');
   });
   document.querySelector('[data-flow="filters-apply"]')?.addEventListener('click',()=>{toast('Filter wurden angewendet.');setTimeout(()=>go('coupons'),500)});
-  document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value).find(Boolean)||'';render()});
-  document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{state.customerFilter='';render()});
+  document.querySelector('[data-apply-customer]')?.addEventListener('click',()=>{
+    state.customerFilter=[...document.querySelectorAll('[data-filter="customer"]')].map(x=>x.value.trim()).find(Boolean)||'';
+    state.customerStatusFilter=document.querySelector('[data-customer-status-filter]')?.value||'Alle';
+    state.customerPage=1;
+    render();
+  });
+  document.querySelector('[data-reset-customer]')?.addEventListener('click',()=>{
+    state.customerFilter='';
+    state.customerStatusFilter='Alle';
+    state.customerPage=1;
+    render();
+  });
+  document.querySelectorAll('[data-customer-page]').forEach(el=>el.addEventListener('click',()=>{
+    if(el.disabled) return;
+    state.customerPage=Number(el.dataset.customerPage)||1;
+    render();
+  }));
   document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';state.ticketPage=1;render()});
   document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.ticketPage=1;state.toggles={};render()});
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
