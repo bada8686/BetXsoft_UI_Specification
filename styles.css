@@ -4771,10 +4771,10 @@ body.ios-keyboard-locked{
 
 /* customer-return-state-v209:start */
 .route-customers .customers-table-card .data-table tbody tr.customer-selected-row{
-  background:#edf4ff;
-  box-shadow:inset 3px 0 0 var(--blue);
+  background:#e7f0ff;
+  box-shadow:inset 4px 0 0 var(--blue), inset 0 0 0 1px rgba(36,72,242,.16);
 }
 .route-customers .customers-table-card .data-table tbody tr.customer-selected-row:hover{
-  background:#edf4ff;
+  background:#e7f0ff;
 }
 /* customer-return-state-v209:end */
