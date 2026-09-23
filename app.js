@@ -531,19 +531,18 @@ function currentLanguageMeta(){
 }
 function languageFlagMarkup(lang){
   if(lang?.code==='ku'){
+    const rays=Array.from({length:21},(_,i)=>`<line x1="15" y1="4.25" x2="15" y2="6.45" transform="rotate(${(i*360/21).toFixed(3)} 15 10)"/>`).join('');
     return `<span class="drawer-language-flag drawer-language-kurdish-flag" aria-label="Kurdistan">
       <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
-        <rect width="30" height="6.67" y="0" fill="#d51d2a"/>
-        <rect width="30" height="6.66" y="6.67" fill="#fff"/>
-        <rect width="30" height="6.67" y="13.33" fill="#278e43"/>
-        <g transform="translate(15 10)" fill="#f2c200" stroke="#f2c200" stroke-width=".75" stroke-linecap="round">
-          <circle r="2.65" stroke="none"/>
-          <path d="M0-5.1V-3.2M0 5.1V3.2M-5.1 0H-3.2M5.1 0H3.2M-3.6-3.6L-2.25-2.25M3.6 3.6L2.25 2.25M3.6-3.6L2.25-2.25M-3.6 3.6L-2.25 2.25M-1.95-4.72L-1.22-2.96M1.95 4.72L1.22 2.96M1.95-4.72L1.22-2.96M-1.95 4.72L-1.22 2.96M-4.72-1.95L-2.96-1.22M4.72 1.95L2.96 1.22M4.72-1.95L2.96-1.22M-4.72 1.95L-2.96 1.22"/>
-        </g>
+        <rect width="30" height="6.667" y="0" fill="#d51d2a"/>
+        <rect width="30" height="6.666" y="6.667" fill="#fff"/>
+        <rect width="30" height="6.667" y="13.333" fill="#278e43"/>
+        <g stroke="#f2c200" stroke-width="1.05" stroke-linecap="round">${rays}</g>
+        <circle cx="15" cy="10" r="3.05" fill="#f2c200"/>
       </svg>
     </span>`;
   }
-  return `<span class="drawer-language-flag" aria-hidden="true">${lang?.flag||''}</span>`;
+  return `<span class="drawer-language-flag drawer-language-emoji-flag" aria-hidden="true">${lang?.flag||''}</span>`;
 }
 function languageSelector(){
   const current=currentLanguageMeta();
