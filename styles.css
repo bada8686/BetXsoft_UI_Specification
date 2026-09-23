@@ -4864,10 +4864,11 @@ body.ios-keyboard-locked{
   overflow:visible;
 }
 .drawer-language-kurdish-flag svg{
-  width:22px;
+  width:21px;
   height:16px;
-  border-radius:1px;
-  box-shadow:0 0 0 1px rgba(255,255,255,.16);
+  display:block;
+  overflow:visible;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.16));
 }
 .drawer-language-list{
   max-height:314px;
