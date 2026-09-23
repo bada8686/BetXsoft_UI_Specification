@@ -4326,3 +4326,60 @@ body.ios-keyboard-locked{
   }
 }
 /* account-history-close-v187:end */
+
+
+/* account-history-export-v188:start */
+.route-history .history-filter-grid{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) minmax(180px,1fr) auto auto;
+  gap:12px;
+  align-items:end;
+  margin-bottom:18px;
+}
+.route-history .history-export-action{
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-end;
+}
+.route-history .history-export-btn{
+  min-height:44px;
+  padding:10px 18px;
+  border:1px solid #1745b7;
+  border-radius:10px;
+  background:#123da6;
+  color:#fff;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:9px;
+  font-size:14px;
+  font-weight:800;
+  line-height:1;
+  white-space:nowrap;
+  box-shadow:0 4px 12px rgba(18,61,166,.14);
+}
+.route-history .history-export-btn:hover{
+  background:#0f348f;
+}
+.route-history .history-export-btn .svg-icon{
+  width:20px;
+  height:20px;
+  stroke-width:2;
+}
+@media(max-width:760px){
+  .route-history .history-filter-grid{
+    grid-template-columns:1fr 1fr;
+  }
+  .route-history .history-export-action{
+    justify-content:stretch;
+  }
+  .route-history .history-export-btn{
+    width:100%;
+  }
+}
+@media(max-width:520px){
+  .route-history .history-filter-grid{
+    grid-template-columns:1fr;
+  }
+}
+/* account-history-export-v188:end */
