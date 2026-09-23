@@ -1,5 +1,5 @@
 const state = {
-  route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
+  route: location.hash.slice(1) || 'home', drawer: false, language: (()=>{try{return localStorage.getItem('betxsoftLanguage')||'de'}catch(_){return 'de'}})(), languageOpen: false, amount: '', customer: '',
   customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
@@ -429,8 +429,9 @@ function go(route){
   }
   location.hash = route;
   state.drawer=false;
+  state.languageOpen=false;
 }
-function toast(message){ const t=document.querySelector('#toast'); t.textContent=message; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),2200); }
+function toast(message){ const t=document.querySelector('#toast'); const translated=window.BETXSOFT_I18N?.translate(message,state.language)||message; t.textContent=translated; t.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>t.classList.remove('show'),2200); }
 function field(label, input, required=''){ return `<div class="field"><label>${label}${required?' *':''}</label>${input}</div>`; }
 function input(placeholder, attrs=''){ return `<input class="control" placeholder="${placeholder}" ${attrs}>`; }
 function select(options, attrs=''){ return `<select class="control" ${attrs}>${options.map(x=>`<option>${x}</option>`).join('')}</select>`; }
@@ -472,6 +473,24 @@ function pageHead(icon,title,sub,action=''){ return `<div class="page-head"><div
 function steps(active,type='Einzahlung'){ const names=['Daten','Übersicht','Bestätigung']; return `<div class="stepper">${names.map((n,i)=>`<div class="step ${i+1===active?'active':''} ${i+1<active?'done':''}"><span class="step-num">${i+1<active?'✓':i+1}</span>${n}</div>`).join('')}</div>`; }
 function footer(){ return `<footer class="footer"><span>© 2022 BetXsoft. Alle Rechte vorbehalten.</span><i class="mobile-home-indicator"></i></footer>`; }
 function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>368.161,00</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
+function currentLanguageMeta(){
+  const list=window.BETXSOFT_I18N?.languages||[];
+  return list.find(x=>x.code===state.language)||list.find(x=>x.code==='de')||{code:'de',flag:'🇩🇪',name:'Deutsch'};
+}
+function languageSelector(){
+  const current=currentLanguageMeta();
+  const list=window.BETXSOFT_I18N?.languages||[];
+  const options=list.map(lang=>`<button type="button" class="drawer-language-option ${lang.code===state.language?'active':''}" data-language="${lang.code}"><span class="drawer-language-flag">${lang.flag}</span><span>${lang.name}</span></button>`).join('');
+  return `<div class="drawer-language-block">
+    <button class="drawer-sub-link drawer-language-trigger" type="button" data-language-menu aria-expanded="${state.languageOpen?'true':'false'}">
+      <span class="drawer-sub-icon">${svgIcon('globe')}</span>
+      <span class="drawer-sub-label">Sprachen</span>
+      <span class="drawer-language-current" data-no-i18n><span class="drawer-language-flag">${current.flag}</span><span>${current.name}</span></span>
+      <span class="drawer-sub-chevron">${svgIcon('chevron')}</span>
+    </button>
+    ${state.languageOpen?`<div class="drawer-language-list" data-no-i18n>${options}</div>`:''}
+  </div>`;
+}
 function drawer(){
   const primary=(routeIndex,label,icon,tone)=>`<button class="drawer-primary ${tone} ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-primary-icon">${svgIcon(icon)}</span><strong>${label}</strong><span class="drawer-primary-chevron">${svgIcon('chevron')}</span></button>`;
   const item=(routeIndex,icon,label=routes[routeIndex][1])=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
@@ -489,7 +508,7 @@ function drawer(){
       ${item(14,'depositWallet')}
       ${item(15,'payoutWallet')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
-      ${staticItem('Sprachen','globe')}
+      ${languageSelector()}
       ${staticItem('Abmelden','logout')}
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
@@ -1177,8 +1196,14 @@ function render(){
   state.scrollTopOnNextRender=false;
   state.restoreCouponScrollOnNextRender=false;
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
-  document.title=`${routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin'} | BetXsoft`;
+  const i18n=window.BETXSOFT_I18N;
+  if(!i18n?.languages?.some(x=>x.code===state.language)) state.language='de';
+  const routeTitle=routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin';
+  document.title=`${i18n?.translate(routeTitle,state.language)||routeTitle} | BetXsoft`;
   document.querySelector('#app').innerHTML=`<div class="app route-${state.route}">${header()}<main class="layout">${views[state.route]()}</main>${footer()}</div>${drawer()}`;
+  i18n?.apply(document.querySelector('#app'),state.language);
+  const metaDescription=document.querySelector('meta[name="description"]');
+  if(metaDescription) metaDescription.setAttribute('content',i18n?.translate('BetXsoft Shop Admin – Kunden, Zahlungen, Wettscheine und Umsätze zentral verwalten.',state.language)||metaDescription.getAttribute('content'));
   bind();
   requestAnimationFrame(()=>{
     const targetY=restoreCouponScrollOnNextRender?couponListScrollY:(scrollTopOnNextRender?0:preservedScrollY);
@@ -1360,8 +1385,23 @@ function bind(){
     state.committedFlow='payout';
     go('payout-3');
   });
-  document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;render()}));
-  document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;render()}));
+  document.querySelector('[data-language-menu]')?.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    state.languageOpen=!state.languageOpen;
+    render();
+  });
+  document.querySelectorAll('[data-language]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    state.language=el.dataset.language||'de';
+    state.languageOpen=false;
+    try{ localStorage.setItem('betxsoftLanguage',state.language); }catch(_){}
+    render();
+    toast('Sprache wurde geändert.');
+  }));
+  document.querySelectorAll('[data-drawer]').forEach(el=>el.addEventListener('click',()=>{state.drawer=true;state.languageOpen=false;render()}));
+  document.querySelectorAll('[data-drawer-close]').forEach(el=>el.addEventListener('click',()=>{state.drawer=false;state.languageOpen=false;render()}));
   document.querySelectorAll('[data-turnover-record-page]').forEach(el=>el.addEventListener('click',()=>{
     if(el.disabled) return;
     state.turnoverRecordPage=Number(el.dataset.turnoverRecordPage)||1;
