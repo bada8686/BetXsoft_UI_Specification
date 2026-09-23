@@ -740,8 +740,7 @@ function editCustomerView(){
         <div class="field">
           <label>Telefon</label>
           <div class="edit-customer-phone-shell">
-            <input class="control" type="tel" name="phone" value="${esc(profile.phone)}" autocomplete="tel" data-edit-customer-phone>
-            <a class="edit-customer-call" href="tel:${esc(profile.phone.replace(/\s+/g,''))}" data-edit-customer-call>Anrufen</a>
+            <input class="control" type="tel" name="phone" value="${esc(profile.phone)}" autocomplete="tel">
           </div>
         </div>
         <div class="field">
@@ -1292,13 +1291,6 @@ function bind(){
     state.scrollTopOnNextRender=true;
     go('edit-customer');
   }));
-  document.querySelector('[data-edit-customer-phone]')?.addEventListener('input',e=>{
-    const link=document.querySelector('[data-edit-customer-call]');
-    if(!link) return;
-    const phone=String(e.target.value||'').trim();
-    link.href=phone?'tel:'+phone.replace(/\s+/g,''):'#';
-    link.setAttribute('aria-disabled',phone?'false':'true');
-  });
   document.querySelectorAll('[data-edit-customer-toggle] input[type="checkbox"]').forEach(input=>input.addEventListener('change',()=>{
     const status=input.closest('[data-edit-customer-toggle]')?.querySelector('[data-edit-customer-status]');
     if(!status) return;
