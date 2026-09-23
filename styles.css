@@ -4312,3 +4312,17 @@ body.ios-keyboard-locked{
   }
 }
 /* account-history-layout-v186:end */
+
+
+/* account-history-close-v187:start */
+.route-history .history-head-actions{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+@media(max-width:520px){
+  .route-history .history-head-actions{
+    gap:8px;
+  }
+}
+/* account-history-close-v187:end */
