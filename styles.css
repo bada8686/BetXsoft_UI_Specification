@@ -4767,3 +4767,14 @@ body.ios-keyboard-locked{
   }
 }
 /* language-flag-mobile-fix-v208:end */
+
+
+/* customer-return-state-v209:start */
+.route-customers .customers-table-card .data-table tbody tr.customer-selected-row{
+  background:#edf4ff;
+  box-shadow:inset 3px 0 0 var(--blue);
+}
+.route-customers .customers-table-card .data-table tbody tr.customer-selected-row:hover{
+  background:#edf4ff;
+}
+/* customer-return-state-v209:end */
