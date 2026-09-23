@@ -137,6 +137,8 @@ function customerProfileDefaults(row){
     lastName:nameParts.slice(1).join(' '),
     email:cleanMail+'@kunde.ch',
     phone:'+41 79 '+digits.slice(0,3)+' '+digits.slice(3,5)+' '+digits.slice(5,6)+'0',
+    address:'',
+    country:'',
     casinoActive:true,
     accountActive:String(row?.[3]||'').toLowerCase()==='aktiv'
   };
@@ -689,7 +691,7 @@ function editCustomerView(){
   const profile=customerProfile(row);
   const balance=formatAccountBalance(customerBalanceValue(row[1]));
   const riskOptions=['Red 5%','Yellow 10%','Green 20%'].map(x=>`<option value="${x}" ${profile.risk===x?'selected':''}>${x}</option>`).join('');
-  const switchField=(name,checked,text)=>`<label class="edit-customer-switch-row"><input type="checkbox" name="${name}" ${checked?'checked':''}><span class="edit-customer-switch-ui" aria-hidden="true"></span><span>${text}</span></label>`;
+  const switchField=(name,checked)=>`<label class="edit-customer-switch-row" data-edit-customer-toggle><input type="checkbox" name="${name}" ${checked?'checked':''}><span class="edit-customer-switch-ui" aria-hidden="true"></span><span class="edit-customer-status-text ${checked?'active':'inactive'}" data-edit-customer-status>${checked?'Aktiv':'Inaktiv'}</span></label>`;
   return `${pageHead(svgIcon('person'),'Kunde bearbeiten',`Kundendaten von ${esc(row[1])} verwalten.`,'<button class="page-close" data-close-page aria-label="Kunde bearbeiten schließen" title="Schließen">'+svgIcon('close')+'</button>')}
   <section class="card card-pad edit-customer-card">
     <form id="editCustomerForm" data-customer-id="${esc(row[0])}">
@@ -703,7 +705,7 @@ function editCustomerView(){
           <input class="control" type="password" name="password" value="${esc(profile.password)}" autocomplete="new-password" required>
         </div>
         <div class="field">
-          <label>Guthaben</label>
+          <label>Balance</label>
           <div class="control edit-customer-readonly" aria-readonly="true">${esc(balance)}</div>
         </div>
         <div class="field">
@@ -712,8 +714,17 @@ function editCustomerView(){
         </div>
         <div class="field edit-customer-toggle-field">
           <label>Cash-Out</label>
-          ${switchField('payoutActive',profile.payoutActive,'Cash-Out aktiviert')}
+          ${switchField('payoutActive',profile.payoutActive)}
         </div>
+        <div class="field edit-customer-toggle-field">
+          <label>Casino Aktiv</label>
+          ${switchField('casinoActive',profile.casinoActive)}
+        </div>
+        <div class="field edit-customer-toggle-field">
+          <label>Konto Aktiv</label>
+          ${switchField('accountActive',profile.accountActive)}
+        </div>
+        <div class="edit-customer-section-title">Kundeninformationen</div>
         <div class="field">
           <label>Vorname</label>
           <input class="control" name="firstName" value="${esc(profile.firstName)}" autocomplete="given-name">
@@ -733,13 +744,13 @@ function editCustomerView(){
             <a class="edit-customer-call" href="tel:${esc(profile.phone.replace(/\s+/g,''))}" data-edit-customer-call>Anrufen</a>
           </div>
         </div>
-        <div class="field edit-customer-toggle-field">
-          <label>Casino aktiv</label>
-          ${switchField('casinoActive',profile.casinoActive,'Casino aktiviert')}
+        <div class="field">
+          <label>Adress</label>
+          <input class="control" name="address" value="${esc(profile.address||'')}" autocomplete="street-address">
         </div>
-        <div class="field edit-customer-toggle-field">
-          <label>Konto aktiv</label>
-          ${switchField('accountActive',profile.accountActive,'Konto aktiviert')}
+        <div class="field">
+          <label>Country</label>
+          <input class="control" name="country" value="${esc(profile.country||'')}" autocomplete="country-name">
         </div>
       </div>
       <div class="edit-customer-actions">
@@ -1288,6 +1299,14 @@ function bind(){
     link.href=phone?'tel:'+phone.replace(/\s+/g,''):'#';
     link.setAttribute('aria-disabled',phone?'false':'true');
   });
+  document.querySelectorAll('[data-edit-customer-toggle] input[type="checkbox"]').forEach(input=>input.addEventListener('change',()=>{
+    const status=input.closest('[data-edit-customer-toggle]')?.querySelector('[data-edit-customer-status]');
+    if(!status) return;
+    const active=input.checked;
+    status.textContent=active?'Aktiv':'Inaktiv';
+    status.classList.toggle('active',active);
+    status.classList.toggle('inactive',!active);
+  }));
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
     if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
@@ -1435,6 +1454,8 @@ function bind(){
       lastName:String(fd.get('lastName')||'').trim(),
       email:String(fd.get('email')||'').trim(),
       phone:String(fd.get('phone')||'').trim(),
+      address:String(fd.get('address')||'').trim(),
+      country:String(fd.get('country')||'').trim(),
       casinoActive:fd.get('casinoActive')==='on',
       accountActive:fd.get('accountActive')==='on'
     };
