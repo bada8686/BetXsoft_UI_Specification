@@ -4841,3 +4841,48 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-shop-user-v211:end */
+
+
+/* language-list-and-kurdish-flag-v212:start */
+.drawer-language-flag{
+  width:24px;
+  height:18px;
+  display:inline-grid!important;
+  place-items:center;
+  flex:0 0 24px!important;
+  line-height:1;
+  overflow:visible;
+}
+.drawer-language-emoji-flag{
+  font-size:17px;
+}
+.drawer-language-kurdish-flag{
+  width:24px;
+  height:18px;
+  border-radius:0;
+  box-shadow:none;
+  overflow:visible;
+}
+.drawer-language-kurdish-flag svg{
+  width:22px;
+  height:16px;
+  border-radius:1px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.16);
+}
+.drawer-language-list{
+  max-height:314px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-gutter:stable;
+}
+@media(hover:none), (pointer:coarse){
+  .drawer-language-option:hover:not(.active){
+    background:transparent;
+  }
+}
+@media(max-width:520px){
+  .drawer-language-list{
+    max-height:280px!important;
+  }
+}
+/* language-list-and-kurdish-flag-v212:end */
