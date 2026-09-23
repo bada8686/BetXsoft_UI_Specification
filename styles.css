@@ -4289,3 +4289,26 @@ body.ios-keyboard-locked{
   }
 }
 /* customer-search-column-spacing-v185:end */
+
+
+/* account-history-layout-v186:start */
+.route-history .history-date-time{
+  display:inline-block;
+  white-space:nowrap;
+}
+.route-history .history-date-time > span{
+  display:block;
+}
+@media(max-width:520px){
+  .route-history .history-table-card .table-wrap{
+    width:100%;
+    max-width:100%;
+    overflow-x:auto;
+    overflow-y:hidden;
+    -webkit-overflow-scrolling:touch;
+  }
+  .route-history .history-table-card .data-table{
+    min-width:900px;
+  }
+}
+/* account-history-layout-v186:end */
