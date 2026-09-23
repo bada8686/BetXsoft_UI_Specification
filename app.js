@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -451,8 +451,27 @@ function customersView(){
   <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
+function historyPagination(total,currentPage,pageSize=20){
+  const totalPages=Math.max(1,Math.ceil(total/pageSize));
+  const page=Math.min(Math.max(1,currentPage),totalPages);
+  const from=total?((page-1)*pageSize+1):0;
+  const to=Math.min(page*pageSize,total);
+  if(totalPages<=1) return `<div class="table-bottom"><span>Zeige ${from} bis ${to} von ${total} Transaktionen</span></div>`;
+  const buttons=Array.from({length:totalPages},(_,i)=>{
+    const p=i+1;
+    return `<button class="page-btn ${p===page?'active':''}" data-history-page="${p}">${p}</button>`;
+  }).join('');
+  return `<div class="table-bottom"><span>Zeige ${from} bis ${to} von ${total} Transaktionen</span><div class="pagination"><button class="page-btn" data-history-page="${Math.max(1,page-1)}" ${page===1?'disabled':''}>‹</button>${buttons}<button class="page-btn" data-history-page="${Math.min(totalPages,page+1)}" ${page===totalPages?'disabled':''}>›</button></div></div>`;
+}
+
 function historyView(){
   const rows=filteredHistoryRows();
+  const pageSize=20;
+  const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
+  const currentPage=Math.min(Math.max(1,Number(state.historyPage)||1),totalPages);
+  state.historyPage=currentPage;
+  const start=(currentPage-1)*pageSize;
+  const visibleRows=rows.slice(start,start+pageSize);
   const statusOptions=['Alle','Erfolgreich','Ausstehend','Storniert'].map(x=>`<option ${x===state.historyStatusFilter?'selected':''}>${x}</option>`).join('');
   const typeOptions=['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'].map(x=>`<option ${x===state.historyTypeFilter?'selected':''}>${x}</option>`).join('');
   return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<button class="page-close" data-close-page aria-label="Kontoverlauf schließen" title="Schließen">'+svgIcon('close')+'</button>')}
@@ -462,7 +481,7 @@ function historyView(){
     <div class="filter-actions"><button class="btn" data-apply-history>Filtern</button><button class="btn secondary" data-reset-history>Zurücksetzen</button></div>
     <div class="history-export-action"><button class="history-export-btn" data-export>${svgIcon('download')}<span>Exportieren</span></button></div>
   </div></section>
-  <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th><span class="history-balance-head"><span>Guthaben</span><span>Davor</span></span></th><th><span class="history-balance-head"><span>Guthaben</span><span>Danach</span></span></th><th>Beschreibung</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):cell}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${tableBottom(rows.length,'Transaktionen',5,rows.length)}</section>`;
+  <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th><span class="history-balance-head"><span>Guthaben</span><span>Davor</span></span></th><th><span class="history-balance-head"><span>Guthaben</span><span>Danach</span></span></th><th>Beschreibung</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):cell}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${historyPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
 function createUserView(){ return `<section class="create-user-page">
@@ -1047,15 +1066,22 @@ function bind(){
   document.querySelector('[data-apply-history]')?.addEventListener('click',()=>{
     state.historyStatusFilter=document.querySelector('[data-history-status]')?.value||'Alle';
     state.historyTypeFilter=document.querySelector('[data-history-type]')?.value||'Alle';
+    state.historyPage=1;
     render();
     toast('Filter angewendet.');
   });
   document.querySelector('[data-reset-history]')?.addEventListener('click',()=>{
     state.historyStatusFilter='Alle';
     state.historyTypeFilter='Alle';
+    state.historyPage=1;
     render();
     toast('Filter zurückgesetzt.');
   });
+  document.querySelectorAll('[data-history-page]').forEach(el=>el.addEventListener('click',()=>{
+    if(el.disabled) return;
+    state.historyPage=Number(el.dataset.historyPage)||1;
+    render();
+  }));
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>{
     if(state.route==='history') return exportHistoryCsv();
