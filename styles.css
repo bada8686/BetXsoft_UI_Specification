@@ -4576,3 +4576,30 @@ body.ios-keyboard-locked{
   display:block;
 }
 /* transaction-datetime-v201:end */
+
+
+/* transaction-date-filter-v202:start */
+.route-deposit-transactions .transaction-date-range,
+.route-payout-transactions .transaction-date-range{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:8px;
+}
+.route-deposit-transactions .transaction-date-range > label,
+.route-payout-transactions .transaction-date-range > label{
+  display:grid;
+  gap:5px;
+  min-width:0;
+}
+.route-deposit-transactions .transaction-date-range > label > span,
+.route-payout-transactions .transaction-date-range > label > span{
+  font-size:11px;
+  color:var(--muted);
+}
+@media(max-width:520px){
+  .route-deposit-transactions .transaction-date-range,
+  .route-payout-transactions .transaction-date-range{
+    grid-template-columns:1fr 1fr;
+  }
+}
+/* transaction-date-filter-v202:end */
