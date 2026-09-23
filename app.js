@@ -29,18 +29,26 @@ const TOTAL_BALANCE_STORAGE_KEY='betxsoftTotalBalance';
 const INITIAL_TOTAL_BALANCE=368161;
 function totalBalanceValue(){
   try{
-    const stored=Number(localStorage.getItem(TOTAL_BALANCE_STORAGE_KEY));
-    if(Number.isFinite(stored)) return stored;
+    const raw=localStorage.getItem(TOTAL_BALANCE_STORAGE_KEY);
+    if(raw!==null && raw.trim()!==''){
+      const stored=Number(raw);
+      if(Number.isFinite(stored) && stored>=0) return Math.round(stored*100)/100;
+    }
   }catch(_){}
   return INITIAL_TOTAL_BALANCE;
 }
 function setTotalBalance(value){
-  const safe=Math.round((Number(value)||0)*100)/100;
+  const numeric=Number(value);
+  if(!Number.isFinite(numeric) || numeric<0) return totalBalanceValue();
+  const safe=Math.round(numeric*100)/100;
   try{ localStorage.setItem(TOTAL_BALANCE_STORAGE_KEY,String(safe)); }catch(_){}
   return safe;
 }
 function adjustTotalBalance(delta){
-  const next=Math.round((totalBalanceValue()+Number(delta||0))*100)/100;
+  const change=Number(delta);
+  if(!Number.isFinite(change)) return totalBalanceValue();
+  const next=Math.round((totalBalanceValue()+change)*100)/100;
+  if(next<0) return totalBalanceValue();
   return setTotalBalance(next);
 }
 
@@ -1496,6 +1504,9 @@ function bind(){
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
     if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
     const amount=Number(state.amount||'0');
+    if(!Number.isFinite(amount) || amount<=0) return toast('Bitte einen gültigen Betrag eingeben.');
+    const shopBalance=totalBalanceValue();
+    if(amount>shopBalance) return toast('Einzahlung nicht möglich. Der Shop verfügt nicht über genügend Guthaben.');
     const current=customerBalanceValue(state.customer);
     setCustomerBalance(state.customer,current+amount);
     adjustTotalBalance(-amount);
@@ -1597,7 +1608,18 @@ function bind(){
     state.ticketPage=1;
     render();
   }));
-  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{const customer=document.querySelector('#depositCustomer')?.value||'';const a=document.querySelector('#depositAmount').value.trim();if(!customer)return toast('Bitte einen Kunden auswählen.');if(!a||Number(a.replace(',','.'))<=0)return toast('Bitte einen gültigen Betrag eingeben.');state.amount=a.replace(',','.');state.customer=customer;state.committedFlow='';go('deposit-2')});
+  document.querySelector('[data-flow="deposit-next"]')?.addEventListener('click',()=>{
+    const customer=document.querySelector('#depositCustomer')?.value||'';
+    const raw=document.querySelector('#depositAmount')?.value.trim()||'';
+    const amount=Number(raw.replace(',','.'));
+    if(!customer) return toast('Bitte einen Kunden auswählen.');
+    if(!raw||!Number.isFinite(amount)||amount<=0) return toast('Bitte einen gültigen Betrag eingeben.');
+    if(amount>totalBalanceValue()) return toast('Einzahlung nicht möglich. Der Shop verfügt nicht über genügend Guthaben.');
+    state.amount=String(amount);
+    state.customer=customer;
+    state.committedFlow='';
+    go('deposit-2');
+  });
   document.querySelector('[data-flow="payout-next"]')?.addEventListener('click',()=>{
     const customer=document.querySelector('#payoutCustomer')?.value||'';
     const raw=document.querySelector('#payoutAmount').value.trim();
