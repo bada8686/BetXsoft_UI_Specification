@@ -180,6 +180,90 @@ function historyDateTimeMarkup(value){
   const time=parts.join(' ');
   return `<span class="history-date-time"><span>${esc(date)}</span><span>${esc(time)}</span></span>`;
 }
+
+function historyAbsoluteAmount(row){
+  return String(row?.[3]||'0,00').trim().replace(/^[+-]/,'');
+}
+function historySourceText(row){
+  return String(row?.[6]||'').trim();
+}
+function historyPaymentMethod(row){
+  const source=historySourceText(row);
+  const via=source.match(/\bvia\s+(.+)$/i);
+  return via ? via[1].trim() : '';
+}
+function historyCasinoName(row){
+  const source=historySourceText(row).toLowerCase();
+  if(source.includes('live casino')) return 'Live Casino';
+  if(source.includes('slot casino')) return 'Slot Casino';
+  if(source.includes('casino')) return 'Casino';
+  return 'Casino';
+}
+function historyIsSportBet(row){
+  const source=historySourceText(row).toLowerCase();
+  return source.includes('sport') || source.includes('wette');
+}
+function historyTicketNumber(row){
+  const currentId=Number(String(row?.[0]||'').replace(/\D/g,''));
+  const linkedStake=historyRows.find(candidate=>{
+    const candidateId=Number(String(candidate?.[0]||'').replace(/\D/g,''));
+    return Number.isFinite(currentId) &&
+      Number.isFinite(candidateId) &&
+      Math.abs(candidateId-currentId)===1 &&
+      candidate?.[2]==='Wetteinsatz' &&
+      historyIsSportBet(candidate);
+  });
+  const seed=String(linkedStake?.[0]||row?.[0]||'0').replace(/\D/g,'');
+  const numeric=Number(seed.slice(-6))||0;
+  return String(1300000+(numeric%200000));
+}
+function historyDisplayType(row){
+  const type=String(row?.[2]||'');
+  const source=historySourceText(row).toLowerCase();
+  if(type==='Wetteinsatz') return historyIsSportBet(row) ? 'Wette platziert' : 'Casino gespielt';
+  if(type==='Gewinn') return source.includes('sport') ? 'Wette gewonnen' : 'Casino gewonnen';
+  if(type==='Cashed Out') return 'Wettschein ausgezahlt';
+  if(type==='Wette storniert') return 'Wette storniert';
+  if(type==='Bonuserstattung') return 'Bonuserstattung';
+  return type;
+}
+function historyDisplayDescription(row){
+  const type=String(row?.[2]||'');
+  const amount=historyAbsoluteAmount(row);
+  const source=historySourceText(row).toLowerCase();
+  const ticket=`Wettschein #${historyTicketNumber(row)}`;
+  if(type==='Wetteinsatz'){
+    if(historyIsSportBet(row)) return `${ticket} · Einsatz ${amount} CHF`;
+    return `${historyCasinoName(row)} · Einsatz ${amount} CHF`;
+  }
+  if(type==='Gewinn'){
+    if(source.includes('sport')) return `${ticket} · Gewinn ${amount} CHF`;
+    return `${historyCasinoName(row)} · Gewinn ${amount} CHF`;
+  }
+  if(type==='Cashed Out') return `${ticket} · Auszahlung ${amount} CHF`;
+  if(type==='Wette storniert') return `${ticket} · Erstattung ${amount} CHF`;
+  if(type==='Einzahlung'){
+    const method=historyPaymentMethod(row);
+    return `Einzahlung ${amount} CHF${method?` · ${method}`:''}`;
+  }
+  if(type==='Auszahlung'){
+    const method=historyPaymentMethod(row);
+    return `Auszahlung ${amount} CHF${method?` · ${method}`:''}`;
+  }
+  if(type==='Bonuserstattung') return `Bonuserstattung ${amount} CHF`;
+  return historySourceText(row);
+}
+function historyDisplayRow(row){
+  return [
+    row[0],
+    row[1],
+    historyDisplayType(row),
+    row[3],
+    row[4],
+    row[5],
+    historyDisplayDescription(row)
+  ];
+}
 const HISTORY_PAGE_SIZE=20;
 const HISTORY_EXPORT_MAX_PAGES=5;
 
@@ -195,7 +279,8 @@ function exportHistoryCsv(){
   const exportedPages=Math.min(availablePages,HISTORY_EXPORT_MAX_PAGES);
   const headers=['ID','Datum & Zeit','Typ','Betrag','Guthaben vorher','Guthaben nachher','Beschreibung'];
   const csvCell=value=>`"${String(value??'').replace(/"/g,'""')}"`;
-  const csv=[headers,...rows].map(row=>row.map(csvCell).join(';')).join('\n');
+  const exportRows=rows.map(historyDisplayRow);
+  const csv=[headers,...exportRows].map(row=>row.map(csvCell).join(';')).join('\n');
   const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
   const url=URL.createObjectURL(blob);
   const link=document.createElement('a');
@@ -524,7 +609,10 @@ function historyView(){
     <div class="filter-actions"><button class="btn" data-apply-history>Filtern</button><button class="btn secondary" data-reset-history>Zurücksetzen</button></div>
     <div class="history-export-action"><button class="history-export-btn" data-export>${svgIcon('download')}<span>Exportieren</span></button></div>
   </div></section>
-  <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th><span class="history-balance-head"><span>Guthaben</span><span>Davor</span></span></th><th><span class="history-balance-head"><span>Guthaben</span><span>Danach</span></span></th><th>Beschreibung</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):cell}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${historyPagination(rows.length,currentPage,pageSize)}</section>`;
+  <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th><span class="history-balance-head"><span>Guthaben</span><span>Davor</span></span></th><th><span class="history-balance-head"><span>Guthaben</span><span>Danach</span></span></th><th>Beschreibung</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(row=>{
+    const r=historyDisplayRow(row);
+    return `<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):esc(cell)}</td>`).join('')}</tr>`;
+  }).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${historyPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
 function createUserView(){ return `<section class="create-user-page">
