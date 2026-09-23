@@ -1137,10 +1137,33 @@ function transactionView(type){
   const data=isDeposit?deposits:payouts;
   const title=isDeposit?'Einzahlung Transaktionen':'Auszahlungen Transaktionen';
   const closeButton=`<button class="page-close" data-transaction-close aria-label="${title} schließen" title="Schließen">${svgIcon('close')}</button>`;
-  return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`,closeButton)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label>${input('Zeitraum','type="text" value="13.07.2026 - 13.08.2026"')}</div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`;
+  return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`,closeButton)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label><div class="transaction-date-range"><label><span>Von</span><input class="control" type="date" data-transaction-from></label><label><span>Bis</span><input class="control" type="date" data-transaction-to></label></div></div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`;
 }
 function transactionRows(data,isDeposit){
   return data.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===6?(isDeposit?'positive':'negative'):''}">${i===1?transactionDateTimeMarkup(cell):esc(cell)}</td>`).join('')}</tr>`).join('');
+}
+function transactionDateKey(value){
+  const match=String(value||'').trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})/);
+  if(!match) return '';
+  const [,day,month,year]=match;
+  return `${year}-${month.padStart(2,'0')}-${day.padStart(2,'0')}`;
+}
+function applyTransactionFilters(){
+  if(state.route!=='deposit-transactions' && state.route!=='payout-transactions') return;
+  const isDeposit=state.route==='deposit-transactions';
+  const data=isDeposit?deposits:payouts;
+  const q=String(document.querySelector('[data-transaction-search]')?.value||'').trim().toLowerCase();
+  const from=String(document.querySelector('[data-transaction-from]')?.value||'');
+  const to=String(document.querySelector('[data-transaction-to]')?.value||'');
+  const filtered=data.filter(row=>{
+    const textOk=!q||row.join(' ').toLowerCase().includes(q);
+    const date=transactionDateKey(row[1]);
+    const fromOk=!from||date>=from;
+    const toOk=!to||date<=to;
+    return textOk&&fromOk&&toOk;
+  });
+  const body=document.querySelector('#transactionBody');
+  if(body) body.innerHTML=transactionRows(filtered,isDeposit);
 }
 function tableBottom(count,label,pages=5,total=count){ return `<div class="table-bottom"><span>Zeige 1 bis ${count} von ${total} ${label}</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">…</button><button class="page-btn">${pages}</button><button class="page-btn">›</button></div></div>`; }
 
@@ -1485,7 +1508,9 @@ function bind(){
     toast('Kundendaten wurden gespeichert.');
   });
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
-  document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
+  document.querySelector('[data-transaction-search]')?.addEventListener('input',applyTransactionFilters);
+  document.querySelector('[data-transaction-from]')?.addEventListener('change',applyTransactionFilters);
+  document.querySelector('[data-transaction-to]')?.addEventListener('change',applyTransactionFilters);
   document.querySelectorAll('[data-turnover-period]').forEach(el=>el.addEventListener('click',()=>{
     state.turnoverPeriod=el.dataset.turnoverPeriod;
     state.turnoverRangeOpen=false;
