@@ -531,38 +531,22 @@ function currentLanguageMeta(){
 }
 function languageFlagMarkup(lang){
   if(lang?.code==='ku'){
-    const rays=Array.from({length:21},(_,i)=>`<line x1="14" y1="5.45" x2="14" y2="7.35" transform="rotate(${(i*360/21).toFixed(3)} 14 10)"/>`).join('');
+    const rays=Array.from({length:21},(_,i)=>`<line x1="14" y1="5.8" x2="14" y2="7.25" transform="rotate(${(i*360/21).toFixed(3)} 14 9.65)"/>`).join('');
+    const outer='M2 4.05C5.5 1.75 9.35 2.15 13.15 3.35C17.1 4.6 21.1 2.05 26 3.95C25.45 7.45 25.7 10.95 26.25 14.55C21.95 12.95 17.75 15.2 13.65 14.15C9.65 13.12 5.85 12.3 2 14.75C2.45 11.15 2.45 7.55 2 4.05Z';
+    const white='M2.28 7.55C5.85 5.55 9.55 5.95 13.35 7.05C17.2 8.18 21.15 5.98 25.72 7.58C25.55 8.9 25.56 10.2 25.72 11.55C21.55 10.15 17.65 12.25 13.55 11.2C9.55 10.18 5.78 9.45 2.27 11.65C2.38 10.28 2.38 8.9 2.28 7.55Z';
+    const green='M2.27 11.65C5.78 9.45 9.55 10.18 13.55 11.2C17.65 12.25 21.55 10.15 25.72 11.55C25.84 12.55 26.02 13.55 26.25 14.55C21.95 12.95 17.75 15.2 13.65 14.15C9.65 13.12 5.85 12.3 2 14.75C2.12 13.7 2.2 12.68 2.27 11.65Z';
     return `<span class="drawer-language-flag drawer-language-kurdish-flag" aria-label="Kurdistan">
-      <svg viewBox="0 0 28 20" aria-hidden="true" focusable="false">
-        <defs>
-          <clipPath id="kurdishFlagEmojiWave">
-            <path d="M2.1 3.1C5.2 1.55 8.05 1.9 10.95 2.85c3.15 1.03 5.7 1.17 8.55.12 2.15-.79 4.08-.88 6.4.02v13.93c-2.25-.89-4.15-.8-6.31-.01-2.84 1.05-5.42.92-8.55-.11-2.9-.95-5.75-1.3-8.89.22V3.1Z"/>
-          </clipPath>
-          <linearGradient id="kurdishFoldShade" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#000" stop-opacity=".18"/>
-            <stop offset=".12" stop-color="#fff" stop-opacity=".12"/>
-            <stop offset=".31" stop-color="#000" stop-opacity=".14"/>
-            <stop offset=".48" stop-color="#fff" stop-opacity=".14"/>
-            <stop offset=".68" stop-color="#000" stop-opacity=".16"/>
-            <stop offset=".84" stop-color="#fff" stop-opacity=".09"/>
-            <stop offset="1" stop-color="#000" stop-opacity=".20"/>
-          </linearGradient>
-          <linearGradient id="kurdishTopLight" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#fff" stop-opacity=".14"/>
-            <stop offset=".52" stop-color="#fff" stop-opacity="0"/>
-            <stop offset="1" stop-color="#000" stop-opacity=".12"/>
-          </linearGradient>
-        </defs>
-        <g clip-path="url(#kurdishFlagEmojiWave)">
-          <rect width="28" height="6.667" y="0" fill="#d51d2a"/>
-          <rect width="28" height="6.666" y="6.667" fill="#fff"/>
-          <rect width="28" height="6.667" y="13.333" fill="#278e43"/>
-          <g stroke="#f2c200" stroke-width="1.0" stroke-linecap="round">${rays}</g>
-          <circle cx="14" cy="10" r="2.95" fill="#f2c200"/>
-          <rect width="28" height="20" fill="url(#kurdishFoldShade)"/>
-          <rect width="28" height="20" fill="url(#kurdishTopLight)"/>
-        </g>
-        <path d="M2.1 3.1C5.2 1.55 8.05 1.9 10.95 2.85c3.15 1.03 5.7 1.17 8.55.12 2.15-.79 4.08-.88 6.4.02v13.93c-2.25-.89-4.15-.8-6.31-.01-2.84 1.05-5.42.92-8.55-.11-2.9-.95-5.75-1.3-8.89.22V3.1Z" fill="none" stroke="rgba(0,0,0,.18)" stroke-width=".45"/>
+      <svg viewBox="0 0 28 19" aria-hidden="true" focusable="false">
+        <path d="${outer}" fill="#d51d2a"/>
+        <path d="${white}" fill="#fff"/>
+        <path d="${green}" fill="#278e43"/>
+        <g stroke="#f2c200" stroke-width=".88" stroke-linecap="round">${rays}</g>
+        <circle cx="14" cy="9.65" r="2.5" fill="#f2c200"/>
+        <path d="M5.05 2.85C6.2 2.28 7.18 2.26 8.2 2.47L7.72 13.3C6.7 13.05 5.72 13.1 4.7 13.62C5.15 10 5.3 6.42 5.05 2.85Z" fill="#fff" opacity=".16"/>
+        <path d="M10.4 2.58C11.45 2.75 12.4 3.05 13.35 3.35L13.72 14.16C12.7 13.88 11.72 13.62 10.72 13.38C10.4 9.76 10.32 6.16 10.4 2.58Z" fill="#000" opacity=".11"/>
+        <path d="M17.65 3.92C18.72 3.72 19.75 3.3 20.82 2.98L21.13 13.35C20.08 13.65 19.08 13.98 18.02 14.17C18.28 10.75 18.13 7.3 17.65 3.92Z" fill="#fff" opacity=".12"/>
+        <path d="M23.55 3.17C24.35 3.18 25.15 3.42 26 3.95C25.45 7.45 25.7 10.95 26.25 14.55C25.42 14.23 24.6 14.05 23.78 14.03C24.18 10.4 24.1 6.8 23.55 3.17Z" fill="#000" opacity=".13"/>
+        <path d="${outer}" fill="none" stroke="rgba(0,0,0,.22)" stroke-width=".42"/>
       </svg>
     </span>`;
   }
