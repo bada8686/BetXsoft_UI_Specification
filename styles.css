@@ -4383,3 +4383,14 @@ body.ios-keyboard-locked{
   }
 }
 /* account-history-export-v188:end */
+
+
+/* account-history-balance-head-v189:start */
+.route-history .history-balance-head{
+  display:inline-block;
+  line-height:1.15;
+}
+.route-history .history-balance-head > span{
+  display:block;
+}
+/* account-history-balance-head-v189:end */
