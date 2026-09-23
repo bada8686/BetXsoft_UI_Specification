@@ -25,6 +25,25 @@ const dashboardPeriods = {
   month: {deposit:368161, payout:244748, profit:123413}
 };
 
+const TOTAL_BALANCE_STORAGE_KEY='betxsoftTotalBalance';
+const INITIAL_TOTAL_BALANCE=368161;
+function totalBalanceValue(){
+  try{
+    const stored=Number(localStorage.getItem(TOTAL_BALANCE_STORAGE_KEY));
+    if(Number.isFinite(stored)) return stored;
+  }catch(_){}
+  return INITIAL_TOTAL_BALANCE;
+}
+function setTotalBalance(value){
+  const safe=Math.round((Number(value)||0)*100)/100;
+  try{ localStorage.setItem(TOTAL_BALANCE_STORAGE_KEY,String(safe)); }catch(_){}
+  return safe;
+}
+function adjustTotalBalance(delta){
+  const next=Math.round((totalBalanceValue()+Number(delta||0))*100)/100;
+  return setTotalBalance(next);
+}
+
 // Open tickets are a live/current total and must never depend on the dashboard period filter.
 const currentOpenTickets = 42;
 
@@ -524,7 +543,7 @@ function svgIcon(name){
 function pageHead(icon,title,sub,action=''){ return `<div class="page-head"><div class="page-icon">${icon}</div><div><h1>${title}</h1>${sub?`<p>${sub}</p>`:''}</div>${action?`<div class="head-action">${action}</div>`:''}</div>`; }
 function steps(active,type='Einzahlung'){ const names=['Daten','Übersicht','Bestätigung']; return `<div class="stepper">${names.map((n,i)=>`<div class="step ${i+1===active?'active':''} ${i+1<active?'done':''}"><span class="step-num">${i+1<active?'✓':i+1}</span>${n}</div>`).join('')}</div>`; }
 function footer(){ return `<footer class="footer"><span>© 2022 BetXsoft. Alle Rechte vorbehalten.</span><i class="mobile-home-indicator"></i></footer>`; }
-function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>368.161,00</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
+function header(){ return `<header class="topbar"><div class="topbar-main"><div class="brand-zone"><button class="brand" data-go="home" aria-label="Startseite">Bet<span class="brand-x">X</span>soft<small>Casino · Sports · Betting</small></button><div class="mobile-total"><small>Gesamtbalance</small><strong>${formatAccountBalance(totalBalanceValue())}</strong></div></div><button class="home-button" data-go="home" aria-label="Startseite">⌂</button><div class="top-spacer"></div><div class="balance"><span class="balance-copy"><small>Guthaben</small><strong>14.857,00</strong></span></div><button class="menu-button" data-drawer aria-label="Menü öffnen">${svgIcon('menu')}</button></div></header>`; }
 function currentLanguageMeta(){
   const list=window.BETXSOFT_I18N?.languages||[];
   return list.find(x=>x.code===state.language)||list.find(x=>x.code==='de')||{code:'de',flag:'🇩🇪',name:'Deutsch'};
@@ -1479,6 +1498,7 @@ function bind(){
     const amount=Number(state.amount||'0');
     const current=customerBalanceValue(state.customer);
     setCustomerBalance(state.customer,current+amount);
+    adjustTotalBalance(-amount);
     state.committedFlow='deposit';
     go('deposit-3');
   });
@@ -1487,6 +1507,7 @@ function bind(){
     const amount=Number(state.amount||'0');
     const current=customerBalanceValue(state.customer);
     setCustomerBalance(state.customer,Math.max(0,current-amount));
+    adjustTotalBalance(amount);
     state.committedFlow='payout';
     go('payout-3');
   });
