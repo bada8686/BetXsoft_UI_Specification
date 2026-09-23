@@ -490,16 +490,34 @@ function currentLanguageMeta(){
   const list=window.BETXSOFT_I18N?.languages||[];
   return list.find(x=>x.code===state.language)||list.find(x=>x.code==='de')||{code:'de',flag:'🇩🇪',name:'Deutsch'};
 }
+function languageFlagMarkup(lang){
+  if(lang?.code==='ku'){
+    return `<span class="drawer-language-flag drawer-language-kurdish-flag" aria-label="Kurdistan">
+      <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
+        <rect width="30" height="6.67" y="0" fill="#d51d2a"/>
+        <rect width="30" height="6.66" y="6.67" fill="#fff"/>
+        <rect width="30" height="6.67" y="13.33" fill="#278e43"/>
+        <g transform="translate(15 10)" fill="#f2c200" stroke="#f2c200" stroke-width=".75" stroke-linecap="round">
+          <circle r="2.65" stroke="none"/>
+          <path d="M0-5.1V-3.2M0 5.1V3.2M-5.1 0H-3.2M5.1 0H3.2M-3.6-3.6L-2.25-2.25M3.6 3.6L2.25 2.25M3.6-3.6L2.25-2.25M-3.6 3.6L-2.25 2.25M-1.95-4.72L-1.22-2.96M1.95 4.72L1.22 2.96M1.95-4.72L1.22-2.96M-1.95 4.72L-1.22 2.96M-4.72-1.95L-2.96-1.22M4.72 1.95L2.96 1.22M4.72-1.95L2.96-1.22M-4.72 1.95L-2.96 1.22"/>
+        </g>
+      </svg>
+    </span>`;
+  }
+  return `<span class="drawer-language-flag" aria-hidden="true">${lang?.flag||''}</span>`;
+}
 function languageSelector(){
   const current=currentLanguageMeta();
   const list=window.BETXSOFT_I18N?.languages||[];
-  const options=list.map(lang=>`<button type="button" class="drawer-language-option ${lang.code===state.language?'active':''}" data-language="${lang.code}"><span class="drawer-language-flag">${lang.flag}</span><span>${lang.name}</span></button>`).join('');
+  const options=list.map(lang=>`<button type="button" class="drawer-language-option ${lang.code===state.language?'active':''}" data-language="${lang.code}">${languageFlagMarkup(lang)}<span>${lang.name}</span></button>`).join('');
   return `<div class="drawer-language-block">
     <button class="drawer-sub-link drawer-language-trigger" type="button" data-language-menu aria-expanded="${state.languageOpen?'true':'false'}">
       <span class="drawer-sub-icon">${svgIcon('globe')}</span>
       <span class="drawer-sub-label">Sprachen</span>
-      <span class="drawer-language-current" data-no-i18n><span class="drawer-language-flag">${current.flag}</span><span>${current.name}</span></span>
-      <span class="drawer-sub-chevron">${svgIcon('chevron')}</span>
+      <span class="drawer-language-right" data-no-i18n>
+        <span class="drawer-language-current">${languageFlagMarkup(current)}<span class="drawer-language-name">${current.name}</span></span>
+        <span class="drawer-sub-chevron">${svgIcon('chevron')}</span>
+      </span>
     </button>
     ${state.languageOpen?`<div class="drawer-language-list" data-no-i18n>${options}</div>`:''}
   </div>`;
