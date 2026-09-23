@@ -185,6 +185,10 @@ const HISTORY_EXPORT_MAX_PAGES=5;
 
 function exportHistoryCsv(){
   const allRows=filteredHistoryRows();
+  if(!allRows.length){
+    toast('Keine Transaktionen zum Exportieren vorhanden.');
+    return;
+  }
   const maxExportRows=HISTORY_PAGE_SIZE*HISTORY_EXPORT_MAX_PAGES;
   const rows=allRows.slice(0,maxExportRows);
   const availablePages=Math.ceil(allRows.length/HISTORY_PAGE_SIZE);
@@ -471,7 +475,7 @@ function customersView(){
     .filter(r=>!nameFilter||String(r[1]).toLowerCase().includes(nameFilter))
     .filter(r=>statusFilter==='Alle'||r[3]===statusFilter);
   const rows=sortedCustomerRows(allRows);
-  const pageSize=HISTORY_PAGE_SIZE;
+  const pageSize=20;
   const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
   const currentPage=Math.min(Math.max(1,Number(state.customerPage)||1),totalPages);
   state.customerPage=currentPage;
@@ -505,7 +509,7 @@ function historyPagination(total,currentPage,pageSize=HISTORY_PAGE_SIZE){
 
 function historyView(){
   const rows=filteredHistoryRows();
-  const pageSize=20;
+  const pageSize=HISTORY_PAGE_SIZE;
   const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
   const currentPage=Math.min(Math.max(1,Number(state.historyPage)||1),totalPages);
   state.historyPage=currentPage;
