@@ -250,6 +250,7 @@ function svgIcon(name){
     list:'<path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4" cy="6" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="12" r="1.2" fill="currentColor" stroke="none"/><circle cx="4" cy="18" r="1.2" fill="currentColor" stroke="none"/>',
     historyClock:'<path d="M4 8V4m0 0h4M4 4a9 9 0 1 1-1 10"/><path d="M12 7v5l-3 2"/>',
     upload:'<path d="M12 17V5M7 10l5-5 5 5"/><path d="M5 15v4h14v-4"/>',
+    download:'<path d="M12 4v12M7 11l5 5 5-5"/><path d="M5 18v2h14v-2"/>',
     ticket:'<path d="M5 4h14a1 1 0 0 1 1 1v4a3 3 0 0 0 0 6v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a3 3 0 0 0 0-6V5a1 1 0 0 1 1-1Z"/><path d="M12 7v2m0 2v2m0 2v2"/>',
     dollar:'<path d="M12 3v18M16 7.5c-.8-1-2-1.5-4-1.5-2.2 0-3.5 1.1-3.5 2.7 0 4.1 7.5 1.7 7.5 6 0 1.8-1.6 3.3-4.2 3.3-1.8 0-3.4-.7-4.3-1.9"/>',
     person:'<circle cx="12" cy="8" r="3.2"/><path d="M5.5 20c.8-3.7 3-5.6 6.5-5.6s5.7 1.9 6.5 5.6"/>',
@@ -454,11 +455,12 @@ function historyView(){
   const rows=filteredHistoryRows();
   const statusOptions=['Alle','Erfolgreich','Ausstehend','Storniert'].map(x=>`<option ${x===state.historyStatusFilter?'selected':''}>${x}</option>`).join('');
   const typeOptions=['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'].map(x=>`<option ${x===state.historyTypeFilter?'selected':''}>${x}</option>`).join('');
-  return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<div class="history-head-actions"><button class="btn outline" data-export>⇩ Exportieren</button><button class="page-close" data-close-page aria-label="Kontoverlauf schließen" title="Schließen">'+svgIcon('close')+'</button></div>')}
-  <section class="card card-pad"><div class="filters three">
+  return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<button class="page-close" data-close-page aria-label="Kontoverlauf schließen" title="Schließen">'+svgIcon('close')+'</button>')}
+  <section class="card card-pad history-filter-card"><div class="history-filter-grid">
     <div class="field"><label>Status</label><select class="control" data-history-status>${statusOptions}</select></div>
     <div class="field"><label>Transaktionstyp</label><select class="control" data-history-type>${typeOptions}</select></div>
     <div class="filter-actions"><button class="btn" data-apply-history>Filtern</button><button class="btn secondary" data-reset-history>Zurücksetzen</button></div>
+    <div class="history-export-action"><button class="history-export-btn" data-export>${svgIcon('download')}<span>Exportieren</span></button></div>
   </div></section>
   <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Guthaben vorher</th><th>Guthaben nachher</th><th>Beschreibung</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):cell}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${tableBottom(rows.length,'Transaktionen',5,rows.length)}</section>`;
 }
