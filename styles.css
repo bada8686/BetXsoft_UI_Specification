@@ -4717,3 +4717,53 @@ body.ios-keyboard-locked{
   }
 }
 /* multilingual-language-selector-v203:end */
+
+
+/* language-flag-mobile-fix-v208:start */
+.drawer-language-trigger{
+  grid-template-columns:32px minmax(0,1fr) auto!important;
+}
+.drawer-language-current{
+  max-width:none;
+  overflow:visible;
+  flex:0 0 auto;
+}
+.drawer-language-right{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:8px!important;
+  min-width:max-content!important;
+}
+.drawer-language-right .drawer-language-flag{
+  display:inline-flex!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+@media(max-width:520px){
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-trigger,
+  .route-home + .drawer-backdrop + .drawer .drawer-language-trigger{
+    grid-template-columns:27px minmax(0,1fr) auto!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-right,
+  .route-home + .drawer-backdrop + .drawer .drawer-language-right{
+    min-width:46px!important;
+    display:inline-flex!important;
+    align-items:center!important;
+    justify-content:flex-end!important;
+    gap:8px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-current,
+  .route-home + .drawer-backdrop + .drawer .drawer-language-current{
+    max-width:none!important;
+    overflow:visible!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-flag,
+  .route-home + .drawer-backdrop + .drawer .drawer-language-flag{
+    display:inline-flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+    flex:0 0 auto!important;
+  }
+}
+/* language-flag-mobile-fix-v208:end */
