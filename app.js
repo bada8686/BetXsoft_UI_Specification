@@ -13,7 +13,7 @@ function initialSiteLanguage(){
 
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, language: initialSiteLanguage(), languageOpen: false, amount: '', customer: '',
-  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, selectedCustomerId: '', customerListScrollY: 0, restoreCustomerScrollOnNextRender: false, customerSubpageFromSearch: false, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -692,7 +692,7 @@ function customersView(){
     <div class="field"><label>Status</label><select class="control" data-customer-status-filter>${statusOptions}</select></div>
     <div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div>
   </div></section>
-  <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${customerEffectiveStatus(r)==='Aktiv'?'active':'neutral'}">${customerEffectiveStatus(r)}</span></td><td><button class="btn small outline" data-edit-customer="${esc(r[0])}">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
+  <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr class="${String(state.selectedCustomerId)===String(r[0])?'customer-selected-row':''}" data-customer-row="${esc(r[0])}"><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${customerEffectiveStatus(r)==='Aktiv'?'active':'neutral'}">${customerEffectiveStatus(r)}</span></td><td><button class="btn small outline" data-edit-customer="${esc(r[0])}">Bearbeiten</button> <button class="btn small secondary" data-customer-history="${esc(r[0])}">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
 function historyPagination(total,currentPage,pageSize=HISTORY_PAGE_SIZE){
@@ -1227,8 +1227,11 @@ function render(){
   const scrollTopOnNextRender=state.scrollTopOnNextRender;
   const restoreCouponScrollOnNextRender=state.restoreCouponScrollOnNextRender;
   const couponListScrollY=state.couponListScrollY;
+  const restoreCustomerScrollOnNextRender=state.restoreCustomerScrollOnNextRender;
+  const customerListScrollY=state.customerListScrollY;
   state.scrollTopOnNextRender=false;
   state.restoreCouponScrollOnNextRender=false;
+  state.restoreCustomerScrollOnNextRender=false;
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
   const i18n=window.BETXSOFT_I18N;
   if(!i18n?.languages?.some(x=>x.code===state.language)) state.language='en';
@@ -1240,7 +1243,7 @@ function render(){
   if(metaDescription) metaDescription.setAttribute('content',i18n?.translate('BetXsoft Shop Admin – Kunden, Zahlungen, Wettscheine und Umsätze zentral verwalten.',state.language)||metaDescription.getAttribute('content'));
   bind();
   requestAnimationFrame(()=>{
-    const targetY=restoreCouponScrollOnNextRender?couponListScrollY:(scrollTopOnNextRender?0:preservedScrollY);
+    const targetY=restoreCustomerScrollOnNextRender?customerListScrollY:(restoreCouponScrollOnNextRender?couponListScrollY:(scrollTopOnNextRender?0:preservedScrollY));
     window.scrollTo({top:targetY,left:0,behavior:'auto'});
   });
 }
@@ -1366,6 +1369,14 @@ function bind(){
     e.preventDefault();
     e.stopPropagation();
     state.drawer=false;
+    if(state.customerSubpageFromSearch && (state.route==='edit-customer' || state.route==='history')){
+      state.customerSubpageFromSearch=false;
+      state.restoreCustomerScrollOnNextRender=true;
+      history.replaceState(null,'',location.pathname+location.search+'#customers');
+      state.route='customers';
+      render();
+      return;
+    }
     state.customer='';
     state.amount='';
     state.committedFlow='';
@@ -1390,9 +1401,21 @@ function bind(){
   });
 
   document.querySelectorAll('[data-edit-customer]').forEach(el=>el.addEventListener('click',()=>{
-    state.editingCustomerId=el.dataset.editCustomer||'';
+    const customerId=el.dataset.editCustomer||'';
+    state.selectedCustomerId=customerId;
+    state.editingCustomerId=customerId;
+    state.customerListScrollY=window.scrollY;
+    state.customerSubpageFromSearch=true;
     state.scrollTopOnNextRender=true;
     go('edit-customer');
+  }));
+  document.querySelectorAll('[data-customer-history]').forEach(el=>el.addEventListener('click',()=>{
+    const customerId=el.dataset.customerHistory||'';
+    state.selectedCustomerId=customerId;
+    state.customerListScrollY=window.scrollY;
+    state.customerSubpageFromSearch=true;
+    state.scrollTopOnNextRender=true;
+    go('history');
   }));
   document.querySelectorAll('[data-edit-customer-toggle] input[type="checkbox"]').forEach(input=>input.addEventListener('change',()=>{
     const status=input.closest('[data-edit-customer-toggle]')?.querySelector('[data-edit-customer-status]');
