@@ -118,6 +118,8 @@ function setCustomerBalance(name,value){
 }
 
 const historyRows = [
+  ['72810423','22.09.26 10:42:18','Einzahlung','+50,00','179,65','229,65','Einzahlung via Shop'],
+  ['72810422','22.09.26 09:16:44','Auszahlung','-100,00','279,65','179,65','Auszahlung via Shop'],
   ['50054060','06.08.25 11:51:51','Einzahlung','+10,00','0,97','10,97','Einzahlung via Sofortüberweisung'],
   ['41064834','06.08.25 11:51:51','Wetteinsatz','-0,20','10,97','10,77','Wetteinsatz Slot Casino'],
   ['41064745','06.08.25 11:51:23','Gewinn','+21,42','10,77','32,19','Gewinn Slot Casino'],
@@ -221,6 +223,9 @@ function historyTicketNumber(row){
 function historyDisplayType(row){
   const type=String(row?.[2]||'');
   const source=historySourceText(row).toLowerCase();
+  const method=historyPaymentMethod(row).toLowerCase();
+  if(type==='Einzahlung' && method==='shop') return 'Einzahlung Shop';
+  if(type==='Auszahlung' && method==='shop') return 'Auszahlung Shop';
   if(type==='Wetteinsatz') return historyIsSportBet(row) ? 'Wette platziert' : 'Casino gespielt';
   if(type==='Gewinn') return source.includes('sport') ? 'Wette gewonnen' : 'Casino gewonnen';
   if(type==='Cashed Out') return 'Wettschein ausgezahlt';
@@ -245,10 +250,12 @@ function historyDisplayDescription(row){
   if(type==='Wette storniert') return `${ticket} · Erstattung ${amount} CHF`;
   if(type==='Einzahlung'){
     const method=historyPaymentMethod(row);
+    if(method.toLowerCase()==='shop') return `Einzahlung Shop · Betrag ${amount} CHF`;
     return `Einzahlung ${amount} CHF${method?` · ${method}`:''}`;
   }
   if(type==='Auszahlung'){
     const method=historyPaymentMethod(row);
+    if(method.toLowerCase()==='shop') return `Auszahlung Shop · Betrag ${amount} CHF`;
     return `Auszahlung ${amount} CHF${method?` · ${method}`:''}`;
   }
   if(type==='Bonuserstattung') return `Bonuserstattung ${amount} CHF`;
@@ -264,6 +271,15 @@ function historyDisplayRow(row){
     row[5],
     historyDisplayDescription(row)
   ];
+}
+function historyDescriptionMarkup(row){
+  const type=String(row?.[2]||'');
+  const method=historyPaymentMethod(row).toLowerCase();
+  if((type==='Einzahlung'||type==='Auszahlung') && method==='shop'){
+    const label=type==='Einzahlung'?'Einzahlung Shop':'Auszahlung Shop';
+    return `${esc(label)} · Betrag <strong>${esc(historyAbsoluteAmount(row))} CHF</strong>`;
+  }
+  return esc(historyDisplayDescription(row));
 }
 const HISTORY_PAGE_SIZE=20;
 const HISTORY_EXPORT_MAX_PAGES=5;
@@ -612,7 +628,7 @@ function historyView(){
   </div></section>
   <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th><span class="history-balance-head"><span>Guthaben</span><span>Davor</span></span></th><th><span class="history-balance-head"><span>Guthaben</span><span>Danach</span></span></th><th>Beschreibung</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(row=>{
     const r=historyDisplayRow(row);
-    return `<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):esc(cell)}</td>`).join('')}</tr>`;
+    return `<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):i===6?historyDescriptionMarkup(row):esc(cell)}</td>`).join('')}</tr>`;
   }).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${historyPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
