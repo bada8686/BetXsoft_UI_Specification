@@ -4416,6 +4416,14 @@ body.ios-keyboard-locked{
   width:100%;
   min-height:44px;
 }
+.route-edit-customer .edit-customer-readonly{
+  display:flex;
+  align-items:center;
+  background:#f6f7f9;
+  color:#667085;
+  cursor:not-allowed;
+  user-select:none;
+}
 .route-edit-customer .edit-customer-toggle-field{
   display:flex;
   flex-direction:column;
