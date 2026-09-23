@@ -531,14 +531,21 @@ function currentLanguageMeta(){
 }
 function languageFlagMarkup(lang){
   if(lang?.code==='ku'){
-    const rays=Array.from({length:21},(_,i)=>`<line x1="15" y1="4.25" x2="15" y2="6.45" transform="rotate(${(i*360/21).toFixed(3)} 15 10)"/>`).join('');
+    const rays=Array.from({length:21},(_,i)=>`<line x1="12" y1="4.4" x2="12" y2="6.15" transform="rotate(${(i*360/21).toFixed(3)} 12 9)"/>`).join('');
     return `<span class="drawer-language-flag drawer-language-kurdish-flag" aria-label="Kurdistan">
-      <svg viewBox="0 0 30 20" aria-hidden="true" focusable="false">
-        <rect width="30" height="6.667" y="0" fill="#d51d2a"/>
-        <rect width="30" height="6.666" y="6.667" fill="#fff"/>
-        <rect width="30" height="6.667" y="13.333" fill="#278e43"/>
-        <g stroke="#f2c200" stroke-width="1.05" stroke-linecap="round">${rays}</g>
-        <circle cx="15" cy="10" r="3.05" fill="#f2c200"/>
+      <svg viewBox="0 0 24 18" aria-hidden="true" focusable="false">
+        <defs>
+          <clipPath id="kurdishFlagWave">
+            <path d="M1.2 2.1C4.4.7 7.4 1.4 10.2 2.25c3.2.98 6.05 1.35 9.2.15 1.2-.45 2.25-.45 3.4.05v12.95c-1.15-.5-2.2-.5-3.4-.05-3.15 1.2-6 .83-9.2-.15-2.8-.85-5.8-1.55-9-.15V2.1Z"/>
+          </clipPath>
+        </defs>
+        <g clip-path="url(#kurdishFlagWave)">
+          <rect width="24" height="6" y="0" fill="#d51d2a"/>
+          <rect width="24" height="6" y="6" fill="#fff"/>
+          <rect width="24" height="6" y="12" fill="#278e43"/>
+          <g stroke="#f2c200" stroke-width=".9" stroke-linecap="round">${rays}</g>
+          <circle cx="12" cy="9" r="2.65" fill="#f2c200"/>
+        </g>
       </svg>
     </span>`;
   }
