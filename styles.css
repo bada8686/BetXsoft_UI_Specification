@@ -4393,4 +4393,7 @@ body.ios-keyboard-locked{
 .route-history .history-balance-head > span{
   display:block;
 }
+.route-history .history-balance-head > span + span{
+  margin-top:2px;
+}
 /* account-history-balance-head-v189:end */
