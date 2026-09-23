@@ -128,7 +128,7 @@ function customerProfileDefaults(row){
   const nameParts=username.split(/\s+/).filter(Boolean);
   const cleanMail=username.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'')||('kunde'+id);
   const digits=(id.replace(/\D/g,'')+'000000').slice(0,6);
-  const riskOptions=['Niedrig','Mittel','Hoch'];
+  const riskOptions=['Red 5%','Yellow 10%','Green 20%'];
   return {
     password:'Betx'+id+'!',
     risk:riskOptions[(Number(id)||0)%riskOptions.length],
@@ -146,7 +146,10 @@ function customerProfile(row){
   const defaults=customerProfileDefaults(row);
   const stored=storedCustomerProfiles();
   const saved=stored[String(row[0])]||{};
-  return {...defaults,...saved};
+  const profile={...defaults,...saved};
+  const legacyRiskMap={'Niedrig':'Red 5%','Mittel':'Yellow 10%','Hoch':'Green 20%'};
+  if(legacyRiskMap[profile.risk]) profile.risk=legacyRiskMap[profile.risk];
+  return profile;
 }
 function saveCustomerProfile(row,profile){
   if(!row) return;
@@ -685,27 +688,31 @@ function editCustomerView(){
   }
   const profile=customerProfile(row);
   const balance=formatAccountBalance(customerBalanceValue(row[1]));
-  const riskOptions=['Niedrig','Mittel','Hoch'].map(x=>`<option value="${x}" ${profile.risk===x?'selected':''}>${x}</option>`).join('');
+  const riskOptions=['Red 5%','Yellow 10%','Green 20%'].map(x=>`<option value="${x}" ${profile.risk===x?'selected':''}>${x}</option>`).join('');
   const switchField=(name,checked,text)=>`<label class="edit-customer-switch-row"><input type="checkbox" name="${name}" ${checked?'checked':''}><span class="edit-customer-switch-ui" aria-hidden="true"></span><span>${text}</span></label>`;
   return `${pageHead(svgIcon('person'),'Kunde bearbeiten',`Kundendaten von ${esc(row[1])} verwalten.`,'<button class="page-close" data-close-page aria-label="Kunde bearbeiten schließen" title="Schließen">'+svgIcon('close')+'</button>')}
   <section class="card card-pad edit-customer-card">
     <form id="editCustomerForm" data-customer-id="${esc(row[0])}">
       <div class="edit-customer-grid">
         <div class="field">
+          <label>User Name</label>
+          <input class="control" name="username" value="${esc(row[1])}" autocomplete="username" required>
+        </div>
+        <div class="field">
           <label>Passwort</label>
           <input class="control" type="password" name="password" value="${esc(profile.password)}" autocomplete="new-password" required>
         </div>
         <div class="field">
           <label>Guthaben</label>
-          <input class="control" name="balance" inputmode="decimal" autocomplete="off" value="${esc(balance)}" required>
+          <div class="control edit-customer-readonly" aria-readonly="true">${esc(balance)}</div>
         </div>
         <div class="field">
           <label>Risikostufe</label>
           <select class="control" name="risk">${riskOptions}</select>
         </div>
         <div class="field edit-customer-toggle-field">
-          <label>Auszahlung</label>
-          ${switchField('payoutActive',profile.payoutActive,'Auszahlung aktiviert')}
+          <label>Cash-Out</label>
+          ${switchField('payoutActive',profile.payoutActive,'Cash-Out aktiviert')}
         </div>
         <div class="field">
           <label>Vorname</label>
@@ -1414,12 +1421,15 @@ function bind(){
     const row=customerById(form.dataset.customerId);
     if(!row) return toast('Kunde wurde nicht gefunden.');
     const fd=new FormData(form);
-    const rawBalance=String(fd.get('balance')||'').trim().replace(/\./g,'').replace(',','.');
-    const balance=Number(rawBalance);
-    if(!Number.isFinite(balance)||balance<0) return toast('Bitte ein gültiges Guthaben eingeben.');
+    const oldUsername=String(row[1]||'');
+    const username=String(fd.get('username')||'').trim();
+    if(!username) return toast('Bitte einen User Name eingeben.');
+    const duplicate=customers.concat(state.createdUsers).some(candidate=>candidate!==row && String(candidate[1]).toLowerCase()===username.toLowerCase());
+    if(duplicate) return toast('Dieser User Name ist bereits vergeben.');
+    const currentBalance=customerBalanceValue(oldUsername);
     const profile={
       password:String(fd.get('password')||''),
-      risk:String(fd.get('risk')||'Mittel'),
+      risk:String(fd.get('risk')||'Yellow 10%'),
       payoutActive:fd.get('payoutActive')==='on',
       firstName:String(fd.get('firstName')||'').trim(),
       lastName:String(fd.get('lastName')||'').trim(),
@@ -1429,7 +1439,13 @@ function bind(){
       accountActive:fd.get('accountActive')==='on'
     };
     saveCustomerProfile(row,profile);
-    setCustomerBalance(row[1],balance);
+    if(username!==oldUsername){
+      const stored=storedCustomerBalances();
+      delete stored[oldUsername];
+      try{ localStorage.setItem('betxsoftCustomerBalances',JSON.stringify(stored)); }catch(_){}
+      row[1]=username;
+    }
+    setCustomerBalance(row[1],currentBalance);
     row[3]=profile.accountActive?'Aktiv':'Gesperrt';
     render();
     toast('Kundendaten wurden gespeichert.');
