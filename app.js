@@ -1182,7 +1182,10 @@ function applyTransactionFilters(){
     return textOk&&fromOk&&toOk;
   });
   const body=document.querySelector('#transactionBody');
-  if(body) body.innerHTML=transactionRows(filtered,isDeposit);
+  if(body){
+    body.innerHTML=transactionRows(filtered,isDeposit);
+    window.BETXSOFT_I18N?.apply(body,state.language);
+  }
 }
 function tableBottom(count,label,pages=5,total=count){ return `<div class="table-bottom"><span>Zeige 1 bis ${count} von ${total} ${label}</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">…</button><button class="page-btn">${pages}</button><button class="page-btn">›</button></div></div>`; }
 
@@ -1364,7 +1367,8 @@ function bind(){
     const status=input.closest('[data-edit-customer-toggle]')?.querySelector('[data-edit-customer-status]');
     if(!status) return;
     const active=input.checked;
-    status.textContent=active?'Aktiv':'Inaktiv';
+    const statusSource=active?'Aktiv':'Inaktiv';
+    status.textContent=window.BETXSOFT_I18N?.translate(statusSource,state.language)||statusSource;
     status.classList.toggle('active',active);
     status.classList.toggle('inactive',!active);
   }));
