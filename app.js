@@ -239,26 +239,26 @@ function historyDisplayDescription(row){
   const source=historySourceText(row).toLowerCase();
   const ticket=`Wettschein #${historyTicketNumber(row)}`;
   if(type==='Wetteinsatz'){
-    if(historyIsSportBet(row)) return `${ticket} · Einsatz ${amount} CHF`;
-    return `${historyCasinoName(row)} · Einsatz ${amount} CHF`;
+    if(historyIsSportBet(row)) return `${ticket} · Einsatz ${amount}`;
+    return `${historyCasinoName(row)} · Einsatz ${amount}`;
   }
   if(type==='Gewinn'){
-    if(source.includes('sport')) return `${ticket} · Gewinn ${amount} CHF`;
-    return `${historyCasinoName(row)} · Gewinn ${amount} CHF`;
+    if(source.includes('sport')) return `${ticket} · Gewinn ${amount}`;
+    return `${historyCasinoName(row)} · Gewinn ${amount}`;
   }
-  if(type==='Cashed Out') return `${ticket} · Auszahlung ${amount} CHF`;
-  if(type==='Wette storniert') return `${ticket} · Erstattung ${amount} CHF`;
+  if(type==='Cashed Out') return `${ticket} · Auszahlung ${amount}`;
+  if(type==='Wette storniert') return `${ticket} · Erstattung ${amount}`;
   if(type==='Einzahlung'){
     const method=historyPaymentMethod(row);
-    if(method.toLowerCase()==='shop') return `Einzahlung Shop · Betrag ${amount} CHF`;
-    return `Einzahlung ${amount} CHF${method?` · ${method}`:''}`;
+    if(method.toLowerCase()==='shop') return `Einzahlung Shop · Betrag ${amount}`;
+    return `Einzahlung ${amount}${method?` · ${method}`:''}`;
   }
   if(type==='Auszahlung'){
     const method=historyPaymentMethod(row);
-    if(method.toLowerCase()==='shop') return `Auszahlung Shop · Betrag ${amount} CHF`;
-    return `Auszahlung ${amount} CHF${method?` · ${method}`:''}`;
+    if(method.toLowerCase()==='shop') return `Auszahlung Shop · Betrag ${amount}`;
+    return `Auszahlung ${amount}${method?` · ${method}`:''}`;
   }
-  if(type==='Bonuserstattung') return `Bonuserstattung ${amount} CHF`;
+  if(type==='Bonuserstattung') return `Bonuserstattung ${amount}`;
   return historySourceText(row);
 }
 function historyDisplayRow(row){
@@ -273,13 +273,12 @@ function historyDisplayRow(row){
   ];
 }
 function historyDescriptionMarkup(row){
-  const type=String(row?.[2]||'');
-  const method=historyPaymentMethod(row).toLowerCase();
-  if((type==='Einzahlung'||type==='Auszahlung') && method==='shop'){
-    const label=type==='Einzahlung'?'Einzahlung Shop':'Auszahlung Shop';
-    return `${esc(label)} · Betrag <strong>${esc(historyAbsoluteAmount(row))} CHF</strong>`;
-  }
-  return esc(historyDisplayDescription(row));
+  const description=historyDisplayDescription(row);
+  const amount=historyAbsoluteAmount(row);
+  const escapedDescription=esc(description);
+  const escapedAmount=esc(amount);
+  if(!escapedAmount || !escapedDescription.includes(escapedAmount)) return escapedDescription;
+  return escapedDescription.replace(escapedAmount,`<strong>${escapedAmount}</strong>`);
 }
 const HISTORY_PAGE_SIZE=20;
 const HISTORY_EXPORT_MAX_PAGES=5;
