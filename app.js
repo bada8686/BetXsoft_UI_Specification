@@ -1,5 +1,18 @@
+function initialSiteLanguage(){
+  const supported=(window.BETXSOFT_I18N?.languages||[]).map(x=>x.code);
+  try{
+    const saved=localStorage.getItem('betxsoftLanguage');
+    if(saved && supported.includes(saved)) return saved;
+  }catch(_){}
+  const deviceLanguage=String(navigator.language||navigator.userLanguage||'').toLowerCase();
+  const primary=deviceLanguage.split('-')[0];
+  const detected=supported.includes(primary)?primary:'en';
+  try{ localStorage.setItem('betxsoftLanguage',detected); }catch(_){}
+  return detected;
+}
+
 const state = {
-  route: location.hash.slice(1) || 'home', drawer: false, language: (()=>{try{return localStorage.getItem('betxsoftLanguage')||'de'}catch(_){return 'de'}})(), languageOpen: false, amount: '', customer: '',
+  route: location.hash.slice(1) || 'home', drawer: false, language: initialSiteLanguage(), languageOpen: false, amount: '', customer: '',
   customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
@@ -1200,7 +1213,7 @@ function render(){
   state.restoreCouponScrollOnNextRender=false;
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
   const i18n=window.BETXSOFT_I18N;
-  if(!i18n?.languages?.some(x=>x.code===state.language)) state.language='de';
+  if(!i18n?.languages?.some(x=>x.code===state.language)) state.language='en';
   const routeTitle=routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin';
   document.title=`${i18n?.translate(routeTitle,state.language)||routeTitle} | BetXsoft`;
   document.querySelector('#app').innerHTML=`<div class="app route-${state.route}">${header()}<main class="layout">${views[state.route]()}</main>${footer()}</div>${drawer()}`;
