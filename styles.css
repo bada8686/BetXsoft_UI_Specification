@@ -4610,7 +4610,7 @@ body.ios-keyboard-locked{
   width:100%;
 }
 .drawer-language-trigger{
-  grid-template-columns:32px minmax(0,1fr) auto 18px;
+  grid-template-columns:32px minmax(0,1fr) auto;
 }
 .drawer-language-current{
   min-width:0;
@@ -4626,6 +4626,22 @@ body.ios-keyboard-locked{
   overflow:hidden;
   text-overflow:ellipsis;
 }
+.drawer-language-right{
+  min-width:0;
+  display:inline-flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:8px;
+  white-space:nowrap;
+}
+.drawer-language-right .drawer-sub-chevron{
+  flex:0 0 auto;
+}
+.drawer-language-name{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 .drawer-language-current > span:last-child{
   overflow:hidden;
   text-overflow:ellipsis;
@@ -4634,6 +4650,21 @@ body.ios-keyboard-locked{
   flex:0 0 auto;
   font-size:16px;
   line-height:1;
+}
+.drawer-language-kurdish-flag{
+  width:24px;
+  height:16px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border-radius:2px;
+  box-shadow:0 0 0 1px rgba(255,255,255,.22);
+}
+.drawer-language-kurdish-flag svg{
+  display:block;
+  width:24px;
+  height:16px;
 }
 .drawer-language-list{
   margin:3px 6px 7px 41px;
@@ -4674,7 +4705,7 @@ body.ios-keyboard-locked{
 }
 @media(max-width:520px){
   .drawer-language-trigger{
-    grid-template-columns:30px minmax(0,1fr) auto 17px;
+    grid-template-columns:30px minmax(0,1fr) auto;
   }
   .drawer-language-current{
     max-width:92px;
