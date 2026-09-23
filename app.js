@@ -431,6 +431,45 @@ const payouts = [
 
 function moneyClass(v){ return String(v).trim().startsWith('-') ? 'negative' : String(v).trim().startsWith('+') ? 'positive' : ''; }
 function esc(s){ return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+const CUSTOMER_SEARCH_RETURN_KEY='betxsoftCustomerSearchReturn';
+function saveCustomerSearchReturn(customerId){
+  const snapshot={
+    customerId:String(customerId||''),
+    page:Number(state.customerPage)||1,
+    scrollY:Math.max(0,Math.round(window.scrollY||0)),
+    idFilter:String(state.customerIdFilter||''),
+    nameFilter:String(state.customerNameFilter||''),
+    statusFilter:String(state.customerStatusFilter||'Alle')
+  };
+  state.selectedCustomerId=snapshot.customerId;
+  state.customerListScrollY=snapshot.scrollY;
+  state.customerSubpageFromSearch=true;
+  try{ sessionStorage.setItem(CUSTOMER_SEARCH_RETURN_KEY,JSON.stringify(snapshot)); }catch(_){}
+  return snapshot;
+}
+function readCustomerSearchReturn(){
+  try{ return JSON.parse(sessionStorage.getItem(CUSTOMER_SEARCH_RETURN_KEY)||'null'); }
+  catch(_){ return null; }
+}
+function restoreCustomerSearchReturn(){
+  const snapshot=readCustomerSearchReturn();
+  if(!snapshot) return;
+  state.selectedCustomerId=String(snapshot.customerId||state.selectedCustomerId||'');
+  state.customerPage=Number(snapshot.page)||state.customerPage||1;
+  state.customerListScrollY=Math.max(0,Number(snapshot.scrollY)||0);
+  state.customerIdFilter=String(snapshot.idFilter??state.customerIdFilter??'');
+  state.customerNameFilter=String(snapshot.nameFilter??state.customerNameFilter??'');
+  state.customerStatusFilter=String(snapshot.statusFilter||state.customerStatusFilter||'Alle');
+}
+function returnToCustomerSearch(){
+  iosKeyboardViewportLock?.release?.();
+  restoreCustomerSearchReturn();
+  state.customerSubpageFromSearch=false;
+  state.restoreCustomerScrollOnNextRender=true;
+  history.replaceState(null,'',location.pathname+location.search+'#customers');
+  state.route='customers';
+  render();
+}
 function go(route){
   if(route==='deposit-1' && state.route!=='deposit-2'){
     state.customer='';
@@ -1245,6 +1284,10 @@ function render(){
   requestAnimationFrame(()=>{
     const targetY=restoreCustomerScrollOnNextRender?customerListScrollY:(restoreCouponScrollOnNextRender?couponListScrollY:(scrollTopOnNextRender?0:preservedScrollY));
     window.scrollTo({top:targetY,left:0,behavior:'auto'});
+    if(restoreCustomerScrollOnNextRender){
+      requestAnimationFrame(()=>window.scrollTo({top:customerListScrollY,left:0,behavior:'auto'}));
+      setTimeout(()=>window.scrollTo({top:customerListScrollY,left:0,behavior:'auto'}),160);
+    }
   });
 }
 
@@ -1370,11 +1413,7 @@ function bind(){
     e.stopPropagation();
     state.drawer=false;
     if(state.customerSubpageFromSearch && (state.route==='edit-customer' || state.route==='history')){
-      state.customerSubpageFromSearch=false;
-      state.restoreCustomerScrollOnNextRender=true;
-      history.replaceState(null,'',location.pathname+location.search+'#customers');
-      state.route='customers';
-      render();
+      returnToCustomerSearch();
       return;
     }
     state.customer='';
@@ -1402,18 +1441,14 @@ function bind(){
 
   document.querySelectorAll('[data-edit-customer]').forEach(el=>el.addEventListener('click',()=>{
     const customerId=el.dataset.editCustomer||'';
-    state.selectedCustomerId=customerId;
+    saveCustomerSearchReturn(customerId);
     state.editingCustomerId=customerId;
-    state.customerListScrollY=window.scrollY;
-    state.customerSubpageFromSearch=true;
     state.scrollTopOnNextRender=true;
     go('edit-customer');
   }));
   document.querySelectorAll('[data-customer-history]').forEach(el=>el.addEventListener('click',()=>{
     const customerId=el.dataset.customerHistory||'';
-    state.selectedCustomerId=customerId;
-    state.customerListScrollY=window.scrollY;
-    state.customerSubpageFromSearch=true;
+    saveCustomerSearchReturn(customerId);
     state.scrollTopOnNextRender=true;
     go('history');
   }));
@@ -1660,7 +1695,7 @@ function bind(){
 const iosKeyboardViewportLock=(()=>{
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform==='MacIntel' && navigator.maxTouchPoints>1);
-  if(!isIOS) return {installed:false};
+  if(!isIOS) return {installed:false,unfreeze(){},release(){}};
 
   const editableSelector=[
     'input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]):not([type="file"]):not([type="button"]):not([type="submit"]):not([type="reset"])',
@@ -1699,7 +1734,7 @@ const iosKeyboardViewportLock=(()=>{
     document.body.style.overflow='hidden';
   }
 
-  function unfreeze(){
+  function unfreeze(restorePosition=true){
     if(!lock) return;
     const saved=lock;
     lock=null;
@@ -1714,10 +1749,16 @@ const iosKeyboardViewportLock=(()=>{
     document.body.style.width=saved.bodyWidth;
     document.body.style.overflow=saved.bodyOverflow;
 
-    requestAnimationFrame(()=>{
-      window.scrollTo({left:saved.x,top:saved.y,behavior:'instant'});
-      requestAnimationFrame(()=>window.scrollTo(saved.x,saved.y));
-    });
+    if(restorePosition){
+      requestAnimationFrame(()=>{
+        window.scrollTo({left:saved.x,top:saved.y,behavior:'instant'});
+        requestAnimationFrame(()=>window.scrollTo(saved.x,saved.y));
+      });
+    }
+  }
+  function release(){
+    clearTimeout(restoreTimer);
+    unfreeze(false);
   }
 
   document.addEventListener('focusin',e=>{
@@ -1751,9 +1792,19 @@ const iosKeyboardViewportLock=(()=>{
     window.visualViewport.addEventListener('scroll',keepAnchored,{passive:true});
   }
 
-  return {installed:true,unfreeze};
+  return {installed:true,unfreeze,release};
 })();
 /* ios-keyboard-viewport-lock:end */
 
-addEventListener('hashchange',render);
+try{ history.scrollRestoration='manual'; }catch(_){}
+addEventListener('hashchange',()=>{
+  const nextRoute=location.hash.slice(1)||'home';
+  if(nextRoute==='customers' && state.customerSubpageFromSearch && (state.route==='edit-customer' || state.route==='history')){
+    iosKeyboardViewportLock?.release?.();
+    restoreCustomerSearchReturn();
+    state.customerSubpageFromSearch=false;
+    state.restoreCustomerScrollOnNextRender=true;
+  }
+  render();
+});
 render();
