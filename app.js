@@ -180,8 +180,15 @@ function historyDateTimeMarkup(value){
   const time=parts.join(' ');
   return `<span class="history-date-time"><span>${esc(date)}</span><span>${esc(time)}</span></span>`;
 }
+const HISTORY_PAGE_SIZE=20;
+const HISTORY_EXPORT_MAX_PAGES=5;
+
 function exportHistoryCsv(){
-  const rows=filteredHistoryRows();
+  const allRows=filteredHistoryRows();
+  const maxExportRows=HISTORY_PAGE_SIZE*HISTORY_EXPORT_MAX_PAGES;
+  const rows=allRows.slice(0,maxExportRows);
+  const availablePages=Math.ceil(allRows.length/HISTORY_PAGE_SIZE);
+  const exportedPages=Math.min(availablePages,HISTORY_EXPORT_MAX_PAGES);
   const headers=['ID','Datum & Zeit','Typ','Betrag','Guthaben vorher','Guthaben nachher','Beschreibung'];
   const csvCell=value=>`"${String(value??'').replace(/"/g,'""')}"`;
   const csv=[headers,...rows].map(row=>row.map(csvCell).join(';')).join('\n');
@@ -189,12 +196,12 @@ function exportHistoryCsv(){
   const url=URL.createObjectURL(blob);
   const link=document.createElement('a');
   link.href=url;
-  link.download='kontoverlauf.csv';
+  link.download='kontoverlauf-letzte-'+exportedPages+'-seiten.csv';
   document.body.appendChild(link);
   link.click();
   link.remove();
   URL.revokeObjectURL(url);
-  toast('Kontoverlauf wurde exportiert.');
+  toast(exportedPages===1?'Die letzte verfügbare Seite wurde exportiert.':`Die letzten ${exportedPages} verfügbaren Seiten wurden exportiert.`);
 }
 
 const couponsSeed = [
@@ -464,7 +471,7 @@ function customersView(){
     .filter(r=>!nameFilter||String(r[1]).toLowerCase().includes(nameFilter))
     .filter(r=>statusFilter==='Alle'||r[3]===statusFilter);
   const rows=sortedCustomerRows(allRows);
-  const pageSize=20;
+  const pageSize=HISTORY_PAGE_SIZE;
   const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
   const currentPage=Math.min(Math.max(1,Number(state.customerPage)||1),totalPages);
   state.customerPage=currentPage;
@@ -483,7 +490,7 @@ function customersView(){
   <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
-function historyPagination(total,currentPage,pageSize=20){
+function historyPagination(total,currentPage,pageSize=HISTORY_PAGE_SIZE){
   const totalPages=Math.max(1,Math.ceil(total/pageSize));
   const page=Math.min(Math.max(1,currentPage),totalPages);
   const from=total?((page-1)*pageSize+1):0;
