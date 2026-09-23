@@ -1268,6 +1268,19 @@ function bind(){
     state.restoreCouponScrollOnNextRender=true;
     go('coupons');
   });
+
+  document.querySelectorAll('[data-edit-customer]').forEach(el=>el.addEventListener('click',()=>{
+    state.editingCustomerId=el.dataset.editCustomer||'';
+    state.scrollTopOnNextRender=true;
+    go('edit-customer');
+  }));
+  document.querySelectorAll('[data-edit-customer-phone]')?.addEventListener('input',e=>{
+    const link=document.querySelectorAll('[data-edit-customer-call]');
+    if(!link) return;
+    const phone=String(e.target.value||'').trim();
+    link.href=phone?'tel:'+phone.replace(/\s+/g,''):'#';
+    link.setAttribute('aria-disabled',phone?'false':'true');
+  });
   document.querySelectorAll('[data-go]').forEach(el=>el.addEventListener('click',()=>go(el.dataset.go)));
   document.querySelector('[data-confirm-deposit]')?.addEventListener('click',()=>{
     if(state.committedFlow==='deposit'){ go('deposit-3'); return; }
@@ -1394,6 +1407,33 @@ function bind(){
   }));
   document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';state.ticketPage=1;render()});
   document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.ticketPage=1;state.toggles={};render()});
+
+  document.querySelectorAll('#editCustomerForm')?.addEventListener('submit',e=>{
+    e.preventDefault();
+    const form=e.currentTarget;
+    const row=customerById(form.dataset.customerId);
+    if(!row) return toast('Kunde wurde nicht gefunden.');
+    const fd=new FormData(form);
+    const rawBalance=String(fd.get('balance')||'').trim().replace(/\./g,'').replace(',','.');
+    const balance=Number(rawBalance);
+    if(!Number.isFinite(balance)||balance<0) return toast('Bitte ein gültiges Guthaben eingeben.');
+    const profile={
+      password:String(fd.get('password')||''),
+      risk:String(fd.get('risk')||'Mittel'),
+      payoutActive:fd.get('payoutActive')==='on',
+      firstName:String(fd.get('firstName')||'').trim(),
+      lastName:String(fd.get('lastName')||'').trim(),
+      email:String(fd.get('email')||'').trim(),
+      phone:String(fd.get('phone')||'').trim(),
+      casinoActive:fd.get('casinoActive')==='on',
+      accountActive:fd.get('accountActive')==='on'
+    };
+    saveCustomerProfile(row,profile);
+    setCustomerBalance(row[1],balance);
+    row[3]=profile.accountActive?'Aktiv':'Gesperrt';
+    render();
+    toast('Kundendaten wurden gespeichert.');
+  });
   document.querySelector('#createUserForm')?.addEventListener('submit',e=>{e.preventDefault();const fd=new FormData(e.target);const name=fd.get('username').trim();const rawBalance=String(fd.get('balance')||'').trim().replace(',','.');const balance=Number.isFinite(Number(rawBalance))&&rawBalance!==''?Number(rawBalance):0;state.createdUsers.unshift([String(6000+state.createdUsers.length),name,formatAccountBalance(balance),'Aktiv']);toast(`Kunde ${name} wurde erstellt.`);setTimeout(()=>go('home'),500)});
   document.querySelector('[data-transaction-search]')?.addEventListener('input',e=>{const data=state.route==='deposit-transactions'?deposits:payouts;const q=e.target.value.toLowerCase();const filtered=data.filter(r=>r.join(' ').toLowerCase().includes(q));document.querySelector('#transactionBody').innerHTML=transactionRows(filtered,state.route==='deposit-transactions')});
   document.querySelectorAll('[data-turnover-period]').forEach(el=>el.addEventListener('click',()=>{
