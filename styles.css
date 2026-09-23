@@ -4563,3 +4563,16 @@ body.ios-keyboard-locked{
   }
 }
 /* edit-customer-page-v197:end */
+
+
+/* transaction-datetime-v201:start */
+.route-deposit-transactions .transaction-date-time,
+.route-payout-transactions .transaction-date-time{
+  display:inline-block;
+  white-space:nowrap;
+}
+.route-deposit-transactions .transaction-date-time > span,
+.route-payout-transactions .transaction-date-time > span{
+  display:block;
+}
+/* transaction-datetime-v201:end */
