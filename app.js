@@ -531,21 +531,38 @@ function currentLanguageMeta(){
 }
 function languageFlagMarkup(lang){
   if(lang?.code==='ku'){
-    const rays=Array.from({length:21},(_,i)=>`<line x1="12" y1="4.4" x2="12" y2="6.15" transform="rotate(${(i*360/21).toFixed(3)} 12 9)"/>`).join('');
+    const rays=Array.from({length:21},(_,i)=>`<line x1="14" y1="5.45" x2="14" y2="7.35" transform="rotate(${(i*360/21).toFixed(3)} 14 10)"/>`).join('');
     return `<span class="drawer-language-flag drawer-language-kurdish-flag" aria-label="Kurdistan">
-      <svg viewBox="0 0 24 18" aria-hidden="true" focusable="false">
+      <svg viewBox="0 0 28 20" aria-hidden="true" focusable="false">
         <defs>
-          <clipPath id="kurdishFlagWave">
-            <path d="M1.2 2.1C4.4.7 7.4 1.4 10.2 2.25c3.2.98 6.05 1.35 9.2.15 1.2-.45 2.25-.45 3.4.05v12.95c-1.15-.5-2.2-.5-3.4-.05-3.15 1.2-6 .83-9.2-.15-2.8-.85-5.8-1.55-9-.15V2.1Z"/>
+          <clipPath id="kurdishFlagEmojiWave">
+            <path d="M2.1 3.1C5.2 1.55 8.05 1.9 10.95 2.85c3.15 1.03 5.7 1.17 8.55.12 2.15-.79 4.08-.88 6.4.02v13.93c-2.25-.89-4.15-.8-6.31-.01-2.84 1.05-5.42.92-8.55-.11-2.9-.95-5.75-1.3-8.89.22V3.1Z"/>
           </clipPath>
+          <linearGradient id="kurdishFoldShade" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#000" stop-opacity=".18"/>
+            <stop offset=".12" stop-color="#fff" stop-opacity=".12"/>
+            <stop offset=".31" stop-color="#000" stop-opacity=".14"/>
+            <stop offset=".48" stop-color="#fff" stop-opacity=".14"/>
+            <stop offset=".68" stop-color="#000" stop-opacity=".16"/>
+            <stop offset=".84" stop-color="#fff" stop-opacity=".09"/>
+            <stop offset="1" stop-color="#000" stop-opacity=".20"/>
+          </linearGradient>
+          <linearGradient id="kurdishTopLight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#fff" stop-opacity=".14"/>
+            <stop offset=".52" stop-color="#fff" stop-opacity="0"/>
+            <stop offset="1" stop-color="#000" stop-opacity=".12"/>
+          </linearGradient>
         </defs>
-        <g clip-path="url(#kurdishFlagWave)">
-          <rect width="24" height="6" y="0" fill="#d51d2a"/>
-          <rect width="24" height="6" y="6" fill="#fff"/>
-          <rect width="24" height="6" y="12" fill="#278e43"/>
-          <g stroke="#f2c200" stroke-width=".9" stroke-linecap="round">${rays}</g>
-          <circle cx="12" cy="9" r="2.65" fill="#f2c200"/>
+        <g clip-path="url(#kurdishFlagEmojiWave)">
+          <rect width="28" height="6.667" y="0" fill="#d51d2a"/>
+          <rect width="28" height="6.666" y="6.667" fill="#fff"/>
+          <rect width="28" height="6.667" y="13.333" fill="#278e43"/>
+          <g stroke="#f2c200" stroke-width="1.0" stroke-linecap="round">${rays}</g>
+          <circle cx="14" cy="10" r="2.95" fill="#f2c200"/>
+          <rect width="28" height="20" fill="url(#kurdishFoldShade)"/>
+          <rect width="28" height="20" fill="url(#kurdishTopLight)"/>
         </g>
+        <path d="M2.1 3.1C5.2 1.55 8.05 1.9 10.95 2.85c3.15 1.03 5.7 1.17 8.55.12 2.15-.79 4.08-.88 6.4.02v13.93c-2.25-.89-4.15-.8-6.31-.01-2.84 1.05-5.42.92-8.55-.11-2.9-.95-5.75-1.3-8.89.22V3.1Z" fill="none" stroke="rgba(0,0,0,.18)" stroke-width=".45"/>
       </svg>
     </span>`;
   }
