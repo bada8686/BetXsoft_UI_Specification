@@ -567,6 +567,11 @@ function drawer(){
   const staticItem=(label,icon)=>`<button class="drawer-sub-link" type="button"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
   return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
     <nav class="drawer-nav">
+      <div class="drawer-shop-user" aria-label="Shop">
+        <span class="drawer-shop-user-icon">${svgIcon('personSolid')}</span>
+        <strong>Shop</strong>
+      </div>
+      <div class="drawer-shop-user-divider" aria-hidden="true"></div>
       ${primary(1,'Einzahlung','down','deposit')}
       ${primary(4,'Auszahlung','up','payout')}
       ${primary(13,'Buchhaltung','bars','turnover')}
