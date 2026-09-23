@@ -588,7 +588,7 @@ function payout3(){
 }
 
 function customerIsActive(row){
-  return String(row?.[3]||'').trim().toLowerCase()==='aktiv';
+  return customerEffectiveStatus(row)==='Aktiv';
 }
 function sortedCustomerRows(rows){
   return rows
@@ -619,7 +619,7 @@ function customersView(){
   const allRows=customers.concat(state.createdUsers)
     .filter(r=>!idFilter||String(r[0]).toLowerCase().includes(idFilter))
     .filter(r=>!nameFilter||String(r[1]).toLowerCase().includes(nameFilter))
-    .filter(r=>statusFilter==='Alle'||r[3]===statusFilter);
+    .filter(r=>statusFilter==='Alle'||customerEffectiveStatus(r)===statusFilter);
   const rows=sortedCustomerRows(allRows);
   const pageSize=20;
   const totalPages=Math.max(1,Math.ceil(rows.length/pageSize));
@@ -637,7 +637,7 @@ function customersView(){
     <div class="field"><label>Status</label><select class="control" data-customer-status-filter>${statusOptions}</select></div>
     <div class="filter-actions"><button class="btn" data-apply-customer>Filtern</button><button class="btn secondary" data-reset-customer>Zurücksetzen</button></div>
   </div></section>
-  <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
+  <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${customerEffectiveStatus(r)==='Aktiv'?'active':'neutral'}">${customerEffectiveStatus(r)}</span></td><td><button class="btn small outline" data-edit-customer="${esc(r[0])}">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
 function historyPagination(total,currentPage,pageSize=HISTORY_PAGE_SIZE){
