@@ -515,7 +515,7 @@ function languageSelector(){
       <span class="drawer-sub-icon">${svgIcon('globe')}</span>
       <span class="drawer-sub-label">Sprachen</span>
       <span class="drawer-language-right" data-no-i18n>
-        <span class="drawer-language-current">${languageFlagMarkup(current)}<span class="drawer-language-name">${current.name}</span></span>
+        <span class="drawer-language-current">${languageFlagMarkup(current)}</span>
         <span class="drawer-sub-chevron">${svgIcon('chevron')}</span>
       </span>
     </button>
