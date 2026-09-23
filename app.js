@@ -676,6 +676,73 @@ function historyView(){
   }).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${historyPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
+
+function editCustomerView(){
+  const row=customerById(state.editingCustomerId);
+  if(!row){
+    return `${pageHead(svgIcon('person'),'Kunde bearbeiten','Kundendaten verwalten.','<button class="page-close" data-close-page aria-label="Kunde bearbeiten schließen" title="Schließen">'+svgIcon('close')+'</button>')}
+      <section class="card card-pad edit-customer-card"><div class="empty">Kein Kunde ausgewählt.</div></section>`;
+  }
+  const profile=customerProfile(row);
+  const balance=formatAccountBalance(customerBalanceValue(row[1]));
+  const riskOptions=['Niedrig','Mittel','Hoch'].map(x=>`<option value="${x}" ${profile.risk===x?'selected':''}>${x}</option>`).join('');
+  const switchField=(name,checked,text)=>`<label class="edit-customer-switch-row"><input type="checkbox" name="${name}" ${checked?'checked':''}><span class="edit-customer-switch-ui" aria-hidden="true"></span><span>${text}</span></label>`;
+  return `${pageHead(svgIcon('person'),'Kunde bearbeiten',`Kundendaten von ${esc(row[1])} verwalten.`,'<button class="page-close" data-close-page aria-label="Kunde bearbeiten schließen" title="Schließen">'+svgIcon('close')+'</button>')}
+  <section class="card card-pad edit-customer-card">
+    <form id="editCustomerForm" data-customer-id="${esc(row[0])}">
+      <div class="edit-customer-grid">
+        <div class="field">
+          <label>Passwort</label>
+          <input class="control" type="password" name="password" value="${esc(profile.password)}" autocomplete="new-password" required>
+        </div>
+        <div class="field">
+          <label>Guthaben</label>
+          <input class="control" name="balance" inputmode="decimal" autocomplete="off" value="${esc(balance)}" required>
+        </div>
+        <div class="field">
+          <label>Risikostufe</label>
+          <select class="control" name="risk">${riskOptions}</select>
+        </div>
+        <div class="field edit-customer-toggle-field">
+          <label>Auszahlung</label>
+          ${switchField('payoutActive',profile.payoutActive,'Auszahlung aktiviert')}
+        </div>
+        <div class="field">
+          <label>Vorname</label>
+          <input class="control" name="firstName" value="${esc(profile.firstName)}" autocomplete="given-name">
+        </div>
+        <div class="field">
+          <label>Nachname</label>
+          <input class="control" name="lastName" value="${esc(profile.lastName)}" autocomplete="family-name">
+        </div>
+        <div class="field">
+          <label>E-Mail</label>
+          <input class="control" type="email" name="email" value="${esc(profile.email)}" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>Telefon</label>
+          <div class="edit-customer-phone-shell">
+            <input class="control" type="tel" name="phone" value="${esc(profile.phone)}" autocomplete="tel" data-edit-customer-phone>
+            <a class="edit-customer-call" href="tel:${esc(profile.phone.replace(/\s+/g,''))}" data-edit-customer-call>Anrufen</a>
+          </div>
+        </div>
+        <div class="field edit-customer-toggle-field">
+          <label>Casino aktiv</label>
+          ${switchField('casinoActive',profile.casinoActive,'Casino aktiviert')}
+        </div>
+        <div class="field edit-customer-toggle-field">
+          <label>Konto aktiv</label>
+          ${switchField('accountActive',profile.accountActive,'Konto aktiviert')}
+        </div>
+      </div>
+      <div class="edit-customer-actions">
+        <button type="button" class="btn secondary" data-go="customers">Abbrechen</button>
+        <button type="submit" class="btn edit-customer-save">Speichern</button>
+      </div>
+    </form>
+  </section>`;
+}
+
 function createUserView(){ return `<section class="create-user-page">
   <div class="create-user-head">
     <div class="create-user-heading">
@@ -1046,7 +1113,7 @@ function transactionView(type){ const isDeposit=type==='deposit'; const data=isD
 function transactionRows(data,isDeposit){ return data.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===6?(isDeposit?'positive':'negative'):''}">${c}</td>`).join('')}</tr>`).join(''); }
 function tableBottom(count,label,pages=5,total=count){ return `<div class="table-bottom"><span>Zeige 1 bis ${count} von ${total} ${label}</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">…</button><button class="page-btn">${pages}</button><button class="page-btn">›</button></div></div>`; }
 
-const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout')};
+const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,'edit-customer':editCustomerView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout')};
 
 function render(){
   const preservedScrollY=window.scrollY;
