@@ -1274,8 +1274,8 @@ function bind(){
     state.scrollTopOnNextRender=true;
     go('edit-customer');
   }));
-  document.querySelectorAll('[data-edit-customer-phone]')?.addEventListener('input',e=>{
-    const link=document.querySelectorAll('[data-edit-customer-call]');
+  document.querySelector('[data-edit-customer-phone]')?.addEventListener('input',e=>{
+    const link=document.querySelector('[data-edit-customer-call]');
     if(!link) return;
     const phone=String(e.target.value||'').trim();
     link.href=phone?'tel:'+phone.replace(/\s+/g,''):'#';
@@ -1408,7 +1408,7 @@ function bind(){
   document.querySelector('[data-apply-ticket]')?.addEventListener('click',()=>{state.ticketFilter=[...document.querySelectorAll('[data-filter="ticket"]')].map(x=>x.value).find(Boolean)||'';state.ticketPage=1;render()});
   document.querySelector('[data-reset-ticket]')?.addEventListener('click',()=>{state.ticketFilter='';state.ticketPage=1;state.toggles={};render()});
 
-  document.querySelectorAll('#editCustomerForm')?.addEventListener('submit',e=>{
+  document.querySelector('#editCustomerForm')?.addEventListener('submit',e=>{
     e.preventDefault();
     const form=e.currentTarget;
     const row=customerById(form.dataset.customerId);
