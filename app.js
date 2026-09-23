@@ -148,6 +148,22 @@ function historyDateTimeMarkup(value){
   const time=parts.join(' ');
   return `<span class="history-date-time"><span>${esc(date)}</span><span>${esc(time)}</span></span>`;
 }
+function exportHistoryCsv(){
+  const rows=filteredHistoryRows();
+  const headers=['ID','Datum & Zeit','Typ','Betrag','Guthaben vorher','Guthaben nachher','Beschreibung'];
+  const csvCell=value=>`"${String(value??'').replace(/"/g,'""')}"`;
+  const csv=[headers,...rows].map(row=>row.map(csvCell).join(';')).join('\n');
+  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const link=document.createElement('a');
+  link.href=url;
+  link.download='kontoverlauf.csv';
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  toast('Kontoverlauf wurde exportiert.');
+}
 
 const couponsSeed = [
   ['ali','1377640','5,00','LOSS','93,04','5172'],['ali','1377639','10,00','WON','34,50','5171'],['ali','1377638','3,50','OPEN','68,10','5170'],
@@ -1039,7 +1055,10 @@ function bind(){
     toast('Filter zurückgesetzt.');
   });
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
-  document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
+  document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>{
+    if(state.route==='history') return exportHistoryCsv();
+    toast('Export wurde vorbereitet.');
+  }));
   document.querySelectorAll('[data-amount]').forEach(el=>el.addEventListener('click',()=>{const target=document.querySelector('#depositAmount,#payoutAmount');if(!target)return;target.value=el.dataset.amount;document.querySelectorAll('[data-amount]').forEach(x=>x.classList.remove('selected'));el.classList.add('selected')}));
   document.querySelectorAll('[data-toggle]').forEach(el=>el.addEventListener('click',e=>{
     e.preventDefault();
