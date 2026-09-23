@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -129,6 +129,25 @@ const historyRows = [
   ['55487595','19.10.25 21:42:06','Gewinn','+50,00','290,25','340,25','Gewinn Sport'],
   ['53063881','28.09.25 16:54:12','Auszahlung','-30,00','70,35','40,35','Auszahlung via Skrill']
 ];
+
+function historyStatusForRow(row){
+  const type=String(row?.[2]||'').toLowerCase();
+  if(type.includes('storniert')) return 'Storniert';
+  return 'Erfolgreich';
+}
+function filteredHistoryRows(){
+  return historyRows.filter(row=>{
+    const statusOk=state.historyStatusFilter==='Alle'||historyStatusForRow(row)===state.historyStatusFilter;
+    const typeOk=state.historyTypeFilter==='Alle'||row[2]===state.historyTypeFilter;
+    return statusOk&&typeOk;
+  });
+}
+function historyDateTimeMarkup(value){
+  const parts=String(value||'').trim().split(/\s+/);
+  const date=parts.shift()||'';
+  const time=parts.join(' ');
+  return `<span class="history-date-time"><span>${esc(date)}</span><span>${esc(time)}</span></span>`;
+}
 
 const couponsSeed = [
   ['ali','1377640','5,00','LOSS','93,04','5172'],['ali','1377639','10,00','WON','34,50','5171'],['ali','1377638','3,50','OPEN','68,10','5170'],
@@ -415,7 +434,18 @@ function customersView(){
   <section class="card table-card customers-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Benutzername</th><th>Guthaben</th><th>Status</th><th>Aktionen</th></tr></thead><tbody>${visibleRows.length?visibleRows.map(r=>`<tr><td>${r[0]}</td><td><strong>${r[1]}</strong></td><td>${formatAccountBalance(customerBalanceValue(r[1]))}</td><td><span class="status ${r[3]==='Aktiv'?'active':'neutral'}">${r[3]}</span></td><td><button class="btn small outline" data-demo="Kundendaten geöffnet">Bearbeiten</button> <button class="btn small secondary" data-go="history">Kontoverlauf</button></td></tr>`).join(''):`<tr><td colspan="5" class="empty">Keine Kunden gefunden.</td></tr>`}</tbody></table></div>${customerPagination(rows.length,currentPage,pageSize)}</section>`;
 }
 
-function historyView(){ return `${pageHead('↔','Transaktionen','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}<section class="card card-pad"><div class="filters three"><div class="field"><label>Status</label>${select(['Alle','Erfolgreich','Ausstehend','Storniert'])}</div><div class="field"><label>Transaktionstyp</label>${select(['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'])}</div><div class="filter-actions"><button class="btn" data-demo="Filter angewendet">Filtern</button><button class="btn secondary" data-demo="Filter zurückgesetzt">Zurücksetzen</button></div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Alt-Guthaben</th><th>Neu-Guthaben</th><th>Beschreibung</th></tr></thead><tbody>${historyRows.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===3?moneyClass(c):''}">${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>${tableBottom(10,'Transaktionen',5,42)}</section>`; }
+function historyView(){
+  const rows=filteredHistoryRows();
+  const statusOptions=['Alle','Erfolgreich','Ausstehend','Storniert'].map(x=>`<option ${x===state.historyStatusFilter?'selected':''}>${x}</option>`).join('');
+  const typeOptions=['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'].map(x=>`<option ${x===state.historyTypeFilter?'selected':''}>${x}</option>`).join('');
+  return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}
+  <section class="card card-pad"><div class="filters three">
+    <div class="field"><label>Status</label><select class="control" data-history-status>${statusOptions}</select></div>
+    <div class="field"><label>Transaktionstyp</label><select class="control" data-history-type>${typeOptions}</select></div>
+    <div class="filter-actions"><button class="btn" data-apply-history>Filtern</button><button class="btn secondary" data-reset-history>Zurücksetzen</button></div>
+  </div></section>
+  <section class="card table-card history-table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum & Zeit</th><th>Typ</th><th>Betrag</th><th>Guthaben vorher</th><th>Guthaben nachher</th><th>Beschreibung</th></tr></thead><tbody>${rows.length?rows.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===3?moneyClass(cell):''}">${i===1?historyDateTimeMarkup(cell):cell}</td>`).join('')}</tr>`).join(''):'<tr><td colspan="7" class="empty">Keine Transaktionen gefunden.</td></tr>'}</tbody></table></div>${tableBottom(rows.length,'Transaktionen',5,rows.length)}</section>`;
+}
 
 function createUserView(){ return `<section class="create-user-page">
   <div class="create-user-head">
@@ -995,6 +1025,18 @@ function bind(){
     state.turnoverRecordPage=1;
     render();
     toast('Kasse auf 0 gesetzt und unter „Letzte Aufzeichnungen“ gespeichert.');
+  });
+  document.querySelector('[data-apply-history]')?.addEventListener('click',()=>{
+    state.historyStatusFilter=document.querySelector('[data-history-status]')?.value||'Alle';
+    state.historyTypeFilter=document.querySelector('[data-history-type]')?.value||'Alle';
+    render();
+    toast('Filter angewendet.');
+  });
+  document.querySelector('[data-reset-history]')?.addEventListener('click',()=>{
+    state.historyStatusFilter='Alle';
+    state.historyTypeFilter='Alle';
+    render();
+    toast('Filter zurückgesetzt.');
   });
   document.querySelectorAll('[data-demo]').forEach(el=>el.addEventListener('click',()=>toast(el.dataset.demo)));
   document.querySelectorAll('[data-export]').forEach(el=>el.addEventListener('click',()=>toast('Export wurde vorbereitet.')));
