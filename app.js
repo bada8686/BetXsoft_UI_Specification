@@ -201,6 +201,7 @@ function historyCasinoName(row){
 }
 function historyIsSportBet(row){
   const source=historySourceText(row).toLowerCase();
+  if(source.includes('casino')) return false;
   return source.includes('sport') || source.includes('wette');
 }
 function historyTicketNumber(row){
