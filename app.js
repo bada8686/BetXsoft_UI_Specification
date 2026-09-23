@@ -116,6 +116,50 @@ function setCustomerBalance(name,value){
   try{ localStorage.setItem('betxsoftCustomerBalances',JSON.stringify(stored)); }catch(_){}
   const row=customers.concat(state.createdUsers).find(r=>r[1]===name);
   if(row) row[2]=formatAccountBalance(safe);
+
+}
+function storedCustomerProfiles(){
+  try{ return JSON.parse(localStorage.getItem('betxsoftCustomerProfiles')||'{}') || {}; }
+  catch(_){ return {}; }
+}
+function customerProfileDefaults(row){
+  const id=String(row?.[0]||'');
+  const username=String(row?.[1]||'Kunde').trim();
+  const nameParts=username.split(/\s+/).filter(Boolean);
+  const cleanMail=username.toLowerCase().replace(/[^a-z0-9]+/g,'.').replace(/^\.|\.$/g,'')||('kunde'+id);
+  const digits=(id.replace(/\D/g,'')+'000000').slice(0,6);
+  const riskOptions=['Niedrig','Mittel','Hoch'];
+  return {
+    password:'Betx'+id+'!',
+    risk:riskOptions[(Number(id)||0)%riskOptions.length],
+    payoutActive:true,
+    firstName:nameParts[0]||'',
+    lastName:nameParts.slice(1).join(' '),
+    email:cleanMail+'@kunde.ch',
+    phone:'+41 79 '+digits.slice(0,3)+' '+digits.slice(3,5)+' '+digits.slice(5,6)+'0',
+    casinoActive:true,
+    accountActive:String(row?.[3]||'').toLowerCase()==='aktiv'
+  };
+}
+function customerProfile(row){
+  if(!row) return null;
+  const defaults=customerProfileDefaults(row);
+  const stored=storedCustomerProfiles();
+  const saved=stored[String(row[0])]||{};
+  return {...defaults,...saved};
+}
+function saveCustomerProfile(row,profile){
+  if(!row) return;
+  const stored=storedCustomerProfiles();
+  stored[String(row[0])]={...customerProfile(row),...profile};
+  try{ localStorage.setItem('betxsoftCustomerProfiles',JSON.stringify(stored)); }catch(_){}
+}
+function customerEffectiveStatus(row){
+  const profile=customerProfile(row);
+  return profile?.accountActive ? 'Aktiv' : 'Gesperrt';
+}
+function customerById(id){
+  return customers.concat(state.createdUsers).find(row=>String(row[0])===String(id))||null;
 }
 
 const historyRows = [
