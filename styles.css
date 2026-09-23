@@ -4397,3 +4397,146 @@ body.ios-keyboard-locked{
   margin-top:2px;
 }
 /* account-history-balance-head-v189:end */
+
+
+/* edit-customer-page-v197:start */
+.route-edit-customer .edit-customer-card{
+  max-width:920px;
+  margin:0 auto;
+}
+.route-edit-customer .edit-customer-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px 20px;
+}
+.route-edit-customer .edit-customer-grid .field{
+  min-width:0;
+}
+.route-edit-customer .edit-customer-grid .control{
+  width:100%;
+  min-height:44px;
+}
+.route-edit-customer .edit-customer-toggle-field{
+  display:flex;
+  flex-direction:column;
+}
+.route-edit-customer .edit-customer-switch-row{
+  min-height:44px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  padding:0 12px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  position:relative;
+  cursor:pointer;
+  color:#344054;
+  font-size:13px;
+  font-weight:650;
+}
+.route-edit-customer .edit-customer-switch-row input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+.route-edit-customer .edit-customer-switch-ui{
+  width:38px;
+  height:22px;
+  border-radius:20px;
+  background:#dfe4ec;
+  position:relative;
+  flex:0 0 auto;
+  transition:.18s ease;
+}
+.route-edit-customer .edit-customer-switch-ui:before{
+  content:"";
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:#fff;
+  position:absolute;
+  top:3px;
+  left:3px;
+  box-shadow:0 1px 4px rgba(0,0,0,.18);
+  transition:.18s ease;
+}
+.route-edit-customer .edit-customer-switch-row input:checked + .edit-customer-switch-ui{
+  background:var(--blue);
+}
+.route-edit-customer .edit-customer-switch-row input:checked + .edit-customer-switch-ui:before{
+  left:19px;
+}
+.route-edit-customer .edit-customer-switch-row:focus-within{
+  border-color:#aebcff;
+  box-shadow:0 0 0 3px rgba(36,72,242,.08);
+}
+.route-edit-customer .edit-customer-phone-shell{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:8px;
+  align-items:stretch;
+}
+.route-edit-customer .edit-customer-call{
+  min-height:44px;
+  padding:0 14px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#fff;
+  color:var(--blue);
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  font-size:12px;
+  font-weight:800;
+  white-space:nowrap;
+}
+.route-edit-customer .edit-customer-call:hover{
+  background:#f5f7ff;
+  border-color:#bfcaff;
+}
+.route-edit-customer .edit-customer-call[aria-disabled="true"]{
+  opacity:.5;
+  pointer-events:none;
+}
+.route-edit-customer .edit-customer-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:24px;
+}
+.route-edit-customer .edit-customer-save{
+  min-width:120px;
+}
+
+@media(max-width:700px){
+  .route-edit-customer .edit-customer-grid{
+    grid-template-columns:1fr;
+    gap:15px;
+  }
+  .route-edit-customer .edit-customer-actions{
+    margin-top:20px;
+  }
+}
+
+@media(max-width:520px){
+  .route-edit-customer .edit-customer-card{
+    padding:16px;
+  }
+  .route-edit-customer .edit-customer-phone-shell{
+    grid-template-columns:1fr auto;
+  }
+  .route-edit-customer .edit-customer-call{
+    min-width:82px;
+  }
+  .route-edit-customer .edit-customer-actions{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  .route-edit-customer .edit-customer-actions .btn{
+    width:100%;
+  }
+}
+/* edit-customer-page-v197:end */
