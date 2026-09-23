@@ -1,6 +1,6 @@
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, amount: '', customer: '',
-  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
+  customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
 };
@@ -19,7 +19,8 @@ const routes = [
   ['home','Startseite','⌂'],['deposit-1','Einzahlung – Daten','↓'],['deposit-2','Einzahlung – Übersicht','↓'],['deposit-3','Einzahlung – Bestätigung','✓'],
   ['payout-1','Auszahlung – Daten','↑'],['payout-2','Auszahlung – Übersicht','↑'],['payout-3','Auszahlung – Bestätigung','✓'],['customers','Kunden','♙'],
   ['history','Kontoverlauf','↔'],['create-user','Kunden erstellen','＋'],['coupons','Wettscheine','▧'],['coupon-filters','Zusätzliche Filter','⚙'],
-  ['coupon-detail','Wettschein-Details','▤'],['turnover','Umsatz','↗'],['deposit-transactions','Einzahlungstransaktionen','↓'],['payout-transactions','Auszahlungstransaktionen','↑']
+  ['coupon-detail','Wettschein-Details','▤'],['turnover','Umsatz','↗'],['deposit-transactions','Einzahlungstransaktionen','↓'],['payout-transactions','Auszahlungstransaktionen','↑'],
+  ['edit-customer','Kunde bearbeiten','✎']
 ];
 
 const customers = [
