@@ -4887,3 +4887,24 @@ body.ios-keyboard-locked{
   }
 }
 /* language-list-and-kurdish-flag-v212:end */
+
+
+/* kurdish-emoji-shape-v214:start */
+.drawer-language-kurdish-flag{
+  width:24px!important;
+  height:18px!important;
+  display:inline-grid!important;
+  place-items:center!important;
+  overflow:visible!important;
+  flex:0 0 24px!important;
+}
+.drawer-language-kurdish-flag svg{
+  width:23px!important;
+  height:17px!important;
+  display:block!important;
+  overflow:visible!important;
+  transform:rotate(-1.2deg);
+  transform-origin:center;
+  filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));
+}
+/* kurdish-emoji-shape-v214:end */
