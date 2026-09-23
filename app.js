@@ -1126,8 +1126,22 @@ function turnoverView(){
   </div>`:''}`;
 }
 
-function transactionView(type){ const isDeposit=type==='deposit'; const data=isDeposit?deposits:payouts; const title=isDeposit?'Einzahlung Transaktionen':'Auszahlungen Transaktionen'; return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label>${input('Zeitraum','type="text" value="13.07.2026 - 13.08.2026"')}</div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`; }
-function transactionRows(data,isDeposit){ return data.map(r=>`<tr>${r.map((c,i)=>`<td class="${i===6?(isDeposit?'positive':'negative'):''}">${c}</td>`).join('')}</tr>`).join(''); }
+function transactionDateTimeMarkup(value){
+  const match=String(value||'').trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4}),?\s+(\d{1,2}):(\d{2})(?::\d{2})?$/);
+  if(!match) return esc(value);
+  const [,day,month,year,hour,minute]=match;
+  return `<span class="transaction-date-time"><span>${day.padStart(2,'0')}.${month.padStart(2,'0')}.${year}</span><span>${hour.padStart(2,'0')}:${minute}</span></span>`;
+}
+function transactionView(type){
+  const isDeposit=type==='deposit';
+  const data=isDeposit?deposits:payouts;
+  const title=isDeposit?'Einzahlung Transaktionen':'Auszahlungen Transaktionen';
+  const closeButton=`<button class="page-close" data-transaction-close aria-label="${title} schließen" title="Schließen">${svgIcon('close')}</button>`;
+  return `${pageHead(isDeposit?'↓':'↑',title,`Übersicht aller ${isDeposit?'Einzahlungs':'Auszahlungs'}transaktionen.`,closeButton)}<section class="card card-pad"><div class="filters three"><div class="field"><label>Zeitraum</label>${input('Zeitraum','type="text" value="13.07.2026 - 13.08.2026"')}</div><div class="field" style="grid-column:span 2"><label>Suche</label>${input('ID, Kunden-ID, Name oder IP-Adresse','data-transaction-search')}</div></div></section><section class="card table-card" style="margin-top:16px"><div class="table-wrap"><table class="data-table"><thead><tr><th>ID</th><th>Datum</th><th>Kunden-ID</th><th>Kundenname</th><th>IP-Adresse</th><th>Art der ${isDeposit?'Einzahlung':'Auszahlung'}</th><th>Betrag</th></tr></thead><tbody id="transactionBody">${transactionRows(data,isDeposit)}</tbody></table></div>${tableBottom(20,'Einträgen',13,250)}</section>`;
+}
+function transactionRows(data,isDeposit){
+  return data.map(r=>`<tr>${r.map((cell,i)=>`<td class="${i===6?(isDeposit?'positive':'negative'):''}">${i===1?transactionDateTimeMarkup(cell):esc(cell)}</td>`).join('')}</tr>`).join('');
+}
 function tableBottom(count,label,pages=5,total=count){ return `<div class="table-bottom"><span>Zeige 1 bis ${count} von ${total} ${label}</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">…</button><button class="page-btn">${pages}</button><button class="page-btn">›</button></div></div>`; }
 
 const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,'edit-customer':editCustomerView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout')};
@@ -1259,6 +1273,13 @@ function bind(){
 
   // Close buttons are intentionally separate from regular navigation:
   // close the current flow, replace its history entry and show the dashboard immediately.
+  document.querySelectorAll('[data-transaction-close]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    state.drawer=false;
+    if(window.history.length>1) window.history.back();
+    else go('home');
+  }));
   document.querySelectorAll('[data-close-page]').forEach(el=>el.addEventListener('click',e=>{
     e.preventDefault();
     e.stopPropagation();
