@@ -454,7 +454,7 @@ function historyView(){
   const rows=filteredHistoryRows();
   const statusOptions=['Alle','Erfolgreich','Ausstehend','Storniert'].map(x=>`<option ${x===state.historyStatusFilter?'selected':''}>${x}</option>`).join('');
   const typeOptions=['Alle','Einzahlung','Auszahlung','Wetteinsatz','Gewinn'].map(x=>`<option ${x===state.historyTypeFilter?'selected':''}>${x}</option>`).join('');
-  return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<button class="btn outline" data-export>⇩ Exportieren</button>')}
+  return `${pageHead(svgIcon('transfer'),'Kontoverlauf','Übersicht aller Transaktionen in Echtzeit.','<div class="history-head-actions"><button class="btn outline" data-export>⇩ Exportieren</button><button class="page-close" data-close-page aria-label="Kontoverlauf schließen" title="Schließen">'+svgIcon('close')+'</button></div>')}
   <section class="card card-pad"><div class="filters three">
     <div class="field"><label>Status</label><select class="control" data-history-status>${statusOptions}</select></div>
     <div class="field"><label>Transaktionstyp</label><select class="control" data-history-type>${typeOptions}</select></div>
