@@ -4928,3 +4928,111 @@ body.ios-keyboard-locked{
   filter:drop-shadow(0 1px 1px rgba(0,0,0,.24));
 }
 /* kurdish-emoji-shape-v215:end */
+
+
+/* shop-login-password-v218:start */
+.drawer-shop-user{
+  grid-template-columns:32px minmax(0,1fr) 18px;
+  border:0;
+  background:transparent;
+  font:inherit;
+  text-align:left;
+  cursor:pointer;
+}
+.drawer-shop-user:hover,
+.drawer-shop-user.active{
+  background:rgba(33,116,213,.16);
+  border-radius:8px;
+}
+.drawer-shop-user-chevron{
+  width:18px;
+  height:18px;
+  display:grid;
+  place-items:center;
+  color:#9bb0c8;
+}
+.drawer-shop-user-chevron .svg-icon{
+  width:15px;
+  height:15px;
+}
+.shop-login-page{
+  min-height:100vh;
+  min-height:100dvh;
+  padding:24px;
+  display:grid;
+  place-items:center;
+  background:#f4f7fb;
+}
+.shop-login-card{
+  width:min(100%,420px);
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#fff;
+  box-shadow:0 16px 48px rgba(6,18,40,.12);
+}
+.shop-login-brand{
+  text-align:center;
+  margin-bottom:24px;
+}
+.shop-login-logo{
+  color:#112d5a;
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:.8px;
+}
+.shop-login-logo span{
+  color:#1877d2;
+}
+.shop-login-brand p{
+  margin:6px 0 0;
+  color:var(--muted);
+  font-size:13px;
+  font-weight:700;
+}
+.shop-login-form{
+  display:grid;
+  gap:16px;
+}
+.route-shop .shop-password-card{
+  max-width:760px;
+  margin:0 auto;
+}
+.route-shop .shop-password-form{
+  display:grid;
+  gap:22px;
+}
+.route-shop .shop-password-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:16px;
+}
+.route-shop .shop-password-actions{
+  display:flex;
+  justify-content:flex-end;
+}
+.route-shop .shop-password-actions .btn{
+  min-width:150px;
+}
+
+@media(max-width:700px){
+  .route-shop .shop-password-grid{
+    grid-template-columns:1fr;
+  }
+}
+@media(max-width:520px){
+  .drawer-shop-user{
+    grid-template-columns:27px minmax(0,1fr) 17px;
+  }
+  .shop-login-page{
+    padding:16px;
+  }
+  .shop-login-card{
+    padding:22px 18px;
+    border-radius:14px;
+  }
+  .route-shop .shop-password-actions .btn{
+    width:100%;
+  }
+}
+/* shop-login-password-v218:end */
