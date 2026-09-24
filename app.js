@@ -11,8 +11,40 @@ function initialSiteLanguage(){
   return detected;
 }
 
+const SHOP_LOGIN_USERNAME='loca25';
+const SHOP_INITIAL_PASSWORD_HASH='09f9b2ca7fb069aa348872f33579c84324698040e7269791658ef5839097e998';
+const SHOP_PASSWORD_HASH_KEY='betxsoftShopPasswordHash';
+const SHOP_AUTH_SESSION_KEY='betxsoftShopAuthenticated';
+
+function currentShopPasswordHash(){
+  try{
+    const stored=String(localStorage.getItem(SHOP_PASSWORD_HASH_KEY)||'').trim().toLowerCase();
+    if(/^[a-f0-9]{64}$/.test(stored)) return stored;
+  }catch(_){}
+  return SHOP_INITIAL_PASSWORD_HASH;
+}
+function saveShopPasswordHash(hash){
+  if(!/^[a-f0-9]{64}$/.test(String(hash||''))) return false;
+  try{ localStorage.setItem(SHOP_PASSWORD_HASH_KEY,String(hash).toLowerCase()); return true; }
+  catch(_){ return false; }
+}
+async function hashShopPassword(value){
+  const bytes=new TextEncoder().encode(String(value||''));
+  const digest=await crypto.subtle.digest('SHA-256',bytes);
+  return Array.from(new Uint8Array(digest),b=>b.toString(16).padStart(2,'0')).join('');
+}
+function shopAuthSession(){
+  try{ return sessionStorage.getItem(SHOP_AUTH_SESSION_KEY)==='1'; }
+  catch(_){ return false; }
+}
+function setShopAuthSession(active){
+  try{
+    if(active) sessionStorage.setItem(SHOP_AUTH_SESSION_KEY,'1');
+    else sessionStorage.removeItem(SHOP_AUTH_SESSION_KEY);
+  }catch(_){}
+}
 const state = {
-  route: location.hash.slice(1) || 'home', drawer: false, language: initialSiteLanguage(), languageOpen: false, amount: '', customer: '',
+  route: location.hash.slice(1) || 'home', drawer: false, authenticated: shopAuthSession(), language: initialSiteLanguage(), languageOpen: false, amount: '', customer: '',
   customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, selectedCustomerId: '', customerListScrollY: 0, restoreCustomerScrollOnNextRender: false, customerSubpageFromSearch: false, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
   customRangeOpen: false, customFrom: '2026-08-01', customTo: '2026-08-13', customDashboard: null,
   turnoverPeriod: 'week', turnoverRangeOpen: false, turnoverFrom: '2026-09-01', turnoverTo: '2026-09-21', turnoverRecordPage: 1, turnoverResetConfirm: false
@@ -60,7 +92,7 @@ const routes = [
   ['payout-1','Auszahlung – Daten','↑'],['payout-2','Auszahlung – Übersicht','↑'],['payout-3','Auszahlung – Bestätigung','✓'],['customers','Kunden','♙'],
   ['history','Kontoverlauf','↔'],['create-user','Kunden erstellen','＋'],['coupons','Wettscheine','▧'],['coupon-filters','Zusätzliche Filter','⚙'],
   ['coupon-detail','Wettschein-Details','▤'],['turnover','Umsatz','↗'],['deposit-transactions','Einzahlungstransaktionen','↓'],['payout-transactions','Auszahlungstransaktionen','↑'],
-  ['edit-customer','Kunde bearbeiten','✎']
+  ['edit-customer','Kunde bearbeiten','✎'],['shop','Shop','♙']
 ];
 
 const customers = [
@@ -601,10 +633,11 @@ function drawer(){
   const staticItem=(label,icon)=>`<button class="drawer-sub-link" type="button"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
   return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
     <nav class="drawer-nav">
-      <div class="drawer-shop-user" aria-label="Shop">
+      <button class="drawer-shop-user ${state.route==='shop'?'active':''}" type="button" data-go="shop" aria-label="Shop">
         <span class="drawer-shop-user-icon">${svgIcon('personSolid')}</span>
         <strong>Shop</strong>
-      </div>
+        <span class="drawer-shop-user-chevron" aria-hidden="true">${svgIcon('chevron')}</span>
+      </button>
       <div class="drawer-shop-user-divider" aria-hidden="true"></div>
       ${primary(1,'Einzahlung','down','deposit')}
       ${primary(4,'Auszahlung','up','payout')}
@@ -1298,7 +1331,54 @@ function applyTransactionFilters(){
 }
 function tableBottom(count,label,pages=5,total=count){ return `<div class="table-bottom"><span>Zeige 1 bis ${count} von ${total} ${label}</span><div class="pagination"><button class="page-btn">‹</button><button class="page-btn active">1</button><button class="page-btn">2</button><button class="page-btn">3</button><button class="page-btn">…</button><button class="page-btn">${pages}</button><button class="page-btn">›</button></div></div>`; }
 
-const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,'edit-customer':editCustomerView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout')};
+function shopLoginView(){
+  return `<div class="shop-login-page">
+    <section class="shop-login-card">
+      <div class="shop-login-brand">
+        <div class="shop-login-logo">BET<span>X</span>SOFT</div>
+        <p>Shop Login</p>
+      </div>
+      <form id="shopLoginForm" class="shop-login-form">
+        <div class="field">
+          <label>Benutzername</label>
+          <input class="control" name="username" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label>Passwort</label>
+          <input class="control" type="password" name="password" autocomplete="current-password" required>
+        </div>
+        <button class="btn block" type="submit">Anmelden</button>
+      </form>
+    </section>
+  </div>`;
+}
+
+function shopView(){
+  return `${pageHead(svgIcon('personSolid'),'Shop','Passwortverwaltung','<button class="page-close" data-close-page aria-label="Shop schließen" title="Schließen">'+svgIcon('close')+'</button>')}
+  <section class="card card-pad shop-password-card">
+    <form id="shopPasswordForm" class="shop-password-form">
+      <div class="shop-password-grid">
+        <div class="field">
+          <label>Aktuelles Passwort</label>
+          <input class="control" type="password" name="currentPassword" autocomplete="current-password" required>
+        </div>
+        <div class="field">
+          <label>Neues Passwort</label>
+          <input class="control" type="password" name="newPassword" autocomplete="new-password" required>
+        </div>
+        <div class="field">
+          <label>Neues Passwort bestätigen</label>
+          <input class="control" type="password" name="confirmPassword" autocomplete="new-password" required>
+        </div>
+      </div>
+      <div class="shop-password-actions">
+        <button class="btn" type="submit">Passwort ändern</button>
+      </div>
+    </form>
+  </section>`;
+}
+
+const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,'edit-customer':editCustomerView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout'),shop:shopView};
 
 function render(){
   const preservedScrollY=window.scrollY;
@@ -1313,6 +1393,14 @@ function render(){
   state.route=location.hash.slice(1)||'home'; if(!views[state.route]) state.route='home';
   const i18n=window.BETXSOFT_I18N;
   if(!i18n?.languages?.some(x=>x.code===state.language)) state.language='en';
+  if(!state.authenticated){
+    document.title=`${i18n?.translate('Shop Login',state.language)||'Shop Login'} | BetXsoft`;
+    document.querySelector('#app').innerHTML=shopLoginView();
+    i18n?.apply(document.querySelector('#app'),state.language);
+    bind();
+    requestAnimationFrame(()=>window.scrollTo({top:0,left:0,behavior:'auto'}));
+    return;
+  }
   const routeTitle=routes.find(x=>x[0]===state.route)?.[1]||'Shop Admin';
   document.title=`${i18n?.translate(routeTitle,state.language)||routeTitle} | BetXsoft`;
   document.querySelector('#app').innerHTML=`<div class="app route-${state.route}">${header()}<main class="layout">${views[state.route]()}</main>${footer()}</div>${drawer()}`;
@@ -1331,6 +1419,48 @@ function render(){
 }
 
 function bind(){
+  document.querySelector('#shopLoginForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const form=e.currentTarget;
+    const fd=new FormData(form);
+    const username=String(fd.get('username')||'').trim();
+    const password=String(fd.get('password')||'');
+    let passwordHash='';
+    try{ passwordHash=await hashShopPassword(password); }
+    catch(_){ return toast('Anmeldung konnte nicht geprüft werden.'); }
+    if(username!==SHOP_LOGIN_USERNAME || passwordHash!==currentShopPasswordHash()){
+      return toast('Benutzername oder Passwort ist falsch.');
+    }
+    setShopAuthSession(true);
+    state.authenticated=true;
+    state.drawer=false;
+    history.replaceState(null,'',location.pathname+location.search+'#home');
+    state.route='home';
+    render();
+    toast('Anmeldung erfolgreich.');
+  });
+
+  document.querySelector('#shopPasswordForm')?.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const form=e.currentTarget;
+    const fd=new FormData(form);
+    const currentPassword=String(fd.get('currentPassword')||'');
+    const newPassword=String(fd.get('newPassword')||'');
+    const confirmPassword=String(fd.get('confirmPassword')||'');
+    if(newPassword!==confirmPassword) return toast('Die neuen Passwörter stimmen nicht überein.');
+    if(newPassword.length<6) return toast('Das neue Passwort muss mindestens 6 Zeichen enthalten.');
+    let currentHash='',newHash='';
+    try{
+      [currentHash,newHash]=await Promise.all([hashShopPassword(currentPassword),hashShopPassword(newPassword)]);
+    }catch(_){
+      return toast('Passwort konnte nicht geändert werden.');
+    }
+    if(currentHash!==currentShopPasswordHash()) return toast('Aktuelles Passwort ist nicht korrekt.');
+    if(!saveShopPasswordHash(newHash)) return toast('Passwort konnte nicht geändert werden.');
+    form.reset();
+    toast('Passwort wurde erfolgreich geändert.');
+  });
+
   document.querySelectorAll('[data-customer-picker]').forEach(picker=>{
     const trigger=picker.querySelector('[data-customer-trigger]');
     const menu=picker.querySelector('[data-customer-menu]');
