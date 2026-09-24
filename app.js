@@ -1521,7 +1521,10 @@ function shopLoginView(){
         </div>
         <div class="field">
           <label>Passwort</label>
-          <input class="control" type="password" name="password" autocomplete="current-password" required>
+          <div class="shop-login-password-shell">
+            <input class="control" type="password" name="password" autocomplete="current-password" required data-login-password-input>
+            <span class="shop-login-password-display" data-login-password-display aria-hidden="true"></span>
+          </div>
         </div>
         <button class="btn block" type="submit">Anmelden</button>
       </form>
@@ -1600,6 +1603,50 @@ function render(){
 }
 
 function bind(){
+  const loginPasswordInput=document.querySelector('[data-login-password-input]');
+  const loginPasswordDisplay=document.querySelector('[data-login-password-display]');
+  if(loginPasswordInput && loginPasswordDisplay){
+    let revealTimer=null;
+
+    const renderMaskedPassword=(revealIndex=-1)=>{
+      const value=String(loginPasswordInput.value||'');
+      if(!value){
+        loginPasswordDisplay.textContent='';
+        return;
+      }
+
+      let visible='';
+      for(let i=0;i<value.length;i++){
+        visible+=i===revealIndex?value[i]:'•';
+      }
+      loginPasswordDisplay.textContent=visible;
+    };
+
+    loginPasswordInput.addEventListener('input',e=>{
+      clearTimeout(revealTimer);
+      const value=String(loginPasswordInput.value||'');
+      const inputType=String(e.inputType||'');
+      const isInsert=inputType.startsWith('insert') && value.length>0;
+
+      if(isInsert){
+        const caret=Number(loginPasswordInput.selectionStart);
+        const revealIndex=Number.isFinite(caret) && caret>0 ? Math.min(value.length-1,caret-1) : value.length-1;
+        renderMaskedPassword(revealIndex);
+        revealTimer=setTimeout(()=>renderMaskedPassword(-1),700);
+      }else{
+        renderMaskedPassword(-1);
+      }
+    });
+
+    loginPasswordInput.addEventListener('blur',()=>{
+      clearTimeout(revealTimer);
+      renderMaskedPassword(-1);
+    });
+
+    loginPasswordInput.addEventListener('change',()=>renderMaskedPassword(-1));
+    renderMaskedPassword(-1);
+  }
+
   document.querySelector('[data-logout]')?.addEventListener('click',e=>{
     e.preventDefault();
     e.stopPropagation();
