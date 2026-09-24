@@ -50,25 +50,63 @@ function setShopAuthSession(active){
 }
 
 const SHOP_IDLE_TIMEOUT_MS=10*60*1000;
-const SHOP_LAST_ACTIVITY_KEY='betxsoftShopLastActivityAt';
+const SHOP_IDLE_EXPIRY_KEY='betxsoftShopIdleExpiresAt';
+const SHOP_LEGACY_ACTIVITY_KEY='betxsoftShopLastActivityAt';
 let shopIdleTimer=null;
+let shopIdleWatchdog=null;
+let shopIdleExpiry=0;
 let shopLastActivityWrite=0;
 
-function shopLastActivityAt(){
+function readShopIdleExpiry(){
+  if(Number.isFinite(shopIdleExpiry) && shopIdleExpiry>0) return shopIdleExpiry;
   try{
-    const value=Number(sessionStorage.getItem(SHOP_LAST_ACTIVITY_KEY)||0);
-    return Number.isFinite(value) && value>0 ? value : 0;
-  }catch(_){
-    return 0;
-  }
+    const stored=Number(sessionStorage.getItem(SHOP_IDLE_EXPIRY_KEY)||0);
+    if(Number.isFinite(stored) && stored>0){
+      shopIdleExpiry=stored;
+      return stored;
+    }
+
+    // Migrate the previous v222 activity timestamp if it exists.
+    const legacyActivity=Number(sessionStorage.getItem(SHOP_LEGACY_ACTIVITY_KEY)||0);
+    if(Number.isFinite(legacyActivity) && legacyActivity>0){
+      const migrated=legacyActivity+SHOP_IDLE_TIMEOUT_MS;
+      shopIdleExpiry=migrated;
+      sessionStorage.setItem(SHOP_IDLE_EXPIRY_KEY,String(migrated));
+      sessionStorage.removeItem(SHOP_LEGACY_ACTIVITY_KEY);
+      return migrated;
+    }
+  }catch(_){}
+  return 0;
+}
+function writeShopIdleExpiry(expiry){
+  const safe=Number(expiry);
+  if(!Number.isFinite(safe) || safe<=0) return;
+  shopIdleExpiry=safe;
+  try{
+    sessionStorage.setItem(SHOP_IDLE_EXPIRY_KEY,String(safe));
+    sessionStorage.removeItem(SHOP_LEGACY_ACTIVITY_KEY);
+  }catch(_){}
 }
 function clearShopIdleTracking(){
   if(shopIdleTimer){
     clearTimeout(shopIdleTimer);
     shopIdleTimer=null;
   }
+  if(shopIdleWatchdog){
+    clearInterval(shopIdleWatchdog);
+    shopIdleWatchdog=null;
+  }
+  shopIdleExpiry=0;
   shopLastActivityWrite=0;
-  try{ sessionStorage.removeItem(SHOP_LAST_ACTIVITY_KEY); }catch(_){}
+  try{
+    sessionStorage.removeItem(SHOP_IDLE_EXPIRY_KEY);
+    sessionStorage.removeItem(SHOP_LEGACY_ACTIVITY_KEY);
+  }catch(_){}
+}
+function shopIdleSessionExpired(now=Date.now()){
+  if(!state.authenticated) return false;
+  const expiry=readShopIdleExpiry();
+  return expiry>0 && now>=expiry;
 }
 function finishShopIdleLogout(){
   if(!state.authenticated) return;
@@ -92,10 +130,13 @@ function scheduleShopIdleLogout(){
   }
   if(!state.authenticated) return;
 
-  const lastActivity=shopLastActivityAt();
-  const elapsed=lastActivity ? Date.now()-lastActivity : 0;
-  const remaining=SHOP_IDLE_TIMEOUT_MS-elapsed;
+  let expiry=readShopIdleExpiry();
+  if(!expiry){
+    expiry=Date.now()+SHOP_IDLE_TIMEOUT_MS;
+    writeShopIdleExpiry(expiry);
+  }
 
+  const remaining=expiry-Date.now();
   if(remaining<=0){
     finishShopIdleLogout();
     return;
@@ -104,41 +145,62 @@ function scheduleShopIdleLogout(){
   shopIdleTimer=setTimeout(()=>{
     shopIdleTimer=null;
     if(!state.authenticated) return;
-    const last=shopLastActivityAt();
-    if(last && Date.now()-last>=SHOP_IDLE_TIMEOUT_MS) finishShopIdleLogout();
+    if(shopIdleSessionExpired()) finishShopIdleLogout();
     else scheduleShopIdleLogout();
   },remaining);
+}
+function ensureShopIdleWatchdog(){
+  if(shopIdleWatchdog || !state.authenticated) return;
+  shopIdleWatchdog=setInterval(()=>{
+    if(!state.authenticated) return;
+    if(shopIdleSessionExpired()) finishShopIdleLogout();
+  },5000);
 }
 function startShopIdleSession(){
   if(!state.authenticated) return;
   const now=Date.now();
   shopLastActivityWrite=now;
-  try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+  writeShopIdleExpiry(now+SHOP_IDLE_TIMEOUT_MS);
+  ensureShopIdleWatchdog();
   scheduleShopIdleLogout();
 }
 function registerShopActivity(){
   if(!state.authenticated) return;
 
   const now=Date.now();
-  const lastActivity=shopLastActivityAt();
-  if(lastActivity && now-lastActivity>=SHOP_IDLE_TIMEOUT_MS){
+
+  // Never revive a session that has already expired.
+  if(shopIdleSessionExpired(now)){
     finishShopIdleLogout();
     return;
   }
 
-  if(now-shopLastActivityWrite<1000) return;
+  // Limit storage writes while still treating normal activity as activity.
+  if(now-shopLastActivityWrite<750) return;
   shopLastActivityWrite=now;
-  try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+  writeShopIdleExpiry(now+SHOP_IDLE_TIMEOUT_MS);
+  ensureShopIdleWatchdog();
   scheduleShopIdleLogout();
 }
 function installShopIdleLogout(){
-  const events=['pointerdown','pointermove','keydown','wheel','touchstart','scroll'];
+  const events=['pointerdown','pointermove','mousedown','mousemove','keydown','wheel','touchstart','scroll'];
   events.forEach(type=>window.addEventListener(type,registerShopActivity,{passive:true}));
 
   document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState!=='visible' || !state.authenticated) return;
-    const lastActivity=shopLastActivityAt();
-    if(lastActivity && Date.now()-lastActivity>=SHOP_IDLE_TIMEOUT_MS){
+
+    if(shopIdleSessionExpired()){
+      finishShopIdleLogout();
+      return;
+    }
+
+    // Returning to an active tab counts as user activity only if the session is still valid.
+    registerShopActivity();
+  });
+
+  window.addEventListener('focus',()=>{
+    if(!state.authenticated) return;
+    if(shopIdleSessionExpired()){
       finishShopIdleLogout();
       return;
     }
@@ -146,11 +208,18 @@ function installShopIdleLogout(){
   });
 
   if(state.authenticated){
-    if(!shopLastActivityAt()){
-      const now=Date.now();
-      shopLastActivityWrite=now;
-      try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+    let expiry=readShopIdleExpiry();
+    if(!expiry){
+      expiry=Date.now()+SHOP_IDLE_TIMEOUT_MS;
+      writeShopIdleExpiry(expiry);
     }
+
+    if(Date.now()>=expiry){
+      finishShopIdleLogout();
+      return;
+    }
+
+    ensureShopIdleWatchdog();
     scheduleShopIdleLogout();
   }
 }
@@ -1493,6 +1562,10 @@ function shopView(){
 const views={home:homeView,'deposit-1':deposit1,'deposit-2':deposit2,'deposit-3':deposit3,'payout-1':payout1,'payout-2':payout2,'payout-3':payout3,customers:customersView,history:historyView,'create-user':createUserView,'edit-customer':editCustomerView,coupons:couponsView,'coupon-filters':couponFiltersView,'coupon-detail':couponDetailView,turnover:turnoverView,'deposit-transactions':()=>transactionView('deposit'),'payout-transactions':()=>transactionView('payout'),shop:shopView};
 
 function render(){
+  if(state.authenticated && shopIdleSessionExpired()){
+    finishShopIdleLogout();
+    return;
+  }
   const preservedScrollY=window.scrollY;
   const scrollTopOnNextRender=state.scrollTopOnNextRender;
   const restoreCouponScrollOnNextRender=state.restoreCouponScrollOnNextRender;
