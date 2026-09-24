@@ -1364,7 +1364,8 @@ function shopView(){
         </div>
         <div class="field">
           <label>Neues Passwort</label>
-          <input class="control" type="password" name="newPassword" autocomplete="new-password" required>
+          <input class="control" type="password" name="newPassword" autocomplete="new-password" minlength="6" required>
+          <small class="shop-password-rule" data-shop-password-rule>Das Passwort muss mindestens 6 Zeichen enthalten.</small>
         </div>
         <div class="field">
           <label>Neues Passwort bestätigen</label>
@@ -1428,7 +1429,7 @@ function bind(){
     let passwordHash='';
     try{ passwordHash=await hashShopPassword(password); }
     catch(_){ return toast('Anmeldung konnte nicht geprüft werden.'); }
-    if(username!==SHOP_LOGIN_USERNAME || passwordHash!==currentShopPasswordHash()){
+    if(username.toLowerCase()!==SHOP_LOGIN_USERNAME.toLowerCase() || passwordHash!==currentShopPasswordHash()){
       return toast('Benutzername oder Passwort ist falsch.');
     }
     setShopAuthSession(true);
@@ -1440,26 +1441,62 @@ function bind(){
     toast('Anmeldung erfolgreich.');
   });
 
-  document.querySelector('#shopPasswordForm')?.addEventListener('submit',async e=>{
-    e.preventDefault();
-    const form=e.currentTarget;
-    const fd=new FormData(form);
-    const currentPassword=String(fd.get('currentPassword')||'');
-    const newPassword=String(fd.get('newPassword')||'');
-    const confirmPassword=String(fd.get('confirmPassword')||'');
-    if(newPassword!==confirmPassword) return toast('Die neuen Passwörter stimmen nicht überein.');
-    if(newPassword.length<6) return toast('Das neue Passwort muss mindestens 6 Zeichen enthalten.');
-    let currentHash='',newHash='';
-    try{
-      [currentHash,newHash]=await Promise.all([hashShopPassword(currentPassword),hashShopPassword(newPassword)]);
-    }catch(_){
-      return toast('Passwort konnte nicht geändert werden.');
-    }
-    if(currentHash!==currentShopPasswordHash()) return toast('Aktuelles Passwort ist nicht korrekt.');
-    if(!saveShopPasswordHash(newHash)) return toast('Passwort konnte nicht geändert werden.');
-    form.reset();
-    toast('Passwort wurde erfolgreich geändert.');
-  });
+  const shopPasswordForm=document.querySelector('#shopPasswordForm');
+  if(shopPasswordForm){
+    const newPasswordInput=shopPasswordForm.querySelector('[name="newPassword"]');
+    const confirmPasswordInput=shopPasswordForm.querySelector('[name="confirmPassword"]');
+    const passwordRule=shopPasswordForm.querySelector('[data-shop-password-rule]');
+    const syncShopPasswordValidation=()=>{
+      const newPassword=String(newPasswordInput?.value||'');
+      const confirmPassword=String(confirmPasswordInput?.value||'');
+      const lengthValid=newPassword.length>=6;
+      const matchValid=!confirmPassword || confirmPassword===newPassword;
+
+      if(passwordRule){
+        passwordRule.classList.toggle('valid',lengthValid);
+        passwordRule.classList.toggle('invalid',newPassword.length>0 && !lengthValid);
+      }
+      if(newPasswordInput){
+        newPasswordInput.classList.toggle('shop-password-invalid',newPassword.length>0 && !lengthValid);
+        newPasswordInput.classList.toggle('shop-password-valid',lengthValid);
+        newPasswordInput.setAttribute('aria-invalid',newPassword.length>0 && !lengthValid?'true':'false');
+      }
+      if(confirmPasswordInput){
+        confirmPasswordInput.classList.toggle('shop-password-invalid',confirmPassword.length>0 && !matchValid);
+        confirmPasswordInput.classList.toggle('shop-password-valid',confirmPassword.length>0 && matchValid && lengthValid);
+        confirmPasswordInput.setAttribute('aria-invalid',confirmPassword.length>0 && !matchValid?'true':'false');
+      }
+    };
+    newPasswordInput?.addEventListener('input',syncShopPasswordValidation);
+    confirmPasswordInput?.addEventListener('input',syncShopPasswordValidation);
+    syncShopPasswordValidation();
+
+    shopPasswordForm.addEventListener('submit',async e=>{
+      e.preventDefault();
+      const form=e.currentTarget;
+      const fd=new FormData(form);
+      const currentPassword=String(fd.get('currentPassword')||'');
+      const newPassword=String(fd.get('newPassword')||'');
+      const confirmPassword=String(fd.get('confirmPassword')||'');
+      if(newPassword.length<6) return toast('Das Passwort muss mindestens 6 Zeichen enthalten.');
+      if(newPassword!==confirmPassword) return toast('Die neuen Passwörter stimmen nicht überein.');
+      let currentHash='',newHash='';
+      try{
+        [currentHash,newHash]=await Promise.all([hashShopPassword(currentPassword),hashShopPassword(newPassword)]);
+      }catch(_){
+        return toast('Passwort konnte nicht geändert werden.');
+      }
+      if(currentHash!==currentShopPasswordHash()) return toast('Aktuelles Passwort ist nicht korrekt.');
+      if(!saveShopPasswordHash(newHash)) return toast('Passwort konnte nicht geändert werden.');
+
+      state.drawer=false;
+      state.languageOpen=false;
+      history.replaceState(null,'',location.pathname+location.search+'#home');
+      state.route='home';
+      render();
+      toast('Passwort wurde erfolgreich geändert.');
+    });
+  }
 
   document.querySelectorAll('[data-customer-picker]').forEach(picker=>{
     const trigger=picker.querySelector('[data-customer-trigger]');
