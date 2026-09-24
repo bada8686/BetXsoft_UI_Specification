@@ -24,9 +24,14 @@ function currentShopPasswordHash(){
   return SHOP_INITIAL_PASSWORD_HASH;
 }
 function saveShopPasswordHash(hash){
-  if(!/^[a-f0-9]{64}$/.test(String(hash||''))) return false;
-  try{ localStorage.setItem(SHOP_PASSWORD_HASH_KEY,String(hash).toLowerCase()); return true; }
-  catch(_){ return false; }
+  const normalized=String(hash||'').toLowerCase();
+  if(!/^[a-f0-9]{64}$/.test(normalized)) return false;
+  try{
+    localStorage.setItem(SHOP_PASSWORD_HASH_KEY,normalized);
+    return String(localStorage.getItem(SHOP_PASSWORD_HASH_KEY)||'').trim().toLowerCase()===normalized;
+  }catch(_){
+    return false;
+  }
 }
 async function hashShopPassword(value){
   const bytes=new TextEncoder().encode(String(value||''));
@@ -1502,14 +1507,19 @@ function bind(){
         return toast('Passwort konnte nicht geändert werden.');
       }
       if(currentHash!==currentShopPasswordHash()) return toast('Aktuelles Passwort ist nicht korrekt.');
-      if(!saveShopPasswordHash(newHash)) return toast('Passwort konnte nicht geändert werden.');
+      if(!saveShopPasswordHash(newHash) || currentShopPasswordHash()!==newHash) return toast('Passwort konnte nicht geändert werden.');
 
+      setShopAuthSession(false);
+      state.authenticated=false;
       state.drawer=false;
       state.languageOpen=false;
+      state.customer='';
+      state.amount='';
+      state.committedFlow='';
       history.replaceState(null,'',location.pathname+location.search+'#home');
       state.route='home';
       render();
-      toast('Passwort wurde erfolgreich geändert.');
+      toast('Passwort wurde erfolgreich geändert. Bitte mit dem neuen Passwort anmelden.');
     });
   }
 
