@@ -60,20 +60,12 @@ let shopLastActivityWrite=0;
 function readShopIdleExpiry(){
   if(Number.isFinite(shopIdleExpiry) && shopIdleExpiry>0) return shopIdleExpiry;
   try{
+    // Remove the old v222 activity value. It must never be reused for a new login.
+    sessionStorage.removeItem(SHOP_LEGACY_ACTIVITY_KEY);
     const stored=Number(sessionStorage.getItem(SHOP_IDLE_EXPIRY_KEY)||0);
     if(Number.isFinite(stored) && stored>0){
       shopIdleExpiry=stored;
       return stored;
-    }
-
-    // Migrate the previous v222 activity timestamp if it exists.
-    const legacyActivity=Number(sessionStorage.getItem(SHOP_LEGACY_ACTIVITY_KEY)||0);
-    if(Number.isFinite(legacyActivity) && legacyActivity>0){
-      const migrated=legacyActivity+SHOP_IDLE_TIMEOUT_MS;
-      shopIdleExpiry=migrated;
-      sessionStorage.setItem(SHOP_IDLE_EXPIRY_KEY,String(migrated));
-      sessionStorage.removeItem(SHOP_LEGACY_ACTIVITY_KEY);
-      return migrated;
     }
   }catch(_){}
   return 0;
@@ -158,6 +150,10 @@ function ensureShopIdleWatchdog(){
 }
 function startShopIdleSession(){
   if(!state.authenticated) return;
+
+  // A successful login always starts a completely fresh idle session.
+  clearShopIdleTracking();
+
   const now=Date.now();
   shopLastActivityWrite=now;
   writeShopIdleExpiry(now+SHOP_IDLE_TIMEOUT_MS);
@@ -1632,6 +1628,7 @@ function bind(){
     if(username.toLowerCase()!==SHOP_LOGIN_USERNAME.toLowerCase() || passwordHash!==currentShopPasswordHash()){
       return toast('Benutzername oder Passwort ist falsch.');
     }
+    clearShopIdleTracking();
     setShopAuthSession(true);
     state.authenticated=true;
     startShopIdleSession();
