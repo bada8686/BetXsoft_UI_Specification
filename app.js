@@ -48,6 +48,112 @@ function setShopAuthSession(active){
     else sessionStorage.removeItem(SHOP_AUTH_SESSION_KEY);
   }catch(_){}
 }
+
+const SHOP_IDLE_TIMEOUT_MS=10*60*1000;
+const SHOP_LAST_ACTIVITY_KEY='betxsoftShopLastActivityAt';
+let shopIdleTimer=null;
+let shopLastActivityWrite=0;
+
+function shopLastActivityAt(){
+  try{
+    const value=Number(sessionStorage.getItem(SHOP_LAST_ACTIVITY_KEY)||0);
+    return Number.isFinite(value) && value>0 ? value : 0;
+  }catch(_){
+    return 0;
+  }
+}
+function clearShopIdleTracking(){
+  if(shopIdleTimer){
+    clearTimeout(shopIdleTimer);
+    shopIdleTimer=null;
+  }
+  shopLastActivityWrite=0;
+  try{ sessionStorage.removeItem(SHOP_LAST_ACTIVITY_KEY); }catch(_){}
+}
+function finishShopIdleLogout(){
+  if(!state.authenticated) return;
+  clearShopIdleTracking();
+  setShopAuthSession(false);
+  state.authenticated=false;
+  state.drawer=false;
+  state.languageOpen=false;
+  state.customer='';
+  state.amount='';
+  state.committedFlow='';
+  history.replaceState(null,'',location.pathname+location.search+'#home');
+  state.route='home';
+  render();
+  toast('Sitzung wegen Inaktivität beendet. Bitte erneut anmelden.');
+}
+function scheduleShopIdleLogout(){
+  if(shopIdleTimer){
+    clearTimeout(shopIdleTimer);
+    shopIdleTimer=null;
+  }
+  if(!state.authenticated) return;
+
+  const lastActivity=shopLastActivityAt();
+  const elapsed=lastActivity ? Date.now()-lastActivity : 0;
+  const remaining=SHOP_IDLE_TIMEOUT_MS-elapsed;
+
+  if(remaining<=0){
+    finishShopIdleLogout();
+    return;
+  }
+
+  shopIdleTimer=setTimeout(()=>{
+    shopIdleTimer=null;
+    if(!state.authenticated) return;
+    const last=shopLastActivityAt();
+    if(last && Date.now()-last>=SHOP_IDLE_TIMEOUT_MS) finishShopIdleLogout();
+    else scheduleShopIdleLogout();
+  },remaining);
+}
+function startShopIdleSession(){
+  if(!state.authenticated) return;
+  const now=Date.now();
+  shopLastActivityWrite=now;
+  try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+  scheduleShopIdleLogout();
+}
+function registerShopActivity(){
+  if(!state.authenticated) return;
+
+  const now=Date.now();
+  const lastActivity=shopLastActivityAt();
+  if(lastActivity && now-lastActivity>=SHOP_IDLE_TIMEOUT_MS){
+    finishShopIdleLogout();
+    return;
+  }
+
+  if(now-shopLastActivityWrite<1000) return;
+  shopLastActivityWrite=now;
+  try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+  scheduleShopIdleLogout();
+}
+function installShopIdleLogout(){
+  const events=['pointerdown','pointermove','keydown','wheel','touchstart','scroll'];
+  events.forEach(type=>window.addEventListener(type,registerShopActivity,{passive:true}));
+
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState!=='visible' || !state.authenticated) return;
+    const lastActivity=shopLastActivityAt();
+    if(lastActivity && Date.now()-lastActivity>=SHOP_IDLE_TIMEOUT_MS){
+      finishShopIdleLogout();
+      return;
+    }
+    registerShopActivity();
+  });
+
+  if(state.authenticated){
+    if(!shopLastActivityAt()){
+      const now=Date.now();
+      shopLastActivityWrite=now;
+      try{ sessionStorage.setItem(SHOP_LAST_ACTIVITY_KEY,String(now)); }catch(_){}
+    }
+    scheduleShopIdleLogout();
+  }
+}
 const state = {
   route: location.hash.slice(1) || 'home', drawer: false, authenticated: shopAuthSession(), language: initialSiteLanguage(), languageOpen: false, amount: '', customer: '',
   customerFilter: '', customerIdFilter: '', customerNameFilter: '', customerStatusFilter: 'Alle', customerPage: 1, selectedCustomerId: '', customerListScrollY: 0, restoreCustomerScrollOnNextRender: false, customerSubpageFromSearch: false, editingCustomerId: '', historyStatusFilter: 'Alle', historyTypeFilter: 'Alle', historyPage: 1, ticketFilter: '', ticketPage: 1, selectedCouponId: '', scrollTopOnNextRender: false, couponListScrollY: 0, restoreCouponScrollOnNextRender: false, toggles: {}, createdUsers: [], dashboardPeriod: 'today',
@@ -1429,6 +1535,7 @@ function bind(){
     e.preventDefault();
     e.stopPropagation();
     setShopAuthSession(false);
+    clearShopIdleTracking();
     state.authenticated=false;
     state.drawer=false;
     state.languageOpen=false;
@@ -1454,6 +1561,7 @@ function bind(){
     }
     setShopAuthSession(true);
     state.authenticated=true;
+    startShopIdleSession();
     state.drawer=false;
     history.replaceState(null,'',location.pathname+location.search+'#home');
     state.route='home';
@@ -1510,6 +1618,7 @@ function bind(){
       if(!saveShopPasswordHash(newHash) || currentShopPasswordHash()!==newHash) return toast('Passwort konnte nicht geändert werden.');
 
       setShopAuthSession(false);
+      clearShopIdleTracking();
       state.authenticated=false;
       state.drawer=false;
       state.languageOpen=false;
@@ -2054,4 +2163,5 @@ addEventListener('hashchange',()=>{
   }
   render();
 });
+installShopIdleLogout();
 render();
