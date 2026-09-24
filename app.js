@@ -630,7 +630,7 @@ function languageSelector(){
 function drawer(){
   const primary=(routeIndex,label,icon,tone)=>`<button class="drawer-primary ${tone} ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-primary-icon">${svgIcon(icon)}</span><strong>${label}</strong><span class="drawer-primary-chevron">${svgIcon('chevron')}</span></button>`;
   const item=(routeIndex,icon,label=routes[routeIndex][1])=>`<button class="drawer-sub-link ${routes[routeIndex][0]===state.route?'active':''}" data-go="${routes[routeIndex][0]}"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
-  const staticItem=(label,icon)=>`<button class="drawer-sub-link" type="button"><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
+  const staticItem=(label,icon,attrs='')=>`<button class="drawer-sub-link" type="button" ${attrs}><span class="drawer-sub-icon">${svgIcon(icon)}</span><span class="drawer-sub-label">${label}</span><span class="drawer-sub-chevron">${svgIcon('chevron')}</span></button>`;
   return `<div class="drawer-backdrop ${state.drawer?'open':''}" data-drawer-close></div><aside class="drawer ${state.drawer?'open':''}">
     <nav class="drawer-nav">
       <button class="drawer-shop-user ${state.route==='shop'?'active':''}" type="button" data-go="shop" aria-label="Shop">
@@ -651,7 +651,7 @@ function drawer(){
       ${item(15,'payoutWallet')}
       <div class="drawer-menu-divider" aria-hidden="true"></div>
       ${languageSelector()}
-      ${staticItem('Abmelden','logout')}
+      ${staticItem('Abmelden','logout','data-logout')}
       <div class="drawer-footer">
         <div class="drawer-footer-rule" aria-hidden="true"></div>
         <a class="drawer-qr-link" href="https://t.me/BETXSOFT" target="_blank" rel="noopener noreferrer" aria-label="BetXsoft auf Telegram öffnen">
@@ -1420,6 +1420,21 @@ function render(){
 }
 
 function bind(){
+  document.querySelector('[data-logout]')?.addEventListener('click',e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    setShopAuthSession(false);
+    state.authenticated=false;
+    state.drawer=false;
+    state.languageOpen=false;
+    state.customer='';
+    state.amount='';
+    state.committedFlow='';
+    history.replaceState(null,'',location.pathname+location.search+'#home');
+    state.route='home';
+    render();
+  });
+
   document.querySelector('#shopLoginForm')?.addEventListener('submit',async e=>{
     e.preventDefault();
     const form=e.currentTarget;
