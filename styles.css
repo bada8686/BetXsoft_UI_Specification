@@ -4976,19 +4976,16 @@ body.ios-keyboard-locked{
   margin-bottom:24px;
 }
 .shop-login-logo{
-  color:#112d5a;
-  font-size:26px;
+  display:inline-block;
+  font-size:64px;
+  line-height:.92;
   font-weight:900;
-  letter-spacing:.8px;
-}
-.shop-login-logo span{
-  color:#1877d2;
-}
-.shop-login-brand p{
-  margin:6px 0 0;
-  color:var(--muted);
-  font-size:13px;
-  font-weight:700;
+  letter-spacing:-4px;
+  background:linear-gradient(135deg,#0b4dff 12%,#145cff 52%,#16a9ef 100%);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
 }
 .shop-login-form{
   display:grid;
@@ -5284,3 +5281,15 @@ body.ios-keyboard-locked{
   }
 }
 /* shop-login-password-spacing-v232:end */
+
+
+/* login-x-brand-v233:start */
+.shop-login-brand{
+  margin-bottom:26px;
+}
+@media(max-width:520px){
+  .shop-login-logo{
+    font-size:58px;
+  }
+}
+/* login-x-brand-v233:end */
