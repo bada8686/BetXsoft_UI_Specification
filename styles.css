@@ -5132,3 +5132,68 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-compact-status-grid-v228:end */
+
+
+/* wettscheine-status-visual-v229:start */
+@media(max-width:520px){
+  .route-coupons .toggle-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:8px!important;
+    margin-bottom:12px!important;
+  }
+  .route-coupons .toggle-card.status-toggle{
+    min-height:46px!important;
+    padding:5px 8px!important;
+    display:grid!important;
+    grid-template-columns:38px 32px minmax(0,1fr)!important;
+    align-items:center!important;
+    gap:8px!important;
+    border-radius:9px!important;
+    background:#fff!important;
+  }
+  .route-coupons .toggle-card.status-toggle:nth-child(5){
+    grid-column:1/-1!important;
+    justify-self:center!important;
+    width:calc(50% - 4px)!important;
+  }
+  .route-coupons .status-toggle-icon{
+    width:32px!important;
+    height:32px!important;
+    border-radius:8px!important;
+    display:grid!important;
+    place-items:center!important;
+  }
+  .route-coupons .status-toggle-icon .svg-icon{
+    width:19px!important;
+    height:19px!important;
+  }
+  .route-coupons .status-toggle-label{
+    min-width:0!important;
+    color:#111827!important;
+    font-size:13px!important;
+    line-height:1!important;
+    font-weight:560!important;
+    white-space:nowrap!important;
+  }
+  .route-coupons .status-0 .status-toggle-icon{
+    color:#1769e8!important;
+    background:#edf3ff!important;
+  }
+  .route-coupons .status-1 .status-toggle-icon{
+    color:#1fac55!important;
+    background:#ebf9ef!important;
+  }
+  .route-coupons .status-2 .status-toggle-icon{
+    color:#df2d35!important;
+    background:#fff0f1!important;
+  }
+  .route-coupons .status-3 .status-toggle-icon{
+    color:#e6531b!important;
+    background:#fff2e9!important;
+  }
+  .route-coupons .status-4 .status-toggle-icon{
+    color:#7040e8!important;
+    background:#f2edff!important;
+  }
+}
+/* wettscheine-status-visual-v229:end */
