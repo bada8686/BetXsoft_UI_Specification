@@ -1524,14 +1524,14 @@ function shopLoginView(){
         <div class="shop-login-logo" aria-label="X">
           <svg class="shop-login-x" viewBox="0 0 100 100" role="img" aria-hidden="true">
             <defs>
-              <linearGradient id="shopLoginXGradient" x1="10" y1="90" x2="90" y2="10" gradientUnits="userSpaceOnUse">
-                <stop offset="0" stop-color="#0b4dff"/>
-                <stop offset="0.55" stop-color="#145cff"/>
-                <stop offset="1" stop-color="#16a9ef"/>
+              <linearGradient id="shopLoginXGradient" x1="8" y1="92" x2="92" y2="8" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#0a49ff"/>
+                <stop offset="0.62" stop-color="#155cff"/>
+                <stop offset="1" stop-color="#20b7ee"/>
               </linearGradient>
             </defs>
-            <path d="M18 10h22l60 80H78L18 10Z" fill="url(#shopLoginXGradient)"/>
-            <path d="M60 10h22L22 90H0l60-80Z" fill="url(#shopLoginXGradient)"/>
+            <path d="M9 9h27l55 82H64L9 9Z" fill="url(#shopLoginXGradient)"/>
+            <path d="M64 9h27L36 91H9L64 9Z" fill="url(#shopLoginXGradient)"/>
           </svg>
         </div>
       </div>
