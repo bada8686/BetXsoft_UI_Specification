@@ -5115,3 +5115,20 @@ body.ios-keyboard-locked{
   }
 }
 /* drawer-spacing-typography-v227:end */
+
+
+/* wettscheine-compact-status-grid-v228:start */
+@media(max-width:520px){
+  .route-coupons .toggle-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;
+    gap:7px!important;
+    margin-bottom:12px!important;
+  }
+  .route-coupons .toggle-card{
+    min-height:38px!important;
+    padding:5px 8px!important;
+    gap:8px!important;
+    border-radius:8px!important;
+  }
+}
+/* wettscheine-compact-status-grid-v228:end */
