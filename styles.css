@@ -5085,3 +5085,33 @@ body.ios-keyboard-locked{
   border-color:#2ca56c;
 }
 /* shop-password-validation-v219:end */
+
+
+/* drawer-spacing-typography-v227:start */
+@media(max-width:520px){
+  /* More generous vertical rhythm in the left menu.
+     Icons, colors and horizontal positioning stay unchanged. */
+  #app > .app + .drawer-backdrop + .drawer .drawer-shop-user{
+    min-height:42px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-shop-user strong{
+    font-size:13px!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-title{
+    min-height:42px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-primary strong,
+  #app > .app + .drawer-backdrop + .drawer .drawer-section-title strong{
+    font-size:14.5px!important;
+  }
+
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-link{
+    min-height:38px!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-sub-label{
+    font-size:12.5px!important;
+  }
+}
+/* drawer-spacing-typography-v227:end */
