@@ -1521,7 +1521,19 @@ function shopLoginView(){
   return `<div class="shop-login-page">
     <section class="shop-login-card">
       <div class="shop-login-brand">
-        <div class="shop-login-logo" aria-label="X">X</div>
+        <div class="shop-login-logo" aria-label="X">
+          <svg class="shop-login-x" viewBox="0 0 100 100" role="img" aria-hidden="true">
+            <defs>
+              <linearGradient id="shopLoginXGradient" x1="10" y1="90" x2="90" y2="10" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#0b4dff"/>
+                <stop offset="0.55" stop-color="#145cff"/>
+                <stop offset="1" stop-color="#16a9ef"/>
+              </linearGradient>
+            </defs>
+            <path d="M18 10h22l60 80H78L18 10Z" fill="url(#shopLoginXGradient)"/>
+            <path d="M60 10h22L22 90H0l60-80Z" fill="url(#shopLoginXGradient)"/>
+          </svg>
+        </div>
       </div>
       <form id="shopLoginForm" class="shop-login-form">
         <div class="field">
