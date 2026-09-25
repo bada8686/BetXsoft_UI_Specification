@@ -5197,3 +5197,18 @@ body.ios-keyboard-locked{
   }
 }
 /* wettscheine-status-visual-v229:end */
+
+
+/* topbar-dark-area-v230:start */
+@media(max-width:520px){
+  /* Increase only the visible dark top-banner area by 5px total.
+     Keep all banner contents at their exact existing viewport position. */
+  #app > .app .topbar{
+    top:-14.5px!important;
+    height:72.5px!important;
+  }
+  #app > .app .topbar-main{
+    transform:translateY(17.5px)!important;
+  }
+}
+/* topbar-dark-area-v230:end */
