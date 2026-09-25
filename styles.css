@@ -4982,8 +4982,8 @@ body.ios-keyboard-locked{
 }
 .shop-login-x{
   display:block;
-  width:120px;
-  height:120px;
+  width:116px;
+  height:116px;
 }
 .shop-login-form{
   display:grid;
@@ -5287,8 +5287,8 @@ body.ios-keyboard-locked{
 }
 @media(max-width:520px){
   .shop-login-x{
-    width:112px;
-    height:112px;
+    width:108px;
+    height:108px;
   }
 }
 /* login-x-brand-v233:end */
