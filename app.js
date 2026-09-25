@@ -1131,7 +1131,17 @@ function createUserView(){ return `<section class="create-user-page">
   </section>
 </section>`; }
 
-function toggleCards(){ return ['Offen','Gewonnen','Verloren','Storniert','Verkauft'].map((n,i)=>`<label class="toggle-card"><button class="switch ${state.toggles[i]?'on':''}" data-toggle="${i}" aria-label="${n}"></button><span>${n}</span></label>`).join(''); }
+function ticketStatusIcon(index){
+  const icons=[
+    '<path d="M7 3.5h7l4 4v13H7z"/><path d="M14 3.5v4h4M10 12h5M10 16h5"/>',
+    '<path d="M8 4h8v4a4 4 0 0 1-8 0V4Z"/><path d="M8 6H5v1a4 4 0 0 0 4 4M16 6h3v1a4 4 0 0 1-4 4M12 12v5M9 20h6M10 17h4"/>',
+    '<circle cx="12" cy="12" r="8"/><path d="m9 9 6 6M15 9l-6 6"/>',
+    '<circle cx="12" cy="12" r="8"/><path d="M6.4 6.4 17.6 17.6"/>',
+    '<path d="M4 6h2l2 9h9l2-6H8"/><circle cx="10" cy="19" r="1.3"/><circle cx="17" cy="19" r="1.3"/>'
+  ];
+  return `<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[index]||icons[0]}</svg>`;
+}
+function toggleCards(){ return ['Offen','Gewonnen','Verloren','Storniert','Verkauft'].map((n,i)=>`<label class="toggle-card status-toggle status-${i}"><button class="switch ${state.toggles[i]?'on':''}" data-toggle="${i}" aria-label="${n}"></button><span class="status-toggle-icon">${ticketStatusIcon(i)}</span><span class="status-toggle-label">${n}</span></label>`).join(''); }
 function activeTicketStatus(){
   const active=Object.keys(state.toggles).find(k=>state.toggles[k]);
   return active===undefined ? '' : ({0:'OPEN',1:'WON',2:'LOSS',3:'CANCELLED',4:'SOLD'})[active] || '';
