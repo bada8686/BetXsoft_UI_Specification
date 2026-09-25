@@ -5212,3 +5212,21 @@ body.ios-keyboard-locked{
   }
 }
 /* topbar-dark-area-v230:end */
+
+
+/* mobile-language-menu-viewport-fix-v231:start */
+@media(max-width:520px){
+  /* Keep the opened language selector inside the visible mobile area.
+     The language list itself scrolls instead of extending behind Safari's bottom UI. */
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-list{
+    max-height:190px!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    -webkit-overflow-scrolling:touch!important;
+    scrollbar-width:none!important;
+  }
+  #app > .app + .drawer-backdrop + .drawer .drawer-language-list::-webkit-scrollbar{
+    display:none!important;
+  }
+}
+/* mobile-language-menu-viewport-fix-v231:end */
