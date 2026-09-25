@@ -2246,6 +2246,7 @@ const iosKeyboardViewportLock=(()=>{
 
   document.addEventListener('focusin',e=>{
     if(!isEditable(e.target)) return;
+    if(e.target.closest?.('.shop-login-page')) return;
     clearTimeout(restoreTimer);
     freeze();
 
