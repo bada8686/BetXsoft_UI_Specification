@@ -1521,8 +1521,7 @@ function shopLoginView(){
   return `<div class="shop-login-page">
     <section class="shop-login-card">
       <div class="shop-login-brand">
-        <div class="shop-login-logo">BET<span>X</span>SOFT</div>
-        <p>Shop Login</p>
+        <div class="shop-login-logo" aria-label="X">X</div>
       </div>
       <form id="shopLoginForm" class="shop-login-form">
         <div class="field">
