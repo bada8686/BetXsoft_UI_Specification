@@ -1530,8 +1530,7 @@ function shopLoginView(){
                 <stop offset="1" stop-color="#20b7ee"/>
               </linearGradient>
             </defs>
-            <path d="M9 9h27l55 82H64L9 9Z" fill="url(#shopLoginXGradient)"/>
-            <path d="M64 9h27L36 91H9L64 9Z" fill="url(#shopLoginXGradient)"/>
+            <path d="M8 8h29l13 22 13-22h29L64 50l28 42H63L50 70 37 92H8l28-42L8 8Z" fill="url(#shopLoginXGradient)"/>
           </svg>
         </div>
       </div>
